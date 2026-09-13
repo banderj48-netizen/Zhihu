@@ -6,4 +6,6 @@
 - 聊天记录必须保存真实消息内容、消息时间、稳定 ID、会话内顺序和发送者信息；删除优先采用软删除。
 - `backend/agent/retrieval/service.py` 只提供供上下文组装流程显式调用的检索函数，不注册为 Agent Tool，Agent 不得自主触发数据库检索。
 - 短固定画像直接查 PostgreSQL；经历、原始资料和聊天记录使用 PostgreSQL 关键词与 Chroma 向量混合检索，向量库只保存候选 ID 和检索元数据。
+- `backend/agent/runtime/llm.py` 和 `agent.py` 中的 LLM、Agent 类必须通过依赖注入工作；Agent 不注册检索工具，不主动访问数据库或向量库。
+- `backend/agent/runtime/model_builder.py` 从 `backend/.env` 或环境变量读取 LLM API Key、URL 和模型名，禁止在代码中硬编码密钥。
 - 修改或新增数据库模块后，应同步更新本文件中的约束和执行说明。
