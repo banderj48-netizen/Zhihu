@@ -4,7 +4,7 @@
 
 传统后端（`backend/app`）负责认证、授权、知乎数据、数据库、版本、删除和审计。
 
-Agent（`backend/agent`）负责候选抽取、评测解释、领域和记忆推理、检索、Prompt、模型调用和输出校验。
+Agent（`backend/agent`）负责候选抽取、评测解释、领域和记忆推理、检索需求、Prompt、模型调用和输出校验。RAG、向量化和索引由独立服务实现，不属于本目录。
 
 ## 初始化阶段通信
 
@@ -106,7 +106,7 @@ question_proposal
 
 ## 删除和撤销
 
-传统后端发布 `source_revoked` 或 `avatar_deleted` 事件，包含受影响的 source/document/evidence ID。Agent 删除缓存、向量和运行时索引，并返回清理结果。事件完成前，相关内容不得继续召回。
+传统后端发布 `source_revoked` 或 `avatar_deleted` 事件，包含受影响的 source/document/evidence ID。Agent 停止使用相关结果；独立 RAG 服务负责删除自己的向量和索引。事件完成前，相关内容不得继续召回。
 
 ## 错误和幂等
 

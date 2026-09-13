@@ -51,7 +51,7 @@ Docker 与本机实例择一启动，避免端口冲突；Compose 不覆盖本�
 
 ## 迁移规则
 
-`schema.sql` 是 PostgreSQL 基线迁移 1，`migrations/002_personality_assessment.sql` 是迁移 2。现在共 17 张表：16 张原有表及 `schema_migrations`。
+`schema.sql` 是 PostgreSQL 基线迁移 1，`migrations/002_personality_assessment.sql` 是迁移 2，`migrations/003_domain_selections.sql` 是迁移 3。当前 schema 版本为 3，领域选择表保存兴趣和自评熟悉度。
 
 - JSON 数据用 `JSONB`，时间用 `TIMESTAMPTZ`，分享/跳过标志用 `BOOLEAN`。
 - `initialize()` 在一个事务内持 PostgreSQL advisory lock，按序执行未应用迁移；失败时整体回滚。

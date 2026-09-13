@@ -6,7 +6,10 @@ from threading import Lock
 from enum import Enum
 from agent.personality import export_personality, public_questions, render_personality, score_assessment
 from agent.personality.repository import latest_assessment, save_assessment, save_skipped
+from agent.domains.api import router as domains_router
+from agent.domains.repository import get_selections
 app=FastAPI(title='TwinLoop API',version='0.1.0')
+app.include_router(domains_router)
 lock=Lock(); tasks={}; profiles={}; versions={}
 def now(): return datetime.now(timezone.utc).isoformat()
 def uid(x): return x or 'local-demo-user'
@@ -108,7 +111,11 @@ def personality_latest(x_user_id:str|None=Header(default=None)):
  return result
 def build_card(profile,user,vid):
  d=profile['data']; entries=[]
+ try:
+  domain_profile=get_selections(user)
+ except Exception:
+  domain_profile=d.get('domains',[])
  personality=d.get('personality') or latest_assessment(user)
  for i,m in enumerate(d.get('memories',[]),1):
   if m.get('share'): entries.append({'id':i,'keys':m.get('keys',[]),'content':m.get('content',''),'enabled':True,'insertion_order':i,'constant':m.get('depth')=='deep','selective':False,'position':'after_char','extensions':{'twin':{'memory_id':m.get('id',f'memory_{i}'),'depth':m.get('depth','shallow'),'source_refs':m.get('source_refs',[]),'confirmation_status':'confirmed','version':m.get('version',1)}}})
- return {'spec':'chara_card_v2','spec_version':'2.0','data':{'name':d.get('name',f'Twin_{user[:8]}'),'description':'；'.join(map(str,d.get('facts',[])[:8])) or '主人尚未提供公开身份事实。','personality':render_personality(personality),'scenario':'数字分身在虚拟社交场景中交流。虚拟经历不等于主人的现实经历。','first_mes':'你好。','mes_example':d.get('mes_example',''),'creator_notes':f'TwinLoop version {vid}; 由用户确认的资料生成。','system_prompt':'{{original}}\n不编造主人的经历、能力或现实承诺；未知时自然说明。','post_history_instructions':'{{original}}\n按适用条件和例外回应。','alternate_greetings':[],'tags':['TwinLoop'],'creator':'TwinLoop','character_version':vid,'character_book':{'name':'三层世界书','description':'深层原则、中层条件反应、浅层事件。','recursive_scanning':False,'entries':entries},'extensions':{'twin':{'schema_version':'2.1-proposal','owner_id':user,'version_id':vid,'assessment':{'status':personality.get('status') if isinstance(personality,dict) else 'not_completed'},'personality':export_personality(personality if isinstance(personality,dict) else None),'domain_profile':d.get('domains',[]),'private_answers_included':False}}}}
+ return {'spec':'chara_card_v2','spec_version':'2.0','data':{'name':d.get('name',f'Twin_{user[:8]}'),'description':'；'.join(map(str,d.get('facts',[])[:8])) or '主人尚未提供公开身份事实。','personality':render_personality(personality),'scenario':'数字分身在虚拟社交场景中交流。虚拟经历不等于主人的现实经历。','first_mes':'你好。','mes_example':d.get('mes_example',''),'creator_notes':f'TwinLoop version {vid}; 由用户确认的资料生成。','system_prompt':'{{original}}\n不编造主人的经历、能力或现实承诺；未知时自然说明。','post_history_instructions':'{{original}}\n按适用条件和例外回应。','alternate_greetings':[],'tags':['TwinLoop'],'creator':'TwinLoop','character_version':vid,'character_book':{'name':'三层世界书','description':'深层原则、中层条件反应、浅层事件。','recursive_scanning':False,'entries':entries},'extensions':{'twin':{'schema_version':'2.1-proposal','owner_id':user,'version_id':vid,'assessment':{'status':personality.get('status') if isinstance(personality,dict) else 'not_completed'},'personality':export_personality(personality if isinstance(personality,dict) else None),'domain_profile':domain_profile,'private_answers_included':False}}}}

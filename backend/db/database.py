@@ -15,7 +15,7 @@ from psycopg.rows import dict_row
 BACKEND_ROOT = Path(__file__).resolve().parents[1]
 SCHEMA_PATH = Path(__file__).with_name("schema.sql")
 MIGRATIONS_PATH = Path(__file__).with_name("migrations")
-SCHEMA_VERSION = 2
+SCHEMA_VERSION = 3
 MIGRATION_LOCK = 716052809
 
 
@@ -43,7 +43,7 @@ def connect(url: str | None = None) -> psycopg.Connection:
 
 
 def migration_files() -> list[tuple[int, Path]]:
-    return [(1, SCHEMA_PATH), (2, MIGRATIONS_PATH / "002_personality_assessment.sql")]
+    return [(1, SCHEMA_PATH), (2, MIGRATIONS_PATH / "002_personality_assessment.sql"), (3, MIGRATIONS_PATH / "003_domain_selections.sql")]
 
 
 def initialize(url: str | None = None) -> int:

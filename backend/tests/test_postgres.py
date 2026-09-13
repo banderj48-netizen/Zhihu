@@ -66,9 +66,9 @@ class PostgreSQLTests(unittest.TestCase):
     def test_repeat_and_concurrent_migrations_preserve_data(self):
         save_assessment("u1", self.result())
         with ThreadPoolExecutor(max_workers=3) as pool:
-            self.assertEqual(list(pool.map(lambda _: initialize(), range(3))), [2, 2, 2])
+            self.assertEqual(list(pool.map(lambda _: initialize(), range(3))), [3, 3, 3])
         with connect() as db:
-            self.assertEqual(db.execute("SELECT count(*) AS n FROM schema_migrations").fetchone()["n"], 2)
+            self.assertEqual(db.execute("SELECT count(*) AS n FROM schema_migrations").fetchone()["n"], 3)
             self.assertEqual(db.execute("SELECT count(*) AS n FROM personality_assessments").fetchone()["n"], 1)
 
     def test_changed_migration_is_rejected(self):
@@ -82,13 +82,13 @@ class PostgreSQLTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as directory:
             migration = Path(directory) / "003_test.sql"
             migration.write_text("CREATE TABLE rollback_probe(id TEXT); SELECT 1/0;", encoding="utf-8")
-            files = database.migration_files() + [(3, migration)]
+            files = database.migration_files() + [(4, migration)]
             with patch.object(database, "migration_files", return_value=files):
                 with self.assertRaises(psycopg.errors.DivisionByZero):
                     initialize()
         with connect() as db:
             self.assertIsNone(db.execute("SELECT to_regclass('rollback_probe') AS name").fetchone()["name"])
-            self.assertEqual(db.execute("SELECT count(*) AS n FROM schema_migrations").fetchone()["n"], 2)
+            self.assertEqual(db.execute("SELECT count(*) AS n FROM schema_migrations").fetchone()["n"], 3)
 
     def test_jsonb_roundtrip_and_read_in_another_process(self):
         result = self.result()
