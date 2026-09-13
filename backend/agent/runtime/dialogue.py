@@ -23,6 +23,7 @@ class DialogueResult:
     """双 Agent 对话执行结果。"""
     dialogue_run_id: str
     conversation_id: str
+    chat_no: str
     status: str
     rounds: int
     evaluation: DialogueEvaluation | None = None
@@ -52,6 +53,7 @@ async def run_agent_dialogue(avatar_a_id: str, avatar_b_id: str, *, user_id_a: s
     await limiter.acquire()
     run_id, conversation_id = str(uuid4()), chat_repository.create_conversation("direct", "数字分身对话")
     _update_run(run_id, conversation_id, avatar_a_id, avatar_b_id, user_id_a, user_id_b, "running", 0, max_rounds)
+    chat_no = _create_chat_group(run_id, conversation_id, avatar_a_id, avatar_b_id, user_id_a, user_id_b, {"scene_id": scene_id, "topic_mode": topic_mode})
     try:
         participant_a = _participant_id(chat_repository, conversation_id, avatar_a_id, "Agent A")
         participant_b = _participant_id(chat_repository, conversation_id, avatar_b_id, "Agent B")
@@ -64,7 +66,8 @@ async def run_agent_dialogue(avatar_a_id: str, avatar_b_id: str, *, user_id_a: s
             refusal = str(gate.get("refusal_response") or "这个话题我平时关注不多，暂时不太想聊。")
             await _persist(chat_repository, vector_store, conversation_id, participant_b, refusal, run_id, "B", 0, metadata={"event": "topic_rejected", "topic": topic, "interest_score": gate.get("interest_score", 0), "threshold": float(os.getenv("DIALOGUE_INTEREST_THRESHOLD", "0.55")), "reason": gate.get("interest_reason", "")})
             _update_run(run_id, conversation_id, avatar_a_id, avatar_b_id, user_id_a, user_id_b, "completed", 0, max_rounds, {"scene_id": scene_id, "selected_topic": topic, "termination_reason": "topic_rejected", "interest_check": gate})
-            return DialogueResult(run_id, conversation_id, "completed", 0, None)
+            _update_chat_group(chat_no, "completed", {"termination_reason": "topic_rejected"})
+            return DialogueResult(run_id, conversation_id, chat_no, "completed", 0, None)
         # 由 A 先围绕选定主题发起自然开场，再交给 B 回答。
         opening = await _run_turn(graph_a, user_id_a, avatar_a_id, conversation_id, f"请在{scene_id or '当前场景'}自然开启关于‘{topic}’的闲聊，只输出一句话。", 0)
         await _persist(chat_repository, vector_store, conversation_id, participant_a, opening, run_id, "A", 0, metadata={"event": "topic_opening", "topic_source": gate.get("topic_source", "manual"), "topic": topic, "topic_score": (gate.get("shared_topics") or [{}])[0].get("score")})
@@ -88,10 +91,12 @@ async def run_agent_dialogue(avatar_a_id: str, avatar_b_id: str, *, user_id_a: s
         _update_run(run_id, conversation_id, avatar_a_id, avatar_b_id, user_id_a, user_id_b, "completed", max_rounds, max_rounds)
         if evaluation and push_gateway and evaluation.score > float(os.getenv("GREAT_SCORE", "0.8")):
             await push_gateway.push_profile_urls(user_id_a, user_id_b, None, None, evaluation.score)
-        return DialogueResult(run_id, conversation_id, "completed", max_rounds, evaluation)
+        _update_chat_group(chat_no, "completed", {})
+        return DialogueResult(run_id, conversation_id, chat_no, "completed", max_rounds, evaluation)
     except Exception:
         try:
             _update_run(run_id, conversation_id, avatar_a_id, avatar_b_id, user_id_a, user_id_b, "failed", 0, max_rounds)
+            _update_chat_group(chat_no, "failed", {})
         finally:
             raise
     finally:
@@ -117,6 +122,23 @@ def _save_evaluation(run_id: str, evaluation: DialogueEvaluation) -> None:
             (run_id, "evaluator", evaluation.score, float(os.getenv("GREAT_SCORE", "0.8")), evaluation.summary, Jsonb(dict(evaluation.dimensions)), Jsonb(dict(evaluation.raw_result))))
 
 
+def _create_chat_group(run_id: str, conversation_id: str, avatar_a: str, avatar_b: str, user_a: str, user_b: str, metadata: dict[str, Any]) -> str:
+    """创建一次运行对应的唯一聊天组，并返回对外聊天号。"""
+    from db.database import connect
+    chat_no = f"chat_{uuid4().hex}"
+    with connect() as db:
+        row = db.execute("""INSERT INTO agent_chat_groups(chat_no,dialogue_run_id,conversation_id,initiator_avatar_id,invited_avatar_id,initiator_user_id,invited_user_id,metadata)
+            VALUES(%s,%s,%s,%s,%s,%s,%s,%s) ON CONFLICT(dialogue_run_id) DO UPDATE SET metadata=agent_chat_groups.metadata || EXCLUDED.metadata RETURNING chat_no""", (chat_no, run_id, conversation_id, avatar_a, avatar_b, user_a, user_b, Jsonb(metadata))).fetchone()
+        return str(row["chat_no"])
+
+
+def _update_chat_group(chat_no: str, status: str, metadata: dict[str, Any]) -> None:
+    """更新聊天组状态、结束时间和扩展元数据。"""
+    from db.database import connect
+    with connect() as db:
+        db.execute("UPDATE agent_chat_groups SET status=%s,ended_at=CASE WHEN %s <> 'running' THEN COALESCE(ended_at,now()) ELSE ended_at END,metadata=metadata || %s WHERE chat_no=%s", (status, status, Jsonb(metadata), chat_no))
+
+
 def _participant_id(repository: ChatRepository, conversation_id: str, avatar_id: str, name: str) -> str:
     """创建参与者并返回参与者 ID。"""
     from db.database import connect
@@ -134,6 +156,9 @@ async def _run_turn(graph: Any, user_id: str, avatar_id: str, conversation_id: s
 async def _persist(repository: ChatRepository, vector_store: VectorSearchAdapter | None, conversation_id: str, participant_id: str, content: str, run_id: str, role: str, turn_no: int, metadata: dict[str, Any] | None = None) -> None:
     """先写 PostgreSQL，再尽力写 Chroma；向量失败不影响聊天事实记录。"""
     result = repository.append_message(conversation_id, participant_id, content, metadata={"dialogue_run_id": run_id, "agent_role": role, "turn_no": turn_no, **(metadata or {})})
+    from db.database import connect
+    with connect() as db:
+        db.execute("UPDATE agent_chat_groups SET message_count=message_count+1 WHERE dialogue_run_id=%s", (run_id,))
     if vector_store:
         try:
             await vector_store.upsert("chat_messages", [result["message_id"]], [content], [{"message_id": result["message_id"], "conversation_id": conversation_id, "agent_role": role, "turn_no": turn_no, "deleted": False}])

@@ -14,3 +14,4 @@
 - 数字分身初始化状态、心灵感应反馈和性格调整表位于 `backend/db/postgresql_twin_initialization.sql`，需在聊天与画像脚本之后执行。
 - 初始化、匹配和反馈 API 位于 `backend/agent/runtime/api.py`，统一通过服务层调用，禁止在路由中直接操作 Chroma。
 - 双 Agent 开场话题门控位于 `backend/agent/runtime/topic_gate.py`：共同观点优先，无共同观点时随机试探；接收方兴趣分数低于阈值时正常结束，不进入后续对话。
+- Agent 聊天组索引位于 `backend/db/postgresql_agent_chat_groups.sql`，一次 `run_agent_dialogue` 只创建一个 `chat_no`；聊天正文必须从 `chat_messages` 读取，查询接口必须校验用户参与权限。

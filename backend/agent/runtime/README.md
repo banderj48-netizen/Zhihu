@@ -32,3 +32,5 @@ response = await llm.generate("请回答问题")
 `matching.py` 提供当前场景候选的随机、手动和 LLM 匹配策略；双 Agent 运行状态及评判结果由 `dialogue.py` 写入既有业务表。
 
 `topic_gate.py` 在对话开始前比较双方高置信度观点，选择共同话题或随机试探话题，并由接收方先判断兴趣；低兴趣会写入拒绝消息并立即结束 LangGraph 流程。
+
+`chat_groups.py` 提供聊天组统计、分页列表和完整消息查询；聊天组由 `dialogue.py` 在每次运行开始时创建，并以 `chat_no` 作为用户查询标识。

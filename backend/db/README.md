@@ -246,3 +246,6 @@ python -m unittest discover -s backend/tests -p "test_postgres.py" -v
 ## 数字分身初始化与反馈
 
 执行 `postgresql_twin_initialization.sql`（需先执行 `postgresql_agent_dialogue.sql`），创建初始化会话、心灵感应反馈和性格调整累计表。初始化流程通过 `backend/agent/runtime/api.py` 暴露，PostgreSQL 保存事实数据，Chroma 仍由既有同步队列负责。
+聊天组索引使用 `postgresql_agent_chat_groups.sql`，应在 `postgresql_agent_dialogue.sql` 之后执行。它只保存一次双 Agent 运行的发起方、被邀请方、`chat_no` 和状态；正文仍从 `chat_messages` 查询。
+
+查询接口：`GET /v1/twin/chat-groups/count` 统计用户参与的组数，`GET /v1/twin/chat-groups` 分页列出双方，`GET /v1/twin/chat-groups/{chat_no}/messages` 查询完整消息。接口会校验用户是否为发起方或被邀请方。

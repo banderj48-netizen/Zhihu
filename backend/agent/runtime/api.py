@@ -7,10 +7,12 @@ from pydantic import BaseModel, Field
 
 from agent.runtime.initialization import InitializationService
 from agent.runtime.mind_reading import MindReadingService
+from agent.runtime.chat_groups import ChatGroupService
 
 router = APIRouter(prefix="/v1/twin", tags=["digital-twin"])
 _initializations = InitializationService()
 _mind_reading = MindReadingService()
+_chat_groups = ChatGroupService()
 
 
 class InitCreate(BaseModel):
@@ -81,3 +83,26 @@ def answer_mind_reading(question_id: str, body: dict[str, str]):
     except ValueError as exc:
         raise HTTPException(404, str(exc)) from exc
 
+
+@router.get("/chat-groups/count")
+def count_chat_groups(status: str | None = None, x_user_id: str | None = Header(default=None)):
+    """统计当前用户参与的聊天组数量。"""
+    return {"count": _chat_groups.count_my_chat_groups(x_user_id or "local-demo-user", status=status)}
+
+
+@router.get("/chat-groups")
+def list_chat_groups(page: int = 1, page_size: int = 20, status: str | None = None, x_user_id: str | None = Header(default=None)):
+    """分页查询当前用户参与的聊天组。"""
+    try:
+        return _chat_groups.list_my_chat_groups(x_user_id or "local-demo-user", page=page, page_size=page_size, status=status)
+    except ValueError as exc:
+        raise HTTPException(422, str(exc)) from exc
+
+
+@router.get("/chat-groups/{chat_no}/messages")
+def get_chat_group_messages(chat_no: str, x_user_id: str | None = Header(default=None)):
+    """查询指定聊天组的完整消息并执行用户归属校验。"""
+    value = _chat_groups.get_chat_group_messages(x_user_id or "local-demo-user", chat_no)
+    if not value:
+        raise HTTPException(404, "聊天记录不存在")
+    return value
