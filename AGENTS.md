@@ -15,3 +15,7 @@
 - 初始化、匹配和反馈 API 位于 `backend/agent/runtime/api.py`，统一通过服务层调用，禁止在路由中直接操作 Chroma。
 - 双 Agent 开场话题门控位于 `backend/agent/runtime/topic_gate.py`：共同观点优先，无共同观点时随机试探；接收方兴趣分数低于阈值时正常结束，不进入后续对话。
 - Agent 聊天组索引位于 `backend/db/postgresql_agent_chat_groups.sql`，一次 `run_agent_dialogue` 只创建一个 `chat_no`；聊天正文必须从 `chat_messages` 读取，查询接口必须校验用户参与权限。
+- Nginx 入口配置位于 `infra/nginx.conf`：80 端口转发 `/` 到 Next.js 3000，`/api/` 和 `/v1/` 到 FastAPI 8000；后端推荐使用 `backend/run_server.ps1` 启动。
+- 看山场景在场和次日状态使用 `backend/db/postgresql_agent_presence.sql`，聊天组 ready/可见与已读状态使用 `backend/db/postgresql_agent_chat_group_reads.sql`；执行顺序为画像、聊天、对话、聊天组、在场、已读脚本。
+- `backend/agent/runtime/dialogue_manager.py` 负责最多 10 组后台对话、协作式取消和 SSE 事件；所有匹配模式均固定当前用户 avatar 为 A，仅选择其他空闲 avatar 为 B。
+- 场景、匹配、实时事件、取消和次日接口统一位于 `/v1/twin`；聊天记录仅展示 `processing_status=ready` 的组，`POST /v1/twin/chat-groups/{chat_no}/read` 维护未读红点。

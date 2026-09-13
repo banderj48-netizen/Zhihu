@@ -1,3 +1,10 @@
+"""TwinLoop FastAPI 应用入口。
+
+本文件只负责组装 FastAPI 应用、注册路由和配置中间件；数据库连接、模型实例
+以及业务服务仍由各自模块负责。生产环境建议使用 ``uvicorn app.main:app``
+启动，避免在路由模块中重复创建应用实例。
+"""
+
 # 必须在导入任何读取环境变量的模块之前加载 .env
 from app.config import load_env as _load_env
 _ENV_LOADED=_load_env()
@@ -29,7 +36,7 @@ app.include_router(domains_router)
 # 前端与后端分端口时需要放行凭证跨域，否则浏览器不会带上 HttpOnly Cookie。
 # allow_credentials=True 时不能使用通配来源，必须逐个列出。
 import os as _os
-_origins=[o.strip() for o in _os.environ.get('TWINLOOP_CORS_ORIGINS','http://127.0.0.1:8000,http://localhost:8000,http://127.0.0.1:5173,http://localhost:5173').split(',') if o.strip()]
+_origins=[o.strip() for o in _os.environ.get('TWINLOOP_CORS_ORIGINS','http://127.0.0.1,http://localhost,http://127.0.0.1:3000,http://localhost:3000,http://127.0.0.1:5173,http://localhost:5173,http://127.0.0.1:8000,http://localhost:8000').split(',') if o.strip()]
 app.add_middleware(CORSMiddleware,allow_origins=_origins,allow_credentials=True,allow_methods=['*'],allow_headers=['*'])
 
 @app.exception_handler(auth_service.AuthError)
@@ -173,3 +180,19 @@ def build_card(profile,user,vid):
  for i,m in enumerate(d.get('memories',[]),1):
   if m.get('share'): entries.append({'id':i,'keys':m.get('keys',[]),'content':m.get('content',''),'enabled':True,'insertion_order':i,'constant':m.get('depth')=='deep','selective':False,'position':'after_char','extensions':{'twin':{'memory_id':m.get('id',f'memory_{i}'),'depth':m.get('depth','shallow'),'source_refs':m.get('source_refs',[]),'confirmation_status':'confirmed','version':m.get('version',1)}}})
  return {'spec':'chara_card_v2','spec_version':'2.0','data':{'name':d.get('name',f'Twin_{user[:8]}'),'description':'；'.join(map(str,d.get('facts',[])[:8])) or '主人尚未提供公开身份事实。','personality':render_personality(personality),'scenario':'数字分身在虚拟社交场景中交流。虚拟经历不等于主人的现实经历。','first_mes':'你好。','mes_example':d.get('mes_example',''),'creator_notes':f'TwinLoop version {vid}; 由用户确认的资料生成。','system_prompt':'{{original}}\n不编造主人的经历、能力或现实承诺；未知时自然说明。','post_history_instructions':'{{original}}\n按适用条件和例外回应。','alternate_greetings':[],'tags':['TwinLoop'],'creator':'TwinLoop','character_version':vid,'character_book':{'name':'三层世界书','description':'深层原则、中层条件反应、浅层事件。','recursive_scanning':False,'entries':entries},'extensions':{'twin':{'schema_version':'2.1-proposal','owner_id':user,'version_id':vid,'assessment':{'status':personality.get('status') if isinstance(personality,dict) else 'not_completed'},'personality':export_personality(personality if isinstance(personality,dict) else None),'domain_profile':domain_profile,'private_answers_included':False}}}}
+
+
+def run_server() -> None:
+ """使用 Uvicorn 在本机启动 FastAPI 服务。
+
+ 直接执行 ``python -m app.main`` 时会进入此函数；部署环境仍推荐使用
+ ``backend/run_server.ps1``，因为脚本会自动设置项目根目录和 ``PYTHONPATH``。
+ """
+ import uvicorn
+
+ # 传入已创建的 app 对象，避免 Uvicorn 再次按字符串导入时丢失项目路径。
+ uvicorn.run(app, host=_os.environ.get('BACKEND_HOST', '127.0.0.1'), port=int(_os.environ.get('BACKEND_PORT', '8000')))
+
+
+if __name__ == '__main__':
+ run_server()

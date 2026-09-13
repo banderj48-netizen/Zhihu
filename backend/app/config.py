@@ -28,7 +28,8 @@ DEFAULTS: dict[str, str] = {
     # 知乎 OAuth 应用凭证（赛事页面分配）
     "ZHIHU_OAUTH_APP_ID": "468",
     "ZHIHU_OAUTH_APP_KEY": "1edca288684b4838a8beb643b7b74a12",
-    "ZHIHU_OAUTH_REDIRECT_URI": "http://127.0.0.1:8000/api/v1/sources/zhihu/callback",
+    # OAuth 回调由 Nginx 80 接收，再反向代理到 FastAPI 8000。
+    "ZHIHU_OAUTH_REDIRECT_URI": "http://127.0.0.1/api/v1/sources/zhihu/callback",
 
     # 开放平台 Access Secret，代表本应用作为调用方
     "ZHIHU_ACCESS_SECRET": "be965dbac2e6644b9c8c0c5dbebd6022beffd664",
@@ -37,7 +38,8 @@ DEFAULTS: dict[str, str] = {
     "TWINLOOP_COOKIE_SECURE": "false",
 
     # 授权完成后浏览器跳回的前端地址
-    "TWINLOOP_FRONTEND_URL": "http://127.0.0.1:8000/",
+    # 登录成功后回到 Nginx 暴露的前端入口，而不是直接访问 3000。
+    "TWINLOOP_FRONTEND_URL": "http://127.0.0.1/",
 }
 
 

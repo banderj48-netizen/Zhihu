@@ -14,6 +14,8 @@
 | `postgresql_zhihu_schema.sql` | PostgreSQL 用户画像、原始资料、记忆、证据、版本和策略表 |
 | `postgresql_chat_schema.sql` | PostgreSQL 聊天会话、参与者和真实消息表 |
 | `postgresql_agent_dialogue.sql` | PostgreSQL 双 Agent 对话运行状态和评判结果表 |
+| `postgresql_agent_presence.sql` | 场景在场状态和用户次日状态 |
+| `postgresql_agent_chat_group_reads.sql` | 聊天组处理完成、可见时间和用户已读状态 |
 | `migrations/` | SQLite 历史迁移脚本 |
 
 ## PostgreSQL 初始化
@@ -33,6 +35,10 @@
 ```powershell
 psql -U postgres -d zhihu -f E:\ZH\Zhihu\backend\db\postgresql_zhihu_schema.sql
 psql -U postgres -d zhihu -f E:\ZH\Zhihu\backend\db\postgresql_chat_schema.sql
+psql -U postgres -d zhihu -f E:\ZH\Zhihu\backend\db\postgresql_agent_dialogue.sql
+psql -U postgres -d zhihu -f E:\ZH\Zhihu\backend\db\postgresql_agent_chat_groups.sql
+psql -U postgres -d zhihu -f E:\ZH\Zhihu\backend\db\postgresql_agent_presence.sql
+psql -U postgres -d zhihu -f E:\ZH\Zhihu\backend\db\postgresql_agent_chat_group_reads.sql
 ```
 
 也可以在 pgAdmin 中打开 `zhihu` 数据库的 Query Tool，依次打开并执行两个 SQL 文件。

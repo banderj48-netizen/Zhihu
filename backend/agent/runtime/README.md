@@ -34,3 +34,8 @@ response = await llm.generate("请回答问题")
 `topic_gate.py` 在对话开始前比较双方高置信度观点，选择共同话题或随机试探话题，并由接收方先判断兴趣；低兴趣会写入拒绝消息并立即结束 LangGraph 流程。
 
 `chat_groups.py` 提供聊天组统计、分页列表和完整消息查询；聊天组由 `dialogue.py` 在每次运行开始时创建，并以 `chat_no` 作为用户查询标识。
+# 双 Agent 实时运行
+
+`DialogueManager` 负责后台任务、最多 10 组并发、取消信号和 SSE 事件；`PresenceService` 负责场景空闲池，并保证当前登录用户的 avatar 永远作为发起方 A。前端通过 `/v1/twin/dialogues/{run_id}/events` 接收 `run_started`、`topic_selected`、`message`、`round_progress`、`evaluation` 和终态事件。
+
+聊天组只有在 PostgreSQL 消息全部落库后才会变为 `processing_status=ready` 并出现在历史接口；Chroma 失败不会回滚事实消息。每日对话终态后调用 `POST /v1/twin/dialogues/{run_id}/advance-day` 回到地图选择。

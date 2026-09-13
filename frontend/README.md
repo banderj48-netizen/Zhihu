@@ -10,6 +10,10 @@ npm run dev
 
 打开终端输出的本地地址（通常是 http://localhost:3000；若端口占用则使用 3001）。
 
+前端页面虽然监听 3000 端口，但 API 基地址配置为 `http://localhost:80`，浏览器请求
+会先到 Nginx 80 端口，再由 Nginx 转发到 FastAPI 8000 端口。使用 Nginx 部署时请保持
+该配置，不要将 API 地址改成 3000 或 8000。
+
 ## 小镇 Demo
 
 首页使用 `specimen/townmap.jpg` 作为地图，并在五个建筑位置提供入口：咖啡馆、图书馆、小酒馆、戏剧院和讲座。

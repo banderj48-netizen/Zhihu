@@ -10,6 +10,8 @@
 
 from __future__ import annotations
 
+import os
+
 from fastapi import APIRouter, Query, Request
 from fastapi.responses import JSONResponse, RedirectResponse
 
@@ -77,6 +79,9 @@ async def callback(
         zhihu_token_expires_at=result["token_expires_at"],
     )
 
-    resp = RedirectResponse(url="http://localhost:3000/", status_code=302)
+    # 回调完成后回到公开入口（Nginx 80），不能硬编码 3000 或 localhost，
+    # 否则用户从 127.0.0.1 访问时会因为主机名不同而拿不到会话 Cookie。
+    frontend_url = os.environ.get("TWINLOOP_FRONTEND_URL", "http://127.0.0.1/")
+    resp = RedirectResponse(url=frontend_url, status_code=302)
     session.set_session_cookie(resp, session_id)
     return resp
