@@ -1,0 +1,17 @@
+{
+  "users": [
+    {
+      "user_id": "user_d46f953b13844150",
+      "zhihu_uid": "1654803610239242241",
+      "zhihu_hash_id": "28780231d9dcd720aa2a8b76ae968c0c",
+      "fullname": "电兵1号",
+      "avatar_url": "https://pic3.zhimg.com/v2-a776a1b57b81234a66773ab8c6d01f74_l.jpg",
+      "headline": "",
+      "zhihu_connected": true,
+      "avatar_id": null,
+      "avatar_status": "not_created",
+      "created_at": "2026-09-13T12:49:05.452598+00:00",
+      "last_login_at": "2026-09-13T16:33:11.821867+00:00"
+    }
+  ]
+}

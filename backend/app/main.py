@@ -1,4 +1,10 @@
-from fastapi import FastAPI, BackgroundTasks, Header, HTTPException
+# 必须在导入任何读取环境变量的模块之前加载 .env
+from app.config import load_env as _load_env
+_ENV_LOADED=_load_env()
+
+from fastapi import FastAPI, BackgroundTasks, Header, HTTPException, Request
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
 from pydantic import BaseModel, Field
 from uuid import uuid4
 from datetime import datetime, timezone
@@ -8,8 +14,52 @@ from agent.personality import export_personality, public_questions, render_perso
 from agent.personality.repository import latest_assessment, save_assessment, save_skipped
 from agent.domains.api import router as domains_router
 from agent.domains.repository import get_selections
+from app.auth import service as auth_service
+from app.auth.router import router as auth_router
+from app.auth.schemas import fail as auth_fail, new_request_id
+from app.consent import service as consent_service
+from app.consent.router import router as consent_router
+from app.consent import zhihu_oauth as _zhihu_oauth
+from app.imports.router import router as imports_router
+from app.imports import zhihu_client as _zhihu_client
 app=FastAPI(title='TwinLoop API',version='0.1.0')
 app.include_router(domains_router)
+
+# 前端与后端分端口时需要放行凭证跨域，否则浏览器不会带上 HttpOnly Cookie。
+# allow_credentials=True 时不能使用通配来源，必须逐个列出。
+import os as _os
+_origins=[o.strip() for o in _os.environ.get('TWINLOOP_CORS_ORIGINS','http://127.0.0.1:8000,http://localhost:8000,http://127.0.0.1:5173,http://localhost:5173').split(',') if o.strip()]
+app.add_middleware(CORSMiddleware,allow_origins=_origins,allow_credentials=True,allow_methods=['*'],allow_headers=['*'])
+
+@app.exception_handler(auth_service.AuthError)
+async def _auth_error_handler(request:Request,exc:auth_service.AuthError):
+ rid=request.headers.get('X-Request-Id') or new_request_id()
+ return JSONResponse(status_code=exc.status_code,content=auth_fail(exc.code,exc.message,rid))
+
+@app.exception_handler(consent_service.ConsentError)
+async def _consent_error_handler(request:Request,exc:consent_service.ConsentError):
+ rid=request.headers.get('X-Request-Id') or new_request_id()
+ return JSONResponse(status_code=exc.status_code,content=auth_fail(exc.code,exc.message,rid))
+
+app.include_router(auth_router)
+app.include_router(consent_router)
+app.include_router(imports_router)
+
+# 本地登录测试页：与后端同源，省去跨域配置
+from fastapi.responses import FileResponse as _FileResponse
+from pathlib import Path as _Path
+_LOGIN_PAGE=_Path(__file__).resolve().parent/'static'/'login_test.html'
+@app.get('/',include_in_schema=False)
+def _login_test_page():
+ if _LOGIN_PAGE.exists(): return _FileResponse(str(_LOGIN_PAGE))
+ return {'service':'twinloop-api','docs':'/docs'}
+
+@app.on_event('startup')
+def _report_oauth_config():
+ print('[config] .env', '已加载' if _ENV_LOADED else '未找到（使用系统环境变量）')
+ print('[consent] 知乎 OAuth 配置:', '完整' if _zhihu_oauth.is_configured() else '!! 不完整，请设置 ZHIHU_OAUTH_APP_ID / APP_KEY / REDIRECT_URI')
+ if _zhihu_oauth.REDIRECT_URI: print('[consent] redirect_uri =',_zhihu_oauth.REDIRECT_URI)
+ print('[imports] Access Secret:', '已配置' if _zhihu_client.is_configured() else '!! 未配置 ZHIHU_ACCESS_SECRET，无法读取用户数据')
 lock=Lock(); tasks={}; profiles={}; versions={}
 def now(): return datetime.now(timezone.utc).isoformat()
 def uid(x): return x or 'local-demo-user'

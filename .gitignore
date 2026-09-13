@@ -1,0 +1,6 @@
+# Blender 便携版安装目录与安装包（体积过大，不入库）
+blender-portable/
+blender-4.5.10-windows-x64.zip
+
+# Blender 自动备份文件
+*.blend1
