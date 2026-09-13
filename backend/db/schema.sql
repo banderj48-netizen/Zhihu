@@ -1,16 +1,14 @@
-PRAGMA foreign_keys = ON;
-
 CREATE TABLE IF NOT EXISTS schema_meta (
     key TEXT PRIMARY KEY,
     value TEXT NOT NULL,
-    updated_at TEXT NOT NULL
+    updated_at TIMESTAMPTZ NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS users (
     id TEXT PRIMARY KEY,
-    created_at TEXT NOT NULL,
-    updated_at TEXT NOT NULL,
-    deleted_at TEXT
+    created_at TIMESTAMPTZ NOT NULL,
+    updated_at TIMESTAMPTZ NOT NULL,
+    deleted_at TIMESTAMPTZ
 );
 
 CREATE TABLE IF NOT EXISTS avatars (
@@ -19,21 +17,21 @@ CREATE TABLE IF NOT EXISTS avatars (
     name TEXT,
     status TEXT NOT NULL DEFAULT 'not_started',
     current_version INTEGER,
-    created_at TEXT NOT NULL,
-    updated_at TEXT NOT NULL,
-    deleted_at TEXT
+    created_at TIMESTAMPTZ NOT NULL,
+    updated_at TIMESTAMPTZ NOT NULL,
+    deleted_at TIMESTAMPTZ
 );
 
 CREATE TABLE IF NOT EXISTS consents (
     id TEXT PRIMARY KEY,
     user_id TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
     provider TEXT NOT NULL,
-    scopes_json TEXT NOT NULL,
+    scopes_json JSONB NOT NULL DEFAULT '[]'::jsonb,
     status TEXT NOT NULL DEFAULT 'active',
     token_ref TEXT,
-    granted_at TEXT NOT NULL,
-    revoked_at TEXT,
-    created_at TEXT NOT NULL
+    granted_at TIMESTAMPTZ NOT NULL,
+    revoked_at TIMESTAMPTZ,
+    created_at TIMESTAMPTZ NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS initialization_sessions (
@@ -42,10 +40,10 @@ CREATE TABLE IF NOT EXISTS initialization_sessions (
     status TEXT NOT NULL DEFAULT 'created',
     current_step TEXT NOT NULL DEFAULT 'created',
     assessment_status TEXT NOT NULL DEFAULT 'not_started',
-    selected_scopes_json TEXT NOT NULL DEFAULT '[]',
-    created_at TEXT NOT NULL,
-    updated_at TEXT NOT NULL,
-    completed_at TEXT,
+    selected_scopes_json JSONB NOT NULL DEFAULT '[]'::jsonb,
+    created_at TIMESTAMPTZ NOT NULL,
+    updated_at TIMESTAMPTZ NOT NULL,
+    completed_at TIMESTAMPTZ,
     failure_code TEXT,
     failure_message TEXT
 );
@@ -62,9 +60,9 @@ CREATE TABLE IF NOT EXISTS import_jobs (
     idempotency_key TEXT NOT NULL UNIQUE,
     error_code TEXT,
     error_message TEXT,
-    created_at TEXT NOT NULL,
-    updated_at TEXT NOT NULL,
-    completed_at TEXT
+    created_at TIMESTAMPTZ NOT NULL,
+    updated_at TIMESTAMPTZ NOT NULL,
+    completed_at TIMESTAMPTZ
 );
 
 CREATE TABLE IF NOT EXISTS source_documents (
@@ -76,11 +74,11 @@ CREATE TABLE IF NOT EXISTS source_documents (
     source_url TEXT NOT NULL,
     title TEXT,
     author_id TEXT,
-    source_created_at TEXT,
-    raw_payload TEXT NOT NULL,
+    source_created_at TIMESTAMPTZ,
+    raw_payload JSONB NOT NULL,
     raw_hash TEXT NOT NULL,
-    fetched_at TEXT NOT NULL,
-    deleted_at TEXT,
+    fetched_at TIMESTAMPTZ NOT NULL,
+    deleted_at TIMESTAMPTZ,
     UNIQUE(user_id, provider, source_url, raw_hash)
 );
 
@@ -93,7 +91,7 @@ CREATE TABLE IF NOT EXISTS evidence_chunks (
     char_end INTEGER,
     section_title TEXT,
     text_hash TEXT NOT NULL,
-    created_at TEXT NOT NULL,
+    created_at TIMESTAMPTZ NOT NULL,
     UNIQUE(document_id, chunk_index)
 );
 
@@ -101,15 +99,15 @@ CREATE TABLE IF NOT EXISTS profile_candidates (
     id TEXT PRIMARY KEY,
     avatar_id TEXT NOT NULL REFERENCES avatars(id) ON DELETE CASCADE,
     candidate_type TEXT NOT NULL,
-    payload_json TEXT NOT NULL,
+    payload_json JSONB NOT NULL,
     status TEXT NOT NULL DEFAULT 'unconfirmed',
     confidence REAL,
     privacy TEXT NOT NULL DEFAULT 'private',
-    share INTEGER NOT NULL DEFAULT 0 CHECK (share IN (0, 1)),
-    source_ids_json TEXT NOT NULL DEFAULT '[]',
-    created_at TEXT NOT NULL,
-    updated_at TEXT NOT NULL,
-    deleted_at TEXT
+    share BOOLEAN NOT NULL DEFAULT FALSE,
+    source_ids_json JSONB NOT NULL DEFAULT '[]'::jsonb,
+    created_at TIMESTAMPTZ NOT NULL,
+    updated_at TIMESTAMPTZ NOT NULL,
+    deleted_at TIMESTAMPTZ
 );
 
 CREATE TABLE IF NOT EXISTS profile_reviews (
@@ -117,10 +115,10 @@ CREATE TABLE IF NOT EXISTS profile_reviews (
     avatar_id TEXT NOT NULL REFERENCES avatars(id) ON DELETE CASCADE,
     candidate_id TEXT REFERENCES profile_candidates(id) ON DELETE SET NULL,
     action TEXT NOT NULL,
-    before_json TEXT,
-    after_json TEXT,
+    before_json JSONB,
+    after_json JSONB,
     reason TEXT,
-    created_at TEXT NOT NULL
+    created_at TIMESTAMPTZ NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS personality_assessments (
@@ -128,15 +126,15 @@ CREATE TABLE IF NOT EXISTS personality_assessments (
     avatar_id TEXT NOT NULL REFERENCES avatars(id) ON DELETE CASCADE,
     instrument_version TEXT NOT NULL,
     status TEXT NOT NULL DEFAULT 'incomplete',
-    raw_answers_json TEXT NOT NULL DEFAULT '{}',
-    scores_json TEXT NOT NULL DEFAULT '{}',
+    raw_answers_json JSONB NOT NULL DEFAULT '{}'::jsonb,
+    scores_json JSONB NOT NULL DEFAULT '{}'::jsonb,
     confidence REAL,
-    confidence_interval_json TEXT,
-    validity_json TEXT,
-    source_mix_json TEXT,
-    skipped INTEGER NOT NULL DEFAULT 0 CHECK (skipped IN (0, 1)),
-    created_at TEXT NOT NULL,
-    completed_at TEXT
+    confidence_interval_json JSONB,
+    validity_json JSONB,
+    source_mix_json JSONB,
+    skipped BOOLEAN NOT NULL DEFAULT FALSE,
+    created_at TIMESTAMPTZ NOT NULL,
+    completed_at TIMESTAMPTZ
 );
 
 CREATE TABLE IF NOT EXISTS memories (
@@ -144,16 +142,16 @@ CREATE TABLE IF NOT EXISTS memories (
     avatar_id TEXT NOT NULL REFERENCES avatars(id) ON DELETE CASCADE,
     depth TEXT NOT NULL CHECK (depth IN ('deep', 'middle', 'shallow')),
     memory_type TEXT NOT NULL,
-    payload_json TEXT NOT NULL,
+    payload_json JSONB NOT NULL,
     status TEXT NOT NULL DEFAULT 'unconfirmed',
     confidence REAL,
     privacy TEXT NOT NULL DEFAULT 'private',
-    share INTEGER NOT NULL DEFAULT 0 CHECK (share IN (0, 1)),
-    valid_from TEXT,
-    valid_until TEXT,
-    created_at TEXT NOT NULL,
-    updated_at TEXT NOT NULL,
-    deleted_at TEXT
+    share BOOLEAN NOT NULL DEFAULT FALSE,
+    valid_from TIMESTAMPTZ,
+    valid_until TIMESTAMPTZ,
+    created_at TIMESTAMPTZ NOT NULL,
+    updated_at TIMESTAMPTZ NOT NULL,
+    deleted_at TIMESTAMPTZ
 );
 
 CREATE TABLE IF NOT EXISTS memory_evidences (
@@ -168,10 +166,10 @@ CREATE TABLE IF NOT EXISTS avatar_versions (
     avatar_id TEXT NOT NULL REFERENCES avatars(id) ON DELETE CASCADE,
     version INTEGER NOT NULL,
     status TEXT NOT NULL DEFAULT 'draft',
-    snapshot_json TEXT NOT NULL,
-    card_json TEXT,
-    created_at TEXT NOT NULL,
-    published_at TEXT,
+    snapshot_json JSONB NOT NULL,
+    card_json JSONB,
+    created_at TIMESTAMPTZ NOT NULL,
+    published_at TIMESTAMPTZ,
     UNIQUE(avatar_id, version)
 );
 
@@ -179,9 +177,9 @@ CREATE TABLE IF NOT EXISTS agent_events (
     id TEXT PRIMARY KEY,
     avatar_id TEXT NOT NULL REFERENCES avatars(id) ON DELETE CASCADE,
     event_type TEXT NOT NULL,
-    payload_json TEXT NOT NULL,
+    payload_json JSONB NOT NULL,
     contract_version TEXT NOT NULL,
-    created_at TEXT NOT NULL
+    created_at TIMESTAMPTZ NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS audit_events (
@@ -191,8 +189,8 @@ CREATE TABLE IF NOT EXISTS audit_events (
     event_type TEXT NOT NULL,
     target_type TEXT,
     target_id TEXT,
-    metadata_json TEXT NOT NULL DEFAULT '{}',
-    created_at TEXT NOT NULL
+    metadata_json JSONB NOT NULL DEFAULT '{}'::jsonb,
+    created_at TIMESTAMPTZ NOT NULL
 );
 
 CREATE INDEX IF NOT EXISTS idx_avatars_user ON avatars(user_id);
