@@ -21,6 +21,7 @@ from app.consent import service as consent_service
 from app.consent.router import router as consent_router
 from app.consent import zhihu_oauth as _zhihu_oauth
 from app.imports.router import router as imports_router
+from agent.runtime.api import router as twin_runtime_router
 from app.imports import zhihu_client as _zhihu_client
 app=FastAPI(title='TwinLoop API',version='0.1.0')
 app.include_router(domains_router)
@@ -44,6 +45,7 @@ async def _consent_error_handler(request:Request,exc:consent_service.ConsentErro
 app.include_router(auth_router)
 app.include_router(consent_router)
 app.include_router(imports_router)
+app.include_router(twin_runtime_router)
 
 # 本地登录测试页：与后端同源，省去跨域配置
 from fastapi.responses import FileResponse as _FileResponse

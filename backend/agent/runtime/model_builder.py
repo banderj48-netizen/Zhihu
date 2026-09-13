@@ -77,6 +77,25 @@ def build_llm(*, env_file: str | Path | None = None, model: str | None = None) -
     return LLM(model_name, requester)
 
 
+def build_evaluator_llm(*, env_file: str | Path | None = None, model: str | None = None) -> LLM:
+    """读取独立评判模型配置并创建 LLM，不自动复用回答模型配置。"""
+    path = Path(env_file) if env_file else BACKEND_ROOT / ".env"
+    values = dotenv_values(path) if path.exists() else {}
+    api_key = _setting("EVALUATOR_LLM_API_KEY", values)
+    base_url = _setting("EVALUATOR_LLM_BASE_URL", values)
+    model_name = model or _setting("EVALUATOR_LLM_MODEL", values)
+    if not api_key or not model_name:
+        raise ValueError(f"未完整配置 EVALUATOR_LLM_API_KEY、EVALUATOR_LLM_BASE_URL、EVALUATOR_LLM_MODEL，请在 {path} 中设置")
+    if not base_url:
+        base_url = "https://api.openai.com/v1"
+
+    def requester(selected_model: str, prompt: str, options: dict[str, Any]) -> dict[str, Any]:
+        """将评判请求转发到独立的 OpenAI 兼容服务。"""
+        return _post_chat_completion(selected_model, prompt, dict(options), api_key=api_key, base_url=base_url)
+
+    return LLM(model_name, requester)
+
+
 async def build_llm_async(*, env_file: str | Path | None = None, model: str | None = None) -> LLM:
     """提供异步构建入口，保持与异步 Agent 初始化流程一致。"""
     return await asyncio.to_thread(build_llm, env_file=env_file, model=model)

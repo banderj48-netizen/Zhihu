@@ -43,6 +43,7 @@ def connect(url: str | None = None) -> psycopg.Connection:
 
 
 def migration_files() -> list[tuple[int, Path]]:
+    """返回现有主 schema 与版本化迁移文件。"""
     return [(1, SCHEMA_PATH), (2, MIGRATIONS_PATH / "002_personality_assessment.sql"), (3, MIGRATIONS_PATH / "003_domain_selections.sql")]
 
 

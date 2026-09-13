@@ -2,7 +2,7 @@
 name='twinloop-backend'
 version='0.1.0'
 requires-python='>=3.11'
-dependencies=['fastapi>=0.115','uvicorn[standard]>=0.30','pydantic>=2.7','psycopg[binary]>=3.2,<4','python-dotenv>=1.0']
+dependencies=['fastapi>=0.115','uvicorn[standard]>=0.30','pydantic>=2.7','psycopg[binary]>=3.2,<4','python-dotenv>=1.0','langgraph>=0.2,<1','langchain-core>=0.3,<1','chromadb>=1.0,<2','langgraph-checkpoint-postgres>=2.0,<4']
 [project.optional-dependencies]
 test=['httpx>=0.27,<1']
 [build-system]

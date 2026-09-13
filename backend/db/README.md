@@ -13,6 +13,7 @@
 | `../scripts/init_db.py` | 初始化 PostgreSQL 数据库 |
 | `postgresql_zhihu_schema.sql` | PostgreSQL 用户画像、原始资料、记忆、证据、版本和策略表 |
 | `postgresql_chat_schema.sql` | PostgreSQL 聊天会话、参与者和真实消息表 |
+| `postgresql_agent_dialogue.sql` | PostgreSQL 双 Agent 对话运行状态和评判结果表 |
 | `migrations/` | SQLite 历史迁移脚本 |
 
 ## PostgreSQL 初始化
@@ -242,3 +243,6 @@ python -m unittest discover -s backend/tests -p "test_postgres.py" -v
 需使用本机 `.env` 而没有环境变量时，在 Python 中把 `db.database.database_url()` 的值赋给测试变量后调用 unittest；不要打印 URL。未提供测试 URL 时数据库集成测试会明确跳过。
 
 数据库目录、下载包、密码、本地 `.env`、Python 缓存不提交 Git。
+## 数字分身初始化与反馈
+
+执行 `postgresql_twin_initialization.sql`（需先执行 `postgresql_agent_dialogue.sql`），创建初始化会话、心灵感应反馈和性格调整累计表。初始化流程通过 `backend/agent/runtime/api.py` 暴露，PostgreSQL 保存事实数据，Chroma 仍由既有同步队列负责。
