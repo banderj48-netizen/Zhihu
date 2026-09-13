@@ -10,8 +10,6 @@
 
 from __future__ import annotations
 
-import os
-
 from fastapi import APIRouter, Query, Request
 from fastapi.responses import JSONResponse, RedirectResponse
 
@@ -21,11 +19,6 @@ from ..auth.schemas import ConnectRequest, fail, new_request_id, ok
 from . import service
 
 router = APIRouter(prefix="/api/v1/sources/zhihu", tags=["consent"])
-
-# 授权完成后引导浏览器回到的前端地址
-FRONTEND_REDIRECT = os.environ.get(
-    "TWINLOOP_FRONTEND_URL", "http://127.0.0.1:8000/"
-)
 
 
 def _rid(request: Request, body_request_id: str | None = None) -> str:
@@ -84,6 +77,6 @@ async def callback(
         zhihu_token_expires_at=result["token_expires_at"],
     )
 
-    resp = RedirectResponse(url=FRONTEND_REDIRECT, status_code=302)
+    resp = RedirectResponse(url="http://localhost:3000/", status_code=302)
     session.set_session_cookie(resp, session_id)
     return resp
