@@ -51,8 +51,11 @@ class PostgresRetrievalRepository:
             cur = conn.cursor()
             try:
                 cur.execute(sql, params)
+                rows = cur.fetchall()
+                if rows and isinstance(rows[0], Mapping):
+                    return [dict(row) for row in rows]
                 names = [item[0] for item in cur.description]
-                return [dict(zip(names, row)) for row in cur.fetchall()]
+                return [dict(zip(names, row)) for row in rows]
             finally:
                 cur.close()
         finally:
@@ -74,12 +77,12 @@ class PostgresRetrievalRepository:
                    pol.can_use_unconfirmed_memory, pol.can_present_unconfirmed_as_fact, pol.can_invent_user_experience,
                    pol.can_invent_user_opinion, pol.must_show_uncertainty, pol.must_keep_citations,
                    pol.sensitive_attributes_policy, pol.external_action_requires_confirmation, pol.custom_rules
-            FROM public.user_avatars a
-            JOIN public.avatar_versions v ON v.id = a.current_version_id AND v.status = 'active'
-            LEFT JOIN public.avatar_identity i ON i.avatar_version_id = v.id
-            LEFT JOIN public.avatar_personality p ON p.avatar_version_id = v.id
-            LEFT JOIN public.avatar_styles s ON s.avatar_version_id = v.id
-            LEFT JOIN public.avatar_policies pol ON pol.avatar_id = a.id
+            FROM user_avatars a
+            JOIN avatar_versions v ON v.id = a.current_version_id AND v.status = 'active'
+            LEFT JOIN avatar_identity i ON i.avatar_version_id = v.id
+            LEFT JOIN avatar_personality p ON p.avatar_version_id = v.id
+            LEFT JOIN avatar_styles s ON s.avatar_version_id = v.id
+            LEFT JOIN avatar_policies pol ON pol.avatar_id = a.id
             WHERE a.user_id = %s AND a.status <> 'archived' LIMIT 1
         """, (user_id,))
         return rows[0] if rows else {}
@@ -90,7 +93,7 @@ class PostgresRetrievalRepository:
         return await self._select("""
             SELECT m.id AS memory_id, m.memory_type, m.topic, m.content, m.structured_data, m.level, m.score,
                    m.confidence, m.status, m.privacy, m.valid_from, m.valid_until, m.evidence_count, 1.0::float AS keyword_score
-            FROM public.avatar_memories m
+            FROM avatar_memories m
             WHERE m.avatar_id = %s AND m.memory_type = ANY(%s) AND m.status IN ('confirmed','unconfirmed')
               AND m.privacy IN ('public','private') AND (m.valid_until IS NULL OR m.valid_until >= now())
               AND (m.topic ILIKE ANY(%s) OR m.content ILIKE ANY(%s))
@@ -105,7 +108,7 @@ class PostgresRetrievalRepository:
         return await self._select("""
             SELECT m.id AS memory_id, m.memory_type, m.topic, m.content, m.structured_data, m.level, m.score,
                    m.confidence, m.status, m.privacy, m.valid_from, m.valid_until, m.evidence_count
-            FROM public.avatar_memories m WHERE m.avatar_id = %s AND m.id = ANY(%s)
+            FROM avatar_memories m WHERE m.avatar_id = %s AND m.id = ANY(%s)
               AND m.status IN ('confirmed','unconfirmed') AND m.privacy IN ('public','private')
               AND (m.valid_until IS NULL OR m.valid_until >= now())
         """, (avatar_id, list(ids)))
@@ -117,7 +120,7 @@ class PostgresRetrievalRepository:
             SELECT d.id AS document_id, d.platform, d.external_id, d.document_type, d.title, d.content,
                    d.source_url, d.published_at, d.imported_at,
                    ts_headline('simple', d.content, plainto_tsquery('simple', %s)) AS quote, 1.0::float AS keyword_score
-            FROM public.source_documents d
+            FROM source_documents d
             WHERE d.avatar_id = %s AND (to_tsvector('simple', coalesce(d.title,'') || ' ' || d.content)
                 @@ plainto_tsquery('simple', %s) OR d.title ILIKE ANY(%s) OR d.content ILIKE ANY(%s))
             ORDER BY d.published_at DESC NULLS LAST, d.imported_at DESC LIMIT %s
@@ -128,7 +131,7 @@ class PostgresRetrievalRepository:
         if not ids:
             return []
         return await self._select("""SELECT id AS document_id, platform, external_id, document_type, title, content,
-                   source_url, published_at, imported_at FROM public.source_documents
+                   source_url, published_at, imported_at FROM source_documents
                    WHERE avatar_id = %s AND id = ANY(%s)""", (avatar_id, list(ids)))
 
     async def search_chat_keywords(self, avatar_id: str, query: QueryPlan, *, conversation_id: str | None, limit: int) -> list[dict[str, Any]]:
@@ -137,10 +140,11 @@ class PostgresRetrievalRepository:
             SELECT m.id AS message_id, m.conversation_id, m.participant_id, m.sequence_no, m.message_type,
                    m.content, m.content_format, m.reply_to_message_id, m.sent_at, p.avatar_id, p.display_name,
                    c.title AS conversation_title, 1.0::float AS keyword_score
-            FROM public.chat_messages m JOIN public.chat_participants p ON p.id=m.participant_id
-            JOIN public.chat_conversations c ON c.id=m.conversation_id
-            WHERE p.avatar_id=%s AND m.deleted_at IS NULL AND c.status <> 'deleted'
-              AND (%s IS NULL OR m.conversation_id=%s)
+            FROM chat_messages m JOIN chat_participants p ON p.id=m.participant_id
+            JOIN chat_conversations c ON c.id=m.conversation_id
+            WHERE m.deleted_at IS NULL AND c.status <> 'deleted'
+              AND EXISTS (SELECT 1 FROM chat_participants owner_p WHERE owner_p.conversation_id=m.conversation_id AND owner_p.avatar_id=%s)
+              AND (%s::uuid IS NULL OR m.conversation_id=%s::uuid)
               AND (m.content ILIKE %s OR to_tsvector('simple',m.content) @@ plainto_tsquery('simple',%s))
             ORDER BY m.sent_at DESC, m.sequence_no DESC LIMIT %s
         """, (avatar_id, conversation_id, conversation_id, f"%{query.rewritten_question}%", query.rewritten_question, max(1, min(limit, 100))))
@@ -151,15 +155,16 @@ class PostgresRetrievalRepository:
             return []
         return await self._select("""SELECT m.id AS message_id,m.conversation_id,m.participant_id,m.sequence_no,
                    m.message_type,m.content,m.content_format,m.reply_to_message_id,m.sent_at,p.avatar_id,p.display_name,
-                   c.title AS conversation_title FROM public.chat_messages m
-                   JOIN public.chat_participants p ON p.id=m.participant_id JOIN public.chat_conversations c ON c.id=m.conversation_id
-                   WHERE p.avatar_id=%s AND m.id=ANY(%s) AND m.deleted_at IS NULL AND c.status <> 'deleted'""", (avatar_id, list(ids)))
+                   c.title AS conversation_title FROM chat_messages m
+                   JOIN chat_participants p ON p.id=m.participant_id JOIN chat_conversations c ON c.id=m.conversation_id
+                   WHERE m.id=ANY(%s) AND m.deleted_at IS NULL AND c.status <> 'deleted'
+                     AND EXISTS (SELECT 1 FROM chat_participants owner_p WHERE owner_p.conversation_id=m.conversation_id AND owner_p.avatar_id=%s)""", (list(ids), avatar_id))
 
     async def fetch_chat_window(self, conversation_id: str, sequence_no: int, window: int = 3) -> list[dict[str, Any]]:
         """读取命中消息前后的同会话窗口，并按序号排序。"""
         return await self._select("""SELECT m.id AS message_id,m.conversation_id,m.sequence_no,m.content,m.message_type,
-                   m.sent_at,p.avatar_id,p.display_name FROM public.chat_messages m
-                   JOIN public.chat_participants p ON p.id=m.participant_id
+                   m.sent_at,p.avatar_id,p.display_name FROM chat_messages m
+                   JOIN chat_participants p ON p.id=m.participant_id
                    WHERE m.conversation_id=%s AND m.deleted_at IS NULL AND m.sequence_no BETWEEN %s AND %s
                    ORDER BY m.sequence_no ASC""", (conversation_id, max(0, sequence_no-window), sequence_no+window))
 
@@ -259,3 +264,4 @@ async def index_chat_message(message: Mapping[str, object], vector_store: Vector
     if embedding_model: metadata["embedding_model"] = embedding_model
     if embedding_dimension: metadata["embedding_dimension"] = embedding_dimension
     await vector_store.upsert(collection, [item_id], [str(message.get("content", ""))], [metadata])
+

@@ -113,6 +113,8 @@ def build_card(profile,user,vid):
  d=profile['data']; entries=[]
  try:
   domain_profile=get_selections(user)
+  if not domain_profile.get('interests') and not domain_profile.get('expertise') and d.get('domains'):
+   domain_profile=d.get('domains')
  except Exception:
   domain_profile=d.get('domains',[])
  personality=d.get('personality') or latest_assessment(user)

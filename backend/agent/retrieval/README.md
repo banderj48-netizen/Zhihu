@@ -28,3 +28,6 @@ repository = PostgresRetrievalRepository(connection_factory)
 context = await build_context(user_id, question, repository)
 ```
 当前 Agent 只负责问题分析、查询改写和上下文需求契约；不实现 embedding、向量数据库或索引。PostgreSQL 检索仓储由传统后端注入连接工厂，Agent 只在上下文组装流程中显式调用，并继续负责去重、冲突处理、排序和上下文截断。
+
+
+检索 SQL 使用连接的 search_path，不再写死 public schema；生产环境默认 search_path=public，测试可注入临时 schema。
