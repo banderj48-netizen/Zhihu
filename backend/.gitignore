@@ -1,5 +1,15 @@
-data/*.db
-data/*.db-*
 __pycache__/
+.env
+.env.*
+!.env.example
+.postgresql/
+postgresql-*.zip
+*.egg-info/
+build/
+dist/
+data/*.db-*
+*.db
+*.sqlite
+*.sqlite3
 */__pycache__/
 *.py[cod]
