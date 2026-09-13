@@ -30,3 +30,5 @@ response = await llm.generate("请回答问题")
 `initialization.py` 复用既有导入、性格测评和 `ProfileRepository`，负责创建唯一初始化会话及初始画像；`mind_reading.py` 保存无记忆命中后的心灵感应题反馈。FastAPI 路由集中在 `api.py`，检索仍由业务显式调用，Agent 不会自主访问数据库。
 
 `matching.py` 提供当前场景候选的随机、手动和 LLM 匹配策略；双 Agent 运行状态及评判结果由 `dialogue.py` 写入既有业务表。
+
+`topic_gate.py` 在对话开始前比较双方高置信度观点，选择共同话题或随机试探话题，并由接收方先判断兴趣；低兴趣会写入拒绝消息并立即结束 LangGraph 流程。
