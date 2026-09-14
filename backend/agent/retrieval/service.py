@@ -12,6 +12,12 @@ from agent.adapters.vector_search import VectorSearchAdapter
 ConnectionFactory = Callable[[], Any]
 MEMORY_TYPES = ("experience", "fact", "opinion", "behavior", "expertise", "interest")
 
+# Agent 最终上下文的硬上限；候选召回可以更宽，进入 Prompt 前必须经过这些限制。
+MAX_CONTEXT_MEMORY_ITEMS = 10
+MAX_CONTEXT_SOURCE_DOCUMENTS = 5
+MAX_CONTEXT_CHAT_GROUPS = 5
+MAX_CONTEXT_CHAT_MESSAGES_PER_GROUP = 5
+
 
 @dataclass(frozen=True)
 class QueryPlan:
@@ -199,6 +205,20 @@ async def search_long_memories(repository: PostgresRetrievalRepository, vector: 
     return groups
 
 
+def limit_memory_groups(groups: Mapping[str, Sequence[Mapping[str, Any]]], total_limit: int = MAX_CONTEXT_MEMORY_ITEMS) -> dict[str, list[dict[str, Any]]]:
+    """按综合相关性把分类记忆裁剪到全局总量上限。"""
+    safe_limit = max(0, min(int(total_limit), MAX_CONTEXT_MEMORY_ITEMS))
+    ranked: list[tuple[str, Mapping[str, Any]]] = []
+    for group_name, rows in groups.items():
+        for row in rows:
+            ranked.append((group_name, row))
+    ranked.sort(key=lambda item: float(item[1].get("relevance_score") or 0), reverse=True)
+    selected: dict[str, list[dict[str, Any]]] = {str(name): [] for name in groups}
+    for group_name, row in ranked[:safe_limit]:
+        selected.setdefault(group_name, []).append(dict(row))
+    return selected
+
+
 async def search_source_documents(repository: PostgresRetrievalRepository, vector: VectorSearchAdapter, avatar_id: str, query: QueryPlan, *, top_k: int = 8) -> list[dict[str, Any]]:
     """混合检索知乎原始资料；Chroma 仅返回候选 ID，正文由 PostgreSQL 提供。"""
     keyword_rows, vector_rows = await asyncio.gather(repository.search_source_keywords(avatar_id, query, limit=top_k * 3), vector.search("source_documents", query.rewritten_question, where={"avatar_id": avatar_id}, limit=top_k * 3))
@@ -220,7 +240,7 @@ async def search_source_documents(repository: PostgresRetrievalRepository, vecto
     return sorted(merged.values(), key=lambda x: x["relevance_score"], reverse=True)[:top_k]
 
 
-async def search_chat_history(repository: PostgresRetrievalRepository, vector: VectorSearchAdapter, avatar_id: str, query: QueryPlan, *, conversation_id: str | None = None, top_k: int = 12, context_window: int = 3) -> list[dict[str, Any]]:
+async def search_chat_history(repository: PostgresRetrievalRepository, vector: VectorSearchAdapter, avatar_id: str, query: QueryPlan, *, conversation_id: str | None = None, top_k: int = 12, context_window: int = 2, max_messages_per_group: int = MAX_CONTEXT_CHAT_MESSAGES_PER_GROUP) -> list[dict[str, Any]]:
     """混合检索聊天消息并扩展命中消息的前后文窗口。"""
     keyword_rows, vector_rows = await asyncio.gather(repository.search_chat_keywords(avatar_id, query, conversation_id=conversation_id, limit=top_k * 3), vector.search("chat_messages", query.rewritten_question, where={"avatar_id": avatar_id, "deleted": False, **({"conversation_id": conversation_id} if conversation_id else {})}, limit=top_k * 3))
     merged = {str(r["message_id"]): {**r, "semantic_score": 0.0} for r in keyword_rows}
@@ -230,20 +250,26 @@ async def search_chat_history(repository: PostgresRetrievalRepository, vector: V
         if str(item["id"]) in merged: merged[str(item["id"])]["semantic_score"] = float(item.get("semantic_score") or 0)
     for row in merged.values(): row["relevance_score"] = 0.35 * float(row.get("semantic_score") or 0) + 0.25 * float(row.get("keyword_score") or 0) + 0.40
     result = []
+    safe_message_limit = max(1, min(int(max_messages_per_group), MAX_CONTEXT_CHAT_MESSAGES_PER_GROUP))
     for row in sorted(merged.values(), key=lambda x: x["relevance_score"], reverse=True)[:top_k]:
-        result.append({"conversation_id": row["conversation_id"], "matched_message_id": row["message_id"], "relevance_score": row["relevance_score"], "messages": await repository.fetch_chat_window(str(row["conversation_id"]), int(row["sequence_no"]), context_window)})
+        messages = await repository.fetch_chat_window(str(row["conversation_id"]), int(row["sequence_no"]), context_window)
+        result.append({"conversation_id": row["conversation_id"], "matched_message_id": row["message_id"], "relevance_score": row["relevance_score"], "messages": list(messages)[:safe_message_limit]})
     return result
 
 
-async def build_context(user_id: str, question: str, repository: PostgresRetrievalRepository, vector_search: VectorSearchAdapter, *, conversation_id: str | None = None, memory_top_k: int = 8, document_top_k: int = 8, chat_top_k: int = 12, context_window: int = 3) -> dict[str, Any]:
-    """由调用方显式执行，组装固定画像与 PostgreSQL+Chroma 动态检索结果。"""
+async def build_context(user_id: str, question: str, repository: PostgresRetrievalRepository, vector_search: VectorSearchAdapter, *, conversation_id: str | None = None, memory_top_k: int = MAX_CONTEXT_MEMORY_ITEMS, memory_total_limit: int = MAX_CONTEXT_MEMORY_ITEMS, document_top_k: int = MAX_CONTEXT_SOURCE_DOCUMENTS, chat_top_k: int = MAX_CONTEXT_CHAT_GROUPS, context_window: int = 2, chat_messages_per_group: int = MAX_CONTEXT_CHAT_MESSAGES_PER_GROUP) -> dict[str, Any]:
+    """显式组装上下文，并在返回前执行记忆、资料和聊天的最终数量限制。"""
     query = analyze_question(question)
     profile = await repository.get_fixed_profile(user_id)
     empty = {"experiences": [], "opinions": [], "behavior_memories": [], "expertise": [], "interests": []}
     if not profile: return {"query": query.__dict__, "profile": {}, "retrieved_memories": empty, "source_documents": [], "chat_history": [], "notice": "未找到用户当前生效的数字分身画像。"}
     avatar_id = str(profile["avatar_id"])
-    memories, documents, chats = await asyncio.gather(search_long_memories(repository, vector_search, avatar_id, query, top_k=memory_top_k), search_source_documents(repository, vector_search, avatar_id, query, top_k=document_top_k), search_chat_history(repository, vector_search, avatar_id, query, conversation_id=conversation_id, top_k=chat_top_k, context_window=context_window))
-    result: dict[str, Any] = {"query": query.__dict__, "profile": profile, "retrieved_memories": memories, "source_documents": documents, "chat_history": chats, "retrieval_meta": {"memory_count": sum(len(v) for v in memories.values()), "document_count": len(documents), "chat_message_count": len(chats), "generated_at": datetime.now(timezone.utc).isoformat()}}
+    memories, documents, chats = await asyncio.gather(search_long_memories(repository, vector_search, avatar_id, query, top_k=memory_top_k), search_source_documents(repository, vector_search, avatar_id, query, top_k=document_top_k), search_chat_history(repository, vector_search, avatar_id, query, conversation_id=conversation_id, top_k=chat_top_k, context_window=context_window, max_messages_per_group=chat_messages_per_group))
+    memories = limit_memory_groups(memories, memory_total_limit)
+    documents = documents[:MAX_CONTEXT_SOURCE_DOCUMENTS]
+    chats = chats[:MAX_CONTEXT_CHAT_GROUPS]
+    chat_message_count = sum(len(item.get("messages") or []) for item in chats)
+    result: dict[str, Any] = {"query": query.__dict__, "profile": profile, "retrieved_memories": memories, "source_documents": documents, "chat_history": chats, "retrieval_meta": {"memory_count": sum(len(v) for v in memories.values()), "document_count": len(documents), "chat_group_count": len(chats), "chat_message_count": chat_message_count, "context_limits": {"memory_items": MAX_CONTEXT_MEMORY_ITEMS, "source_documents": MAX_CONTEXT_SOURCE_DOCUMENTS, "chat_groups": MAX_CONTEXT_CHAT_GROUPS, "chat_messages_per_group": MAX_CONTEXT_CHAT_MESSAGES_PER_GROUP}, "generated_at": datetime.now(timezone.utc).isoformat()}}
     if not any(memories.values()) and not documents and not chats: result["notice"] = "本轮没有检索到与该问题直接相关的用户记忆。只能根据固定画像进行有限推断，不得虚构用户经历或明确立场。"
     return result
 

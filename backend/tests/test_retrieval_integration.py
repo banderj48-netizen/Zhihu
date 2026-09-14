@@ -20,7 +20,7 @@ from agent.profile.chat_repository import ChatRepository
 from agent.retrieval.service import (
     PostgresRetrievalRepository, analyze_question, build_context, index_memory,
     index_source_document_chunk, index_chat_message, search_long_memories,
-    search_source_documents, search_chat_history,
+    search_source_documents, search_chat_history, limit_memory_groups,
 )
 try:
     from test_postgres import BASE_URL, schema_url
@@ -110,6 +110,20 @@ class RetrievalWriteTests(unittest.TestCase):
             self.assertEqual(db.execute("SELECT status FROM vector_sync_outbox").fetchone()["status"], "pending")
             snapshot = db.execute("SELECT snapshot FROM avatar_versions WHERE id=%s", (result["version_id"],)).fetchone()["snapshot"]
             self.assertEqual(snapshot["identity"]["occupation"], "工程师")
+
+    def test_final_memory_context_has_global_ten_item_limit(self):
+        """最终上下文的记忆上限是全局 10 条，而不是每类各 10 条。"""
+        groups = {
+            "experiences": [{"memory_id": f"e{i}", "relevance_score": 1.0 - i / 100} for i in range(6)],
+            "opinions": [{"memory_id": f"o{i}", "relevance_score": 0.9 - i / 100} for i in range(6)],
+            "behavior_memories": [],
+            "expertise": [{"memory_id": f"x{i}", "relevance_score": 0.8 - i / 100} for i in range(6)],
+            "interests": [],
+        }
+        limited = limit_memory_groups(groups)
+        self.assertEqual(sum(len(rows) for rows in limited.values()), 10)
+        self.assertEqual(limited["experiences"][0]["memory_id"], "e0")
+        self.assertEqual(limited["opinions"][0]["memory_id"], "o0")
 
     def test_idempotent_retry_and_stale_version(self):
         proposal = self.proposal()
