@@ -21,8 +21,26 @@ def _now() -> datetime:
 class InitializationService:
     """复用既有导入、测评和画像仓储的初始化服务。"""
 
-    def create(self, user_id: str, import_job_id: str | None = None) -> dict[str, Any]:
-        """创建用户唯一的初始化会话。"""
+    def create(self, user_id: str, import_job_id: str | None = None, zhihu_token: str | None = None) -> dict[str, Any]:
+        """创建会话，并在同一流程抓取知乎资料、生成领域预选。"""
+        imported: dict[str, Any] = {}
+        if zhihu_token:
+            from app.imports import zhihu_client
+            for key, fn in (("contents", zhihu_client.fetch_contents), ("followees", zhihu_client.fetch_followees), ("favlists", zhihu_client.fetch_favlists), ("collections", zhihu_client.fetch_collections)):
+                try: imported[key] = fn(zhihu_token)
+                except Exception as exc: imported[key] = {"error": str(exc)}
+        domains = []
+        try:
+            from agent.domains.catalog import search
+            domains = search(None, None, None)
+        except Exception: pass
+        recommended = []
+        try:
+            from agent.runtime.model_builder import build_llm
+            prompt = "根据以下知乎资料和领域目录，返回JSON数组，推荐用户感兴趣或擅长的领域，每项包含domain_id、kind(interests/expertise)、level和reason。只输出JSON。知乎资料：" + json.dumps(imported, ensure_ascii=False)[:12000] + " 领域目录：" + json.dumps(domains, ensure_ascii=False)[:12000]
+            raw = asyncio.run(build_llm().generate(prompt, temperature=0.2, max_tokens=1200))
+            recommended = json.loads(raw.text[raw.text.find("["):raw.text.rfind("]") + 1])
+        except Exception: recommended = []
         with connect() as db:
             user_id = self._ensure_uuid_user(db, user_id)
             row = db.execute("""INSERT INTO avatar_initialization_sessions(user_id,import_job_id,status,current_step)
@@ -30,6 +48,8 @@ class InitializationService:
                 ON CONFLICT(user_id) DO UPDATE SET updated_at=now()
                 RETURNING id,user_id,import_job_id,status,current_step,input_data,generated_profile,created_at,updated_at""",
                 (user_id, import_job_id)).fetchone()
+            if imported or recommended:
+                row = db.execute("UPDATE avatar_initialization_sessions SET input_data=input_data || %s, status='domain_pending', current_step='domains_review', updated_at=now() WHERE id=%s RETURNING id,user_id,import_job_id,status,current_step,input_data,generated_profile,created_at,updated_at", (Jsonb({'zhihu': imported, 'domain_recommendations': recommended}), row['id'])).fetchone()
             return dict(row)
 
     @staticmethod

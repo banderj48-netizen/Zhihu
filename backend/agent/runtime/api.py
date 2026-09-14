@@ -118,7 +118,8 @@ class QuestionRequest(BaseModel):
 def create_initialization(request: Request, body: InitCreate, x_user_id: str | None = Header(default=None)):
     """创建或恢复当前用户的唯一初始化会话。"""
     try:
-        return _initializations.create(_resolved_user(request, x_user_id), body.import_job_id)
+        token = auth_session.get_zhihu_token(auth_session.read_session_id(request))
+        return _initializations.create(_resolved_user(request, x_user_id), body.import_job_id, token)
     except Exception as exc:
         raise HTTPException(503, "初始化会话暂不可用") from exc
 
