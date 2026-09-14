@@ -120,6 +120,17 @@ class InitializationService:
             personality = {**personality, "model_name": personality.get("model_name", personality.get("model", "big_five")), "inference_source": personality.get("inference_source", personality.get("source", "self_report")), "status": personality.get("status") if personality.get("status") in {"confirmed", "unconfirmed", "rejected"} else "unconfirmed"}
         if isinstance(personality, dict):
             personality["status"] = personality.get("status") if personality.get("status") in {"confirmed", "unconfirmed", "rejected"} else "unconfirmed"
+        # 综合知乎资料与全部答题结果生成最终画像摘要；LLM 不可用时保留用户填写身份。
+        try:
+            from agent.runtime.model_builder import build_llm
+            prompt = "请根据知乎资料、领域选择、性格、观点和社交答案生成数字分身画像JSON，字段包含summary、style、interests、expertise、opinions、behaviors。只输出JSON。" + json.dumps(data, ensure_ascii=False)[:20000]
+            raw = await build_llm().generate(prompt, temperature=0.2, max_tokens=1800)
+            text = raw.text[raw.text.find("{"):raw.text.rfind("}") + 1]
+            generated = json.loads(text)
+            if isinstance(generated, dict):
+                identity = {**identity, "summary": generated.get("summary") or identity.get("summary"), "extra": {**(identity.get("extra") or {}), "llm_profile": generated}}
+        except Exception:
+            pass
         # 画像生成第一版采用已有测评与用户选择，后续可替换为结构化 LLM 提炼器。
         repo = ProfileRepository()
         result = await asyncio.to_thread(repo.initialize_avatar, user_id=str(session["user_id"]), identity=identity, personality=personality, style=data.get("style", {}), policy=data.get("policy", {}))
