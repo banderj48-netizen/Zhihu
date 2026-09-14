@@ -15,11 +15,19 @@
         <a data-route="encounter" href="#encounter">相遇</a>
         <a data-route="profile" href="#profile">分身</a>
       </nav>
-      <div class="message-box message-box--empty" aria-label="消息盒子，打开消息列表" role="button" tabindex="0">
-        <img class="message-box__asset message-box__asset--empty" src="./美术素材/消息盒子（没有消息）.svg" alt="" aria-hidden="true" />
-        <img class="message-box__asset message-box__asset--unread" src="./美术素材/消息盒子（有消息）.svg" alt="" aria-hidden="true" />
+      <div class="topbar__tools">
+        <div class="message-box message-box--empty" aria-label="消息盒子，打开消息列表" role="button" tabindex="0">
+          <img class="message-box__asset message-box__asset--empty" src="./美术素材/消息盒子（没有消息）.svg" alt="" aria-hidden="true" />
+          <img class="message-box__asset message-box__asset--unread" src="./美术素材/消息盒子（有消息）.svg" alt="" aria-hidden="true" />
+        </div>
+        <div class="music-tools" aria-label="背景音乐控制">
+          <button class="music-toggle is-on" id="music-toggle" type="button" aria-pressed="true" aria-label="关闭背景音乐">♫</button>
+          <button class="music-switch" id="music-switch" type="button" aria-label="切换背景音乐">⏭</button>
+        </div>
       </div>
     </header>
+
+    <audio id="background-music" loop autoplay preload="metadata"></audio>
 
     <section class="message-overlay" id="message-overlay" aria-hidden="true">
       <div class="message-modal" role="dialog" aria-modal="true" aria-labelledby="message-modal-title">
@@ -260,6 +268,15 @@
       const messageOverlay = document.getElementById('message-overlay');
       const messageModalClose = document.getElementById('message-modal-close');
       const messageList = document.getElementById('message-list');
+      const backgroundMusic = document.getElementById('background-music');
+      const musicToggle = document.getElementById('music-toggle');
+      const musicSwitch = document.getElementById('music-switch');
+      const musicSources = ['./音乐/温暖的日常.mp3', './音乐/温暖的日常2.mp3'];
+      let musicIndex = 0;
+      let musicEnabled = true;
+      let musicAutoplayPending = false;
+      const profileIntro = document.querySelector('.profile-intro');
+      const profilePerson = document.querySelector('.profile-person');
       const messageTestData = [
         { id: 'demo-001', name: '看山 · 小许', scene: '场景 · 演讲厅', time: '今天 18:32', text: '我们好像都在关注技术如何影响普通人的生活，想和你继续聊聊。' },
         { id: 'demo-002', name: '看山 · 小陈', scene: '场景 · 书店', time: '昨天 16:08', text: '最近在尝试把阅读时间切成小块，也想听听你是怎么安排的。' }
@@ -318,6 +335,18 @@
       window.addEventListener('scroll', syncSiteTopbarWidth, { passive: true });
       window.addEventListener('resize', syncSiteTopbarWidth, { passive: true });
       syncSiteTopbarWidth();
+
+      function syncProfileIntroPosition() {
+        if (!profileIntro || !profilePerson || window.innerWidth < 901) return;
+        const parentRect = profilePerson.offsetParent?.getBoundingClientRect();
+        if (!parentRect) return;
+        const personRect = profilePerson.getBoundingClientRect();
+        profileIntro.style.top = `${personRect.bottom - parentRect.top + 18}px`;
+      }
+
+      profilePerson?.addEventListener('load', syncProfileIntroPosition, { once: true });
+      window.addEventListener('resize', syncProfileIntroPosition, { passive: true });
+      requestAnimationFrame(syncProfileIntroPosition);
 
       function syncTownMapSize() {
         const renderWidth = getTownMapTargetWidth();
@@ -478,6 +507,7 @@
         tavern.hidden = !isScene;
         profile.hidden = !isProfile;
         if (!town.hidden) requestAnimationFrame(syncTownMapSize);
+        if (isProfile) requestAnimationFrame(syncProfileIntroPosition);
         document.body.classList.toggle('is-scene-view', isScene);
         document.body.classList.toggle('is-profile-view', isProfile);
         if (isScene) {
@@ -496,6 +526,63 @@
         messageOverlay?.classList.add('is-open');
         messageOverlay?.setAttribute('aria-hidden', 'false');
       }
+
+      function updateMusicControls() {
+        if (!musicToggle || !backgroundMusic) return;
+        musicToggle.classList.toggle('is-on', musicEnabled);
+        musicToggle.setAttribute('aria-pressed', String(musicEnabled));
+        musicToggle.setAttribute('aria-label', musicEnabled ? '关闭背景音乐' : '开启背景音乐');
+        musicToggle.textContent = musicEnabled ? '♫' : '♪';
+      }
+
+      async function setMusicEnabled(enabled) {
+        musicEnabled = enabled;
+        if (musicEnabled) {
+          try {
+            await backgroundMusic.play();
+            musicAutoplayPending = false;
+          } catch {
+            // 浏览器拦截未交互页面的自动播放时，保留“已开启”状态，
+            // 并在用户首次交互后重试。
+            musicAutoplayPending = true;
+          }
+        } else {
+          backgroundMusic.pause();
+          musicAutoplayPending = false;
+        }
+        updateMusicControls();
+      }
+
+      async function switchMusicSource() {
+        if (!backgroundMusic) return;
+        const shouldResume = musicEnabled;
+        backgroundMusic.pause();
+        musicIndex = (musicIndex + 1) % musicSources.length;
+        backgroundMusic.src = musicSources[musicIndex];
+        backgroundMusic.load();
+        if (shouldResume) {
+          try {
+            await backgroundMusic.play();
+          } catch {
+            musicEnabled = false;
+          }
+        }
+        updateMusicControls();
+      }
+
+      if (backgroundMusic) {
+        backgroundMusic.src = musicSources[musicIndex];
+        backgroundMusic.loop = true;
+      }
+      musicToggle?.addEventListener('click', () => setMusicEnabled(!musicEnabled));
+      musicSwitch?.addEventListener('click', switchMusicSource);
+      updateMusicControls();
+      void setMusicEnabled(true);
+      const retryMusicAfterInteraction = () => {
+        if (musicEnabled && musicAutoplayPending) void setMusicEnabled(true);
+      };
+      window.addEventListener('pointerdown', retryMusicAfterInteraction, { passive: true });
+      window.addEventListener('keydown', retryMusicAfterInteraction);
 
       function renderMessageList() {
         if (!messageList) return;

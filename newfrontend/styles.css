@@ -1283,6 +1283,47 @@ body { background: #3e3e3e; }
 .message-box--unread .message-box__asset--empty { display: none; }
 .message-box--unread .message-box__asset--unread { display: block; }
 
+.topbar__tools {
+  justify-self: end;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.music-tools {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.music-tools button {
+  display: inline-grid;
+  width: 34px;
+  height: 34px;
+  place-items: center;
+  border: 1px solid rgba(120, 101, 79, .25);
+  border-radius: 50%;
+  background: rgba(255, 253, 248, .72);
+  color: #765f4d;
+  font-size: 17px;
+  line-height: 1;
+  cursor: pointer;
+  transition: background 160ms ease, color 160ms ease, transform 160ms ease;
+}
+
+.music-tools button:hover,
+.music-tools button:focus-visible {
+  background: #f0dfc7;
+  transform: translateY(-1px);
+  outline: none;
+}
+
+.music-tools .music-toggle.is-on {
+  border-color: #9b663d;
+  background: #9b663d;
+  color: #fff;
+}
+
 .encounter-view .message-box,
 .profile-view .message-box { width: 42px; height: 42px; }
 .hero-card { grid-template-columns: minmax(0, 1fr) minmax(420px, 1fr); min-height: 560px; border: 0; border-radius: 0 0 28px 28px; box-shadow: none; }
@@ -2086,6 +2127,53 @@ h1 { color: #3b2112; font-size: clamp(46px, 5vw, 76px); letter-spacing: -0.08em;
   margin-top: 14px;
 }
 
+/* 标签卡片内的加号始终限制在标签区域范围内 */
+.profile-tags-card {
+  overflow: hidden;
+}
+
+.profile-tags-card .tag-cloud {
+  display: flex;
+  flex-wrap: wrap;
+  align-content: flex-start;
+  gap: 10px;
+  width: 100%;
+  min-height: 0;
+  height: auto;
+  max-width: 100%;
+  overflow: visible;
+}
+
+.profile-tags-card .tag-cloud .tag,
+.profile-tags-card .tag-cloud .tag-add {
+  position: static;
+  flex: 0 0 auto;
+}
+
+.profile-tags-card .tag-cloud .tag-add {
+  left: auto;
+  right: auto;
+}
+
+.profile-tags-card {
+  height: auto;
+  align-self: start;
+}
+
+.profile-tags-card .tag-add {
+  left: max(0px, min(79px, calc(100% - 61px)));
+  right: auto;
+}
+
+@media (max-width: 520px) {
+  .profile-tags-card .tag-add {
+    left: max(0px, min(24%, calc(100% - 48px)));
+    width: clamp(48px, 22%, 61px);
+    height: 32px;
+    font-size: 24px;
+  }
+}
+
 /* 全局固定导航：宽度从顶部初始值逐步扩展到小镇地图宽度 */
 :root {
   --site-topbar-height: 64px;
@@ -2147,6 +2235,18 @@ h1 { color: #3b2112; font-size: clamp(46px, 5vw, 76px); letter-spacing: -0.08em;
   overflow: visible;
 }
 
+/* 打开聊天后，右侧面板高度跟随左侧人物列表同步伸展，宽度保持原值 */
+.encounter-layout.has-chat {
+  align-items: stretch;
+}
+
+.encounter-layout.has-chat .chat-panel {
+  height: auto;
+  min-height: 0;
+  max-height: none;
+  align-self: stretch;
+}
+
 /* 导航项响应式放大，保持中间导航的视觉重点 */
 .site-topbar .topbar__nav {
   gap: clamp(28px, 6vw, 104px);
@@ -2170,6 +2270,10 @@ h1 { color: #3b2112; font-size: clamp(46px, 5vw, 76px); letter-spacing: -0.08em;
     padding: 6px 10px;
     font-size: clamp(11px, 3.2vw, 14px);
   }
+
+  .topbar__tools { gap: 6px; }
+  .music-tools { gap: 3px; }
+  .music-tools button { width: 30px; height: 30px; font-size: 15px; }
 }
 
 /* 分身页顶部内容与全局 header 保持间距；标题区与标签卡片顶部对齐 */
@@ -2187,7 +2291,7 @@ h1 { color: #3b2112; font-size: clamp(46px, 5vw, 76px); letter-spacing: -0.08em;
   .profile-tags-card {
     grid-column: 2;
     grid-row: 1;
-    width: 100%;
+    width: min(520px, 100%);
     margin-left: 0;
   }
 
@@ -2199,21 +2303,85 @@ h1 { color: #3b2112; font-size: clamp(46px, 5vw, 76px); letter-spacing: -0.08em;
   }
 
   .profile-intro {
-    position: relative;
-    grid-column: 1;
-    grid-row: 1;
+    position: absolute;
+    grid-column: auto;
+    grid-row: auto;
     left: auto;
     top: auto;
     bottom: auto;
     align-self: start;
-    width: 100%;
+    width: min(520px, 100%);
     padding-top: 4px;
+  }
+
+  .profile-left .profile-intro {
+    left: 0;
+    right: auto;
   }
 }
 
 @media (max-width: 700px) {
   .profile-view {
     padding-top: calc(var(--site-topbar-height) + var(--site-topbar-offset) + 16px);
+  }
+}
+
+/* 标签卡片高度由标签内容决定，避免父级固定行高限制换行后的内容 */
+.profile-left {
+  align-content: start;
+}
+
+@media (min-width: 901px) {
+  .profile-left {
+    grid-template-rows: auto auto;
+  }
+}
+
+@media (max-width: 900px) {
+  .profile-left {
+    grid-template-rows: auto auto;
+    gap: 20px;
+  }
+}
+
+/* 品牌区与 header 其他控件统一视觉尺寸 */
+.site-topbar .topbar__brand {
+  gap: 12px;
+  font-size: clamp(15px, 1.2vw, 18px);
+  line-height: 1;
+  letter-spacing: 0.02em;
+}
+
+.site-topbar .topbar__brand img {
+  width: 42px;
+  height: 42px;
+  border-radius: 12px;
+}
+
+@media (max-width: 700px) {
+  .site-topbar .topbar__brand {
+    gap: 8px;
+    font-size: 13px;
+  }
+
+  .site-topbar .topbar__brand img {
+    width: 32px;
+    height: 32px;
+    border-radius: 9px;
+  }
+}
+
+/* 标签胶囊按文字长度自适应，避免固定宽度造成过多留白 */
+.profile-tags-card .tag-cloud .tag {
+  width: auto;
+  min-width: 0;
+  padding-inline: 16px;
+  white-space: nowrap;
+}
+
+@media (max-width: 520px) {
+  .profile-tags-card .tag-cloud .tag {
+    padding-inline: 13px;
   }
 }
 
