@@ -36,6 +36,49 @@ def _pg_upsert(profile: dict[str, Any]) -> dict[str, Any]:
                 "headline": profile.get("headline", ""),
                 "zhihu_connected": True}
 
+
+def _pg_user_payload(*, user_id: str | None = None, zhihu_uid: str | None = None) -> dict[str, Any] | None:
+    """从 PostgreSQL 读取登录用户及其数字分身状态。
+
+    认证接口必须以 PostgreSQL 的 `user_avatars` 为分身状态事实源，
+    不能只读取 `users`，否则初始化完成后前端仍会看到 `not_created`。
+    `building` 映射为认证接口约定的 `processing`，归档分身按未创建处理。
+    """
+    from db.database import connect
+
+    if user_id is not None:
+        where_sql, value = "u.id::text=%s", str(user_id)
+    elif zhihu_uid is not None:
+        where_sql, value = "u.external_id=%s", str(zhihu_uid)
+    else:
+        raise ValueError("user_id 或 zhihu_uid 至少提供一个")
+    with connect() as db:
+        row = db.execute(
+            f"""
+            SELECT u.id, u.external_id, a.id AS avatar_id,
+                   CASE
+                       WHEN a.status = 'building' THEN 'processing'
+                       WHEN a.status = 'archived' THEN 'not_created'
+                       ELSE COALESCE(a.status, 'not_created')
+                   END AS avatar_status
+            FROM public.users u
+            LEFT JOIN public.user_avatars a ON a.user_id = u.id
+            WHERE {where_sql} AND u.deleted_at IS NULL
+            ORDER BY a.updated_at DESC NULLS LAST
+            LIMIT 1
+            """,
+            (value,),
+        ).fetchone()
+    if not row:
+        return None
+    return {
+        "user_id": str(row["id"]),
+        "zhihu_uid": row["external_id"],
+        "avatar_id": str(row["avatar_id"]) if row["avatar_id"] else None,
+        "avatar_status": row["avatar_status"] or "not_created",
+        "zhihu_connected": True,
+    }
+
 _DATA_FILE = Path(
     os.environ.get(
         "TWINLOOP_USER_STORE",
@@ -89,10 +132,7 @@ def _flush() -> None:
 
 def get_by_id(user_id: str) -> dict[str, Any] | None:
     if _pg_enabled():
-        from db.database import connect
-        with connect() as db:
-            row = db.execute("SELECT id, external_id FROM public.users WHERE id::text=%s AND deleted_at IS NULL", (user_id,)).fetchone()
-        return {"user_id": str(row["id"]), "zhihu_uid": row["external_id"], "zhihu_connected": True} if row else None
+        return _pg_user_payload(user_id=user_id)
     _load()
     with _lock:
         rec = _users.get(user_id)
@@ -101,10 +141,7 @@ def get_by_id(user_id: str) -> dict[str, Any] | None:
 
 def get_by_zhihu_uid(zhihu_uid: str) -> dict[str, Any] | None:
     if _pg_enabled():
-        from db.database import connect
-        with connect() as db:
-            row = db.execute("SELECT id, external_id FROM public.users WHERE external_id=%s AND deleted_at IS NULL", (str(zhihu_uid),)).fetchone()
-        return {"user_id": str(row["id"]), "zhihu_uid": row["external_id"], "zhihu_connected": True} if row else None
+        return _pg_user_payload(zhihu_uid=zhihu_uid)
     _load()
     with _lock:
         user_id = _zhihu_index.get(str(zhihu_uid))

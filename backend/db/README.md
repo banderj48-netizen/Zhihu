@@ -19,6 +19,15 @@
 | `postgresql_agent_chat_group_reads.sql` | 聊天组处理完成、可见时间和用户已读状态 |
 | `migrations/` | SQLite 历史迁移脚本 |
 
+用户数据准备脚本：
+
+```powershell
+$env:PYTHONPATH = "E:\ZH\Zhihu\backend"
+backend\.venv\Scripts\python.exe backend\reports\generate_virtual_users.py "生成一个关注人工智能和教育的中文虚拟用户，至少生成 3 条记忆和 2 篇模拟知乎资料" --count 1 --output backend\data\generated_users.json
+```
+
+脚本默认调用 `backend/.env.models` 中的 LLM，并将画像、记忆和原始资料写入 PostgreSQL；随后消费 `vector_sync_outbox` 同步 `avatar_memories` 和 `source_documents` 到 Chroma。`--model-response-file` 可提供 UTF-8 JSON 模型响应做离线复现，`--skip-vector` 仅用于无 Embedding 网络时的诊断。
+
 ## PostgreSQL 初始化
 
 ### 前置条件

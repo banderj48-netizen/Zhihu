@@ -49,7 +49,7 @@ DEFAULTS: dict[str, str] = {
     "TWINLOOP_COOKIE_SECURE": "false",
 
     # 授权完成后浏览器跳回的前端地址
-    "TWINLOOP_FRONTEND_URL": "http://127.0.0.1:3000/",
+    "TWINLOOP_FRONTEND_URL": "http://127.0.0.1:3000/#intro",
 }
 
 

@@ -39,3 +39,14 @@
 - 陌生回答被用户判定为 `unexpected` 时，`NotificationService` 必须先通过注入的 LLM 生成行为记忆主题和内容，再调用 `create_behavior_memory_tool` 写入未确认行为记忆；LLM 不可用时只允许写入明确标记为回退来源的未确认安全提案。
 - 通知端到端验收脚本为 `backend/reports/test_notifications_e2e.py`；使用 `backend\\.venv\\Scripts\\python.exe backend/reports/test_notifications_e2e.py` 可执行确定性回归，增加 `--real-llm` 可验证真实模型生成，脚本自动创建并清理 `test-notification-*` 临时用户。
 - 交友通知顺序演示脚本为 `backend/reports/demo_friendship_notification_flow.py`；它按 A 推送、A 同意、B 推送、B 同意四步打印 `avatar_friendships` 与 `user_notifications` 快照，默认清理 `demo-friendship-*` 临时数据，使用 `--keep` 保留供人工查询。
+- 虚拟用户数据准备脚本为 `backend/reports/generate_virtual_users.py`；接收自然语言要求，调用 `backend/.env.models` 的 LLM 生成完整身份、性格、风格、策略、记忆和模拟知乎原始资料，使用现有仓储写入 PostgreSQL，并消费 `vector_sync_outbox` 同步 `avatar_memories`、`source_documents` 到 Chroma。脚本默认只新增数据，不删除已有用户；`--model-response-file` 用于离线复现，`--skip-vector` 仅用于诊断。
+- `newfrontend/index.html` 启动时通过后端 `/api/v1/me` 校验会话；未登录时请求 `/api/v1/sources/zhihu/connect` 并跳转知乎授权，后端 OAuth 回调完成后重定向到 `http://127.0.0.1:3000/#intro`。该链路只新增请求与跳转逻辑，不得修改现有页面样式。
+- `newfrontend/index.html` 认证后根据 `/api/v1/me` 的 `avatar_id/avatar_status` 分流：已初始化直接进入 `#intro`，未初始化进入 `#auth` 引导页并可创建 `/v1/twin/initializations` 会话；认证失败必须在引导页显示错误，不得伪造成功状态。
+- `GET /v1/twin/scenes/{scene_id}/avatars` 每次从 PostgreSQL 在场表的 idle 候选中随机返回最多 3 个，newfrontend 场景点击必须使用该接口覆盖静态示例；初始化引导依次调用观点题、社交题、答案保存和 complete 接口，观点题由后端优先使用真实 LLM 生成。
+- 初始化 complete 接口采用两阶段确认：`confirmed=false` 只生成并保存 `profile_review` 草稿，前端展示后必须由用户确认，再以 `confirmed=true` 激活数字分身；长耗时请求使用原生 dialog 提示进度，完成后回到 `#intro`。
+- 初始化前端的等待提示使用阻塞式原生 dialog，创建会话、读取知乎并出题、生成画像和保存画像期间锁定其它页面控件；画像草稿按摘要、风格、兴趣、专长、观点和行为分组可编辑，确认后的 `profile` 由后端写入画像版本与 `avatar_memories`，并通过 `vector_sync_outbox` 同步 Chroma。
+- 画像确认使用独立模态弹窗解析展示，不显示原始 JSON；用户可编辑摘要、风格、兴趣、专长、观点和行为，JSON 字段校验通过后才允许确认提交。
+- 初始画像 LLM 输出必须使用紧凑 JSON 约束并限制各字段条目数量；解析失败时自动使用更短提示重试，禁止因模型输出截断直接回退为空画像。
+- PostgreSQL 数据清理与恢复脚本位于 `backend/db/clear_postgresql_data.ps1` 和 `backend/db/restore_postgresql_backup.ps1`：清理脚本只对所有非系统 schema 执行 `TRUNCATE ... RESTART IDENTITY CASCADE`，保留表结构；恢复脚本使用数据专用备份并仅恢复数据与序列值，两个脚本均需显式追加 `-Force`。备份文件位于 `backups/postgresql/`，执行恢复前应核对文件哈希。
+- `/api/v1/me` 在 PostgreSQL 模式下必须联查 `user_avatars` 返回真实 `avatar_id/avatar_status`；`user_avatars.status=building` 对外映射为 `processing`，归档分身映射为 `not_created`，避免初始化完成后前端再次进入初始化页。
+- 初始化确认接口成功后，newfrontend 应直接将当前路由切换到 `#intro`，不要强制整页刷新触发旧认证状态竞争；重新打开页面时仍必须通过 `/api/v1/me` 校验真实分身状态。

@@ -11,6 +11,7 @@
 from __future__ import annotations
 
 import os
+from urllib.parse import quote
 
 from fastapi import APIRouter, Query, Request
 from fastapi.responses import JSONResponse, RedirectResponse
@@ -27,6 +28,15 @@ def _rid(request: Request, body_request_id: str | None = None) -> str:
     return body_request_id or request.headers.get("X-Request-Id") or new_request_id()
 
 
+def _callback_error(request: Request, exc: service.ConsentError, rid: str):
+    """浏览器 OAuth 失败时回到前端认证页，接口调用仍返回标准 JSON 错误。"""
+    if "text/html" in request.headers.get("accept", ""):
+        frontend_url = os.environ.get("TWINLOOP_FRONTEND_URL", "http://127.0.0.1:3000/#intro")
+        base_url = frontend_url.split("#", 1)[0].rstrip("/")
+        return RedirectResponse(url=f"{base_url}/#auth?error={quote(exc.message)}", status_code=302)
+    return JSONResponse(status_code=exc.status_code, content=fail(exc.code, exc.message, rid))
+
+
 @router.post("/connect")
 async def connect(request: Request, body: ConnectRequest | None = None):
     """创建知乎授权地址。后端负责 OAuth state、Token 和回调校验。"""
@@ -35,10 +45,7 @@ async def connect(request: Request, body: ConnectRequest | None = None):
     try:
         data = service.build_authorization(scopes)
     except service.ConsentError as exc:
-        return JSONResponse(
-            status_code=exc.status_code,
-            content=fail(exc.code, exc.message, rid),
-        )
+        return _callback_error(request, exc, rid)
     return ok(data, rid)
 
 
@@ -67,10 +74,11 @@ async def callback(
     try:
         user = auth_service.login_with_zhihu_profile(result["profile"])
     except auth_service.AuthError as exc:
-        return JSONResponse(
-            status_code=exc.status_code,
-            content=fail(exc.code, exc.message, rid),
-        )
+        if "text/html" in request.headers.get("accept", ""):
+            frontend_url = os.environ.get("TWINLOOP_FRONTEND_URL", "http://127.0.0.1:3000/#intro")
+            base_url = frontend_url.split("#", 1)[0].rstrip("/")
+            return RedirectResponse(url=f"{base_url}/#auth?error={quote(exc.message)}", status_code=302)
+        return JSONResponse(status_code=exc.status_code, content=fail(exc.code, exc.message, rid))
 
     # 知乎 token 只存服务端会话，浏览器仅得到随机会话 ID
     session_id, _ = session.create_session(
@@ -80,6 +88,9 @@ async def callback(
     )
 
     frontend_url = os.environ.get("TWINLOOP_FRONTEND_URL", "http://127.0.0.1:3000/")
+    # 授权完成后统一回到新前端的 intro 首屏；保留显式配置中的 hash。
+    if "#" not in frontend_url:
+        frontend_url = frontend_url.rstrip("/") + "/#intro"
     resp = RedirectResponse(url=frontend_url, status_code=302)
     session.set_session_cookie(resp, session_id)
     return resp

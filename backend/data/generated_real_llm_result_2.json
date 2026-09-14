@@ -1,0 +1,47 @@
+{
+  "ok": true,
+  "generated_at": "2026-09-14T21:26:43.503265+00:00",
+  "llm_model": "deepseek-flash",
+  "request": "生成一个真实联调使用的虚拟知乎用户，标签必须包含 real-llm-demo-2：中文名沈舟，31岁，广州的数据平台工程师；关注大模型应用、开源软件、数据治理和职业教育；性格理性、克制、愿意倾听；回答先给结论，再给依据和边界，资料不足时明确说不确定。生成完整身份、性格评分、表达风格、安全策略、记忆规则、至少5条不同类型记忆、至少3篇模拟知乎原始资料。所有资料明确标记 generated/simulated，不得冒充真实人物或真实知乎来源。",
+  "users": [
+    {
+      "user_id": "ce196fbc-f31f-4d1c-98aa-679172ab0024",
+      "external_id": "generated-real-llm-demo-2-ce196fbc",
+      "avatar_id": "63f8d11e-de2f-4dd8-b706-cb04821615be",
+      "version_id": "27496636-e8dd-4d7f-b528-45c7046f8ba1",
+      "source_document_ids": [
+        "05b6b4c4-da10-4f57-9c1d-bce630be2304",
+        "a6aa78a9-f8e5-4d70-ad30-27a55c16ab14",
+        "d9677e84-4bcd-433a-8705-9b2e4dca6fb5"
+      ],
+      "memory_ids": [
+        "69b9e20a-7e44-432b-bf53-6c3693d97ce7",
+        "244c3efc-98a9-4cc9-9090-ab9fea9b924a",
+        "7511cd74-fce1-46a5-8f88-62c090a1812c",
+        "3dcbe33b-46a3-418e-90b8-7c337cbcd645",
+        "5cf408f9-dd2c-4d34-badf-5dac5aa056d8",
+        "6cac35ef-6dfa-4888-9856-761cf1ef838f"
+      ]
+    }
+  ],
+  "postgres_counts": [
+    {
+      "user_id": "ce196fbc-f31f-4d1c-98aa-679172ab0024",
+      "external_id": "generated-real-llm-demo-2-ce196fbc",
+      "avatar_id": "63f8d11e-de2f-4dd8-b706-cb04821615be",
+      "memory_count": 6,
+      "source_document_count": 3,
+      "style_example_count": 3
+    }
+  ],
+  "vector_sync": {
+    "outbox": {
+      "processed": 9,
+      "failed": 0
+    },
+    "chroma_counts": {
+      "avatar_memories": 51,
+      "source_documents": 26
+    }
+  }
+}

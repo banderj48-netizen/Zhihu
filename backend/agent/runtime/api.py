@@ -5,6 +5,7 @@ from typing import Any, Literal
 import asyncio
 import json
 import os
+import random
 from fastapi import APIRouter, Header, HTTPException, Query, Request
 from fastapi.responses import StreamingResponse
 from pydantic import BaseModel, Field
@@ -116,6 +117,8 @@ class InitStep(BaseModel):
 class InitComplete(BaseModel):
     """完成初始化时用户填写的基础身份。"""
     identity: dict[str, Any] = Field(default_factory=dict)
+    confirmed: bool = False
+    profile: dict[str, Any] = Field(default_factory=dict)
 
 
 class QuestionRequest(BaseModel):
@@ -152,9 +155,11 @@ def get_initialization(request: Request, session_id: str, x_user_id: str | None 
 
 @router.post("/initializations/{session_id}/complete")
 async def complete_initialization(request: Request, session_id: str, body: InitComplete, x_user_id: str | None = Header(default=None)):
-    """生成并激活初始画像。"""
+    """先生成待确认画像，confirmed=true 时才激活数字分身。"""
     try:
-        return await _initializations.complete(session_id, body.identity, user_id=_resolved_user(request, x_user_id))
+        if not body.confirmed:
+            return await _initializations.preview_profile(session_id, user_id=_resolved_user(request, x_user_id))
+        return await _initializations.complete(session_id, body.identity, profile=body.profile, user_id=_resolved_user(request, x_user_id))
     except ValueError as exc:
         raise HTTPException(400, str(exc)) from exc
 
@@ -269,7 +274,9 @@ def list_scenes():
 def list_scene_avatars(scene_id: str, x_user_id: str | None = Header(default=None)):
     """返回场景空闲候选，当前用户自己的 Agent 不会出现在候选中。"""
     me = _my_avatar(x_user_id or "local-demo-user")
-    return {"scene_id": scene_id, "items": _presence.list_candidates(scene_id, exclude_avatar_id=str(me["id"]) if me else None)}
+    candidates = _presence.list_candidates(scene_id, exclude_avatar_id=str(me["id"]) if me else None)
+    # 每次进入场景都从数据库空闲池随机抽取 1-3 个，避免前端固定 Mock 数据。
+    return {"scene_id": scene_id, "items": random.sample(candidates, min(3, len(candidates)))}
 
 
 @router.post("/matches")

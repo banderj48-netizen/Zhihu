@@ -18,6 +18,40 @@ def _now() -> datetime:
     return datetime.now(timezone.utc)
 
 
+def _parse_profile_json(text: str) -> dict[str, Any] | None:
+    """从模型文本中提取画像 JSON，兼容 Markdown 包裹并拒绝不完整结构。"""
+    cleaned = text.strip().replace("```json", "").replace("```", "").strip()
+    start, end = cleaned.find("{"), cleaned.rfind("}")
+    if start < 0 or end <= start:
+        return None
+    try:
+        value = json.loads(cleaned[start : end + 1])
+    except json.JSONDecodeError:
+        return None
+    return value if isinstance(value, dict) else None
+
+
+async def _generate_profile_draft(data: dict[str, Any]) -> dict[str, Any] | None:
+    """调用真实 LLM 生成紧凑画像草稿，解析失败时用严格短格式重试。"""
+    from agent.runtime.model_builder import build_llm
+
+    base = json.dumps(data, ensure_ascii=False)[:20000]
+    prompts = [
+        "请根据以下知乎资料、领域选择、性格、观点和社交答案生成数字分身画像。只输出严格 JSON，不要 Markdown。字段必须包含 summary(string)、style(object)、interests(array，最多5项)、expertise(array，最多5项)、opinions(object，最多4项)、behaviors(object，最多4项)。每个数组项使用不超过40字的字符串或简短对象，全部内容使用中文，避免重复和长篇解释。资料：" + base,
+        "请把以下资料压缩成一份简短数字分身画像，只输出一行严格 JSON：summary、style、interests（最多3项）、expertise（最多3项）、opinions（最多3项）、behaviors（最多3项）。不要 Markdown、不要解释、不要额外字段。资料：" + base,
+    ]
+    for index, prompt in enumerate(prompts):
+        try:
+            raw = await build_llm().generate(prompt, temperature=0.2, max_tokens=4200 if index == 0 else 2600)
+            value = _parse_profile_json(raw.text)
+            if value:
+                return value
+            print(f"[initialization] profile JSON parse failed on attempt {index + 1}", flush=True)
+        except Exception as exc:
+            print(f"[initialization] profile draft attempt {index + 1} failed: {type(exc).__name__}: {exc!r}", flush=True)
+    return None
+
+
 class InitializationService:
     """复用既有导入、测评和画像仓储的初始化服务。"""
 
@@ -138,6 +172,24 @@ class InitializationService:
                 raise ValueError("初始化会话不存在")
             return dict(row)
 
+    async def preview_profile(self, session_id: str, user_id: str | None = None) -> dict[str, Any]:
+        """调用真实 LLM 生成初始画像草稿并保存为待确认状态。"""
+        session = self.get(session_id, user_id=user_id)
+        if not session:
+            raise ValueError("初始化会话不存在")
+        data = session.get("input_data") or {}
+        draft: dict[str, Any] = {"summary": "根据你的知乎资料与答题结果生成的初始画像", "style": data.get("style", {}), "interests": [], "expertise": [], "opinions": [], "behaviors": []}
+        try:
+            value = await _generate_profile_draft(data)
+            if value:
+                nested = value.get("profile") if isinstance(value.get("profile"), dict) else value
+                draft.update(nested)
+        except Exception as exc:
+            print(f"[initialization] LLM preview error: {type(exc).__name__}: {exc!r}", flush=True)
+        with connect() as db:
+            db.execute("UPDATE avatar_initialization_sessions SET status='review',current_step='profile_review',generated_profile=%s,updated_at=now() WHERE id=%s", (Jsonb(draft), session_id))
+        return {"session_id": session_id, "status": "review", "profile": draft}
+
     @staticmethod
     def _find_user(db, user_id: str):
         """查找内部 UUID 或登录系统 external_id，避免向 uuid 列传入任意字符串。"""
@@ -147,13 +199,18 @@ class InitializationService:
             return db.execute("SELECT id FROM users WHERE external_id=%s AND deleted_at IS NULL", (str(user_id),)).fetchone()
         return db.execute("SELECT id FROM users WHERE id=%s AND deleted_at IS NULL", (value,)).fetchone()
 
-    async def complete(self, session_id: str, identity: dict[str, Any], user_id: str | None = None) -> dict[str, Any]:
+    async def complete(self, session_id: str, identity: dict[str, Any], profile: dict[str, Any] | None = None, user_id: str | None = None) -> dict[str, Any]:
         """根据已保存结果创建初始画像版本并完成初始化。"""
         print(f"[initialization] complete session={session_id}", flush=True)
         session = self.get(session_id, user_id=user_id)
         if not session:
             raise ValueError("初始化会话不存在")
         data = session.get("input_data") or {}
+        # 用户确认时以编辑后的画像为准，保留原始问卷数据用于审计和记忆生成。
+        confirmed_profile = profile if isinstance(profile, dict) else (session.get("generated_profile") or {})
+        if confirmed_profile:
+            identity = {**identity, "summary": confirmed_profile.get("summary") or identity.get("summary"), "extra": {**(identity.get("extra") or {}), "llm_profile": confirmed_profile}}
+            data = {**data, "style": confirmed_profile.get("style") or data.get("style") or {}}
         personality = data.get("personality", {})
         # API may receive raw answers or an already scored assessment result.
         if isinstance(personality, dict) and "answers" in personality and "scores" not in personality:
@@ -162,15 +219,14 @@ class InitializationService:
             personality = {**personality, "model_name": personality.get("model_name", personality.get("model", "big_five")), "inference_source": personality.get("inference_source", personality.get("source", "self_report")), "status": personality.get("status") if personality.get("status") in {"confirmed", "unconfirmed", "rejected"} else "unconfirmed"}
         if isinstance(personality, dict):
             personality["status"] = personality.get("status") if personality.get("status") in {"confirmed", "unconfirmed", "rejected"} else "unconfirmed"
-        # 综合知乎资料与全部答题结果生成最终画像摘要；LLM 不可用时保留用户填写身份。
+        # 综合知乎资料与全部答题结果生成最终画像摘要；确认草稿存在时直接复用，避免重复调用模型。
         try:
-            from agent.runtime.model_builder import build_llm
-            prompt = "请根据知乎资料、领域选择、性格、观点和社交答案生成数字分身画像JSON，字段包含summary、style、interests、expertise、opinions、behaviors。只输出JSON。" + json.dumps(data, ensure_ascii=False)[:20000]
-            raw = await build_llm().generate(prompt, temperature=0.2, max_tokens=1800)
-            text = raw.text[raw.text.find("{"):raw.text.rfind("}") + 1]
-            generated = json.loads(text)
+            generated = confirmed_profile or (session.get("generated_profile") or {})
+            if not generated:
+                generated = await _generate_profile_draft(data) or {}
             if isinstance(generated, dict):
-                identity = {**identity, "summary": generated.get("summary") or identity.get("summary"), "extra": {**(identity.get("extra") or {}), "llm_profile": generated}}
+                draft = generated.get("profile") if isinstance(generated.get("profile"), dict) else generated
+                identity = {**identity, "summary": draft.get("summary") or identity.get("summary"), "extra": {**(identity.get("extra") or {}), "llm_profile": draft}}
                 print("[initialization] LLM final profile generated", flush=True)
         except Exception as exc:
             print(f"[initialization] LLM final profile error: {type(exc).__name__}: {exc!r}; using submitted data", flush=True)
@@ -204,6 +260,22 @@ class InitializationService:
             if elapsed is not None and float(elapsed) > 13:
                 continue
             apply({"memory_type": "behavior", "level": item.get("level", "middle"), "topic": item.get("topic"), "content": item.get("custom_text") or item.get("reaction") or f"在情景题中选择 {item.get('selected_option_id')}", "structured_data": item}, "propose_behavior_memory", "social-answers")
+        # 将用户确认后的画像分类字段写入记忆表，仓储层会为每条记录创建 outbox，随后同步到 Chroma。
+        profile_memory_map = (("interests", "interest", "shallow"), ("expertise", "expertise", "middle"), ("opinions", "opinion", "middle"), ("behaviors", "behavior", "middle"))
+        for field, memory_type, level in profile_memory_map:
+            values = confirmed_profile.get(field) if isinstance(confirmed_profile, dict) else None
+            if isinstance(values, dict):
+                values = [{"topic": key, "content": value} for key, value in values.items()]
+            if not isinstance(values, list):
+                continue
+            for value in values:
+                if isinstance(value, dict):
+                    content = value.get("content") or value.get("label") or value.get("name") or json.dumps(value, ensure_ascii=False)
+                    topic = value.get("topic") or value.get("name") or field
+                    structured = value
+                else:
+                    content, topic, structured = str(value), field, {"value": value}
+                apply({"memory_type": memory_type, "level": level, "topic": str(topic), "content": str(content), "structured_data": structured}, f"propose_{memory_type}_memory", "")
         # Return the actually active version after dynamic memories were merged.
         result["version_id"] = version_id
         with connect() as db:

@@ -1,0 +1,47 @@
+{
+  "ok": true,
+  "generated_at": "2026-09-14T21:25:27.872869+00:00",
+  "llm_model": "deepseek-flash",
+  "request": "生成一个关注人工智能、数据治理和教育的中文虚拟用户，至少生成5条记忆和3篇模拟知乎资料",
+  "users": [
+    {
+      "user_id": "dbaf5423-41d6-4b2e-9819-0cca9033ced4",
+      "external_id": "generated-AI-dbaf5423",
+      "avatar_id": "85fbe0b3-3a4a-46dc-9c5e-1bb22c1826dc",
+      "version_id": "2884e831-5d36-4385-a3d4-fe3c045ba44a",
+      "source_document_ids": [
+        "1a15052a-f238-4a1e-af0d-9385faee472b",
+        "9c2ddbeb-5097-45a0-ac1a-09ebff3c2101",
+        "39aeebab-4d55-4e98-88f7-0d68433da4f2"
+      ],
+      "memory_ids": [
+        "348b41fe-cec8-411e-a036-3fa2d9f21083",
+        "bd28fae8-2887-4ede-9006-6c34929f12ed",
+        "cc2dceea-7061-4727-810a-da6a8c6aa43a",
+        "9dbf96ba-4ece-4da7-a37a-6ccd14794165",
+        "ef95e4ce-103f-413f-9cd5-b762fa3a4af9",
+        "218a72f9-d124-41fb-9aa9-4a6e406d882d"
+      ]
+    }
+  ],
+  "postgres_counts": [
+    {
+      "user_id": "dbaf5423-41d6-4b2e-9819-0cca9033ced4",
+      "external_id": "generated-AI-dbaf5423",
+      "avatar_id": "85fbe0b3-3a4a-46dc-9c5e-1bb22c1826dc",
+      "memory_count": 6,
+      "source_document_count": 3,
+      "style_example_count": 3
+    }
+  ],
+  "vector_sync": {
+    "outbox": {
+      "processed": 9,
+      "failed": 0
+    },
+    "chroma_counts": {
+      "avatar_memories": 45,
+      "source_documents": 23
+    }
+  }
+}

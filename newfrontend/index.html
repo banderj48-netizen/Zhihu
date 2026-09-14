@@ -6,6 +6,35 @@
     <meta name="description" content="数字分身小镇入口页面" />
     <title>在小镇里，遇见日常的新鲜想法</title>
     <link rel="stylesheet" href="./styles.css" />
+    <style>
+      /* 仅用于初始化流程弹窗，保持原有页面样式文件不变。 */
+      #system-progress-dialog,
+      #initialization-form {
+        border: 1px solid rgba(255,255,255,.55);
+        border-radius: 18px;
+        background: rgba(247, 241, 230, .97) url('./美术素材/小镇地图.jpg') center/cover;
+        box-shadow: 0 24px 70px rgba(47, 31, 20, .28);
+      }
+      #system-progress-dialog { min-width: min(420px, calc(100vw - 48px)); padding: 30px 34px; color: #3a271c; text-align: center; }
+      #system-progress-dialog::backdrop { background: rgba(34, 25, 19, .66); backdrop-filter: blur(5px); }
+      #system-progress-text { margin: 0; font-size: 18px; letter-spacing: .04em; }
+      #initialization-form { margin-top: 24px; padding: 24px; }
+      #initialization-form h2 { margin-top: 0; color: #3a271c; }
+      #initialization-form fieldset { margin: 16px 0; border: 1px solid rgba(110, 78, 50, .28); border-radius: 12px; padding: 14px; }
+      #initialization-form label { display: block; margin: 9px 0; }
+      #initialization-form textarea { width: 100%; box-sizing: border-box; border: 1px solid rgba(110, 78, 50, .3); border-radius: 10px; padding: 10px; background: rgba(255,255,255,.75); color: #3a271c; font: inherit; }
+      #initialization-form pre { max-height: 180px; overflow: auto; white-space: pre-wrap; }
+      #initialization-form .profile-field { margin: 14px 0; }
+      #initialization-form .profile-field label { font-weight: 700; }
+      #profile-review-dialog { width: min(760px, calc(100vw - 36px)); max-height: 86vh; overflow: auto; border: 1px solid rgba(255,255,255,.65); border-radius: 22px; padding: 0; background: rgba(247, 241, 230, .98) url('./美术素材/小镇地图.jpg') center/cover; color: #3a271c; box-shadow: 0 26px 90px rgba(47, 31, 20, .34); }
+      #profile-review-dialog::backdrop { background: rgba(34, 25, 19, .72); backdrop-filter: blur(7px); }
+      #profile-review-content { padding: 28px 32px 32px; }
+      #profile-review-content h2 { margin-top: 0; }
+      #profile-review-content .profile-field { margin: 16px 0; }
+      #profile-review-content .profile-field label { display: block; margin-bottom: 7px; font-weight: 700; }
+      #profile-review-content textarea { width: 100%; box-sizing: border-box; border: 1px solid rgba(110, 78, 50, .3); border-radius: 10px; padding: 10px; background: rgba(255,255,255,.78); color: #3a271c; font: inherit; }
+      #profile-review-error { color: #a33c28; }
+    </style>
   </head>
   <body>
     <header class="topbar site-topbar" id="site-topbar" aria-label="页面导航">
@@ -20,6 +49,29 @@
         <img class="message-box__asset message-box__asset--unread" src="./美术素材/消息盒子（有消息）.svg" alt="" aria-hidden="true" />
       </div>
     </header>
+    <main class="auth-view" id="auth-view" aria-labelledby="auth-title" hidden>
+      <section class="hero-card">
+        <div class="hero-copy">
+          <p class="eyebrow">看山</p>
+          <h1 id="auth-title">先完成你的看山</h1>
+          <div class="copy-body">
+            <p id="auth-description">知乎授权已完成，再用一点时间让看山认识你。</p>
+            <p id="auth-error" class="copy-body__en" role="alert" hidden></p>
+          </div>
+          <button class="primary-button" id="auth-start-button" type="button">开始初始化</button>
+          <div id="initialization-form" class="copy-body" hidden></div>
+        </div>
+        <div class="hero-visual" aria-label="看山初始化引导">
+          <img src="./美术素材/看山人物.png" alt="看山人物" />
+        </div>
+      </section>
+    </main>
+    <dialog id="system-progress-dialog" aria-live="polite">
+      <p id="system-progress-text">系统正在处理，请稍候…</p>
+    </dialog>
+    <dialog id="profile-review-dialog" aria-labelledby="profile-review-title">
+      <div id="profile-review-content"></div>
+    </dialog>
     <div class="page-shell" id="home-view">
 
       <main class="main-content">
@@ -249,6 +301,14 @@
       ];
 
       const home = document.getElementById('home-view');
+      const authView = document.getElementById('auth-view');
+      const authDescription = document.getElementById('auth-description');
+      const authError = document.getElementById('auth-error');
+      const authStartButton = document.getElementById('auth-start-button');
+      const progressDialog = document.getElementById('system-progress-dialog');
+      const progressText = document.getElementById('system-progress-text');
+      const profileReviewDialog = document.getElementById('profile-review-dialog');
+      const profileReviewContent = document.getElementById('profile-review-content');
       const encounter = document.getElementById('encounter-view');
       const town = document.getElementById('town-panorama');
       const tavern = document.getElementById('tavern-view');
@@ -272,6 +332,281 @@
       const recordList = document.getElementById('chat-record-list');
       const recordSubtitle = document.getElementById('chat-record-subtitle');
       const siteNavLinks = [...document.querySelectorAll('.site-topbar .topbar__nav a[data-route]')];
+
+      // 后端 API 根地址：允许本地调试时通过 window.__TWIN_API_ORIGIN__ 覆盖。
+      const backendOrigin = window.__TWIN_API_ORIGIN__ || 'http://127.0.0.1:8000';
+
+      /**
+       * 向 TwinLoop 后端发送请求，并携带 HttpOnly 会话 Cookie。
+       * 统一封装跨端口请求，避免页面中的各个交互重复处理凭证配置。
+       */
+      async function requestBackend(path, options = {}) {
+        return fetch(`${backendOrigin}${path}`, {
+          credentials: 'include',
+          ...options,
+          headers: {
+            ...(options.headers || {})
+          }
+        });
+      }
+
+      /** 显示原生系统进度弹窗，避免长时间请求期间用户误以为页面失效。 */
+      function showProgress(message) {
+        progressText.textContent = message;
+        [document.getElementById('site-topbar'), home, encounter, town, tavern, profile].forEach((node) => { if (node) node.inert = true; });
+        if (!progressDialog.open) progressDialog.showModal();
+      }
+
+      /** 关闭系统进度弹窗，交给下一阶段页面继续承接操作。 */
+      function hideProgress() {
+        if (progressDialog.open) progressDialog.close();
+        [document.getElementById('site-topbar'), home, encounter, town, tavern, profile].forEach((node) => { if (node) node.inert = false; });
+      }
+
+      /**
+       * 检查当前会话；未登录时向后端申请知乎授权地址并跳转。
+       * 授权回调由后端完成，后端设置 HttpOnly Cookie 后再重定向回 #intro。
+       */
+      async function ensureZhihuAuthorized() {
+        try {
+          const current = await requestBackend('/api/v1/me');
+          if (current.ok) return true;
+          // 只有明确未登录时才发起授权，后端异常不自动循环跳转。
+          if (current.status !== 401 && current.status !== 403) return false;
+
+          const connect = await requestBackend('/api/v1/sources/zhihu/connect', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ scopes: ['profile', 'answers'] })
+          });
+          const payload = await connect.json();
+          const authorizationUrl = payload?.data?.authorization_url;
+          if (connect.ok && authorizationUrl) {
+            window.location.assign(authorizationUrl);
+          }
+        } catch (error) {
+          // 后端未启动时保留原页面，方便本地继续查看静态界面。
+          console.warn('知乎授权检查失败：', error);
+        }
+        return false;
+      }
+
+      /**
+       * 判断用户是否已有可用数字分身，并将页面分流到首页或初始化引导页。
+       * 后端返回的 avatar_status 是唯一事实来源，前端不自行推断数据库状态。
+       */
+      async function resolveAuthenticationState() {
+        try {
+          const callbackError = new URLSearchParams(location.hash.split('?')[1] || '').get('error');
+          if (callbackError) {
+            authError.hidden = false;
+            authError.textContent = `登录认证失败：${callbackError}`;
+          }
+          // 初始化刚完成时必须读取最新分身状态，禁止浏览器复用此前的 not_created 响应。
+          const response = await requestBackend('/api/v1/me', { cache: 'no-store' });
+          if (response.status === 401 || response.status === 403) {
+            authDescription.textContent = '请先使用知乎账号登录，登录完成后会自动返回这里。';
+            authStartButton.textContent = '使用知乎账号登录';
+            authView.hidden = false;
+            home.hidden = true;
+            window.location.hash = 'auth';
+            await ensureZhihuAuthorized();
+            return;
+          }
+          if (!response.ok) {
+            throw new Error(`认证服务返回 ${response.status}`);
+          }
+          const payload = await response.json();
+          const user = payload?.data || {};
+          if (!user.zhihu_connected) {
+            throw new Error('知乎授权已失效，请重新授权');
+          }
+          const initialized = Boolean(user.avatar_id) && user.avatar_status !== 'not_created';
+          if (initialized) {
+            // 已完成初始化的用户直接回到介绍页，不打断现有访问路径。
+            authView.hidden = true;
+            if (!location.hash || location.hash === '#auth') window.location.hash = 'intro';
+            return;
+          }
+          authDescription.textContent = '知乎账号已登录。完成初始化后，看山才能在小镇里替你交流。';
+          authStartButton.textContent = '开始初始化';
+          authView.hidden = false;
+          home.hidden = true;
+          if (location.hash !== '#auth') window.location.hash = 'auth';
+        } catch (error) {
+          // 认证失败时保留可恢复的错误提示，不循环刷新或伪造成功状态。
+          authView.hidden = false;
+          home.hidden = true;
+          authStartButton.disabled = false;
+          authError.hidden = false;
+          authError.textContent = `登录认证失败：${error.message || '请稍后重试'}`;
+          window.location.hash = 'auth';
+        }
+      }
+
+      /**
+       * 创建后端初始化会话，并将用户带入原有初始化流程入口。
+       * 初始化任务创建成功后跳转到介绍页，后续步骤由初始化页面继续承接。
+       */
+      async function startInitialization() {
+        authStartButton.disabled = true;
+        authError.hidden = true;
+        authDescription.textContent = '正在创建初始化会话…';
+        showProgress('正在创建初始化会话，请稍候…');
+        try {
+          const response = await requestBackend('/v1/twin/initializations', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({})
+          });
+          if (!response.ok) throw new Error(`初始化接口返回 ${response.status}`);
+          const session = await response.json();
+          const sessionId = session.id || session.session_id;
+          if (!sessionId) throw new Error('后端未返回初始化会话 ID');
+          hideProgress();
+          await renderInitializationQuestions(sessionId, session);
+        } catch (error) {
+          hideProgress();
+          authError.hidden = false;
+          authError.textContent = `初始化启动失败：${error.message || '请稍后重试'}`;
+          authDescription.textContent = '可以稍后再次尝试，当前页面样式和已登录状态会保留。';
+          authStartButton.disabled = false;
+        }
+      }
+      authStartButton.addEventListener('click', startInitialization);
+
+      /**
+       * 拉取并展示真实 LLM 生成的观点题和社交情景题，提交后由后端生成最终画像。
+       * 题目和答案只通过初始化接口传输，前端不写入数据库也不伪造画像状态。
+       */
+      async function renderInitializationQuestions(sessionId, session) {
+        const form = document.getElementById('initialization-form');
+        const domains = (session.input_data?.domain_recommendations || []).map((item) => item.domain_id).filter(Boolean);
+        showProgress('系统正在读取知乎信息并生成观点题，请稍候…');
+        const opinionResponse = await requestBackend(`/v1/twin/initializations/${sessionId}/opinion-questions`, {
+          method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ count: 3, domain_ids: domains })
+        });
+        if (!opinionResponse.ok) throw new Error(`观点题生成失败（${opinionResponse.status}）`);
+        hideProgress();
+        const opinionQuestions = (await opinionResponse.json()).questions || [];
+        const opinionAnswers = await collectInitializationAnswers(form, '观点题', opinionQuestions, false);
+        const opinionSave = await requestBackend(`/v1/twin/initializations/${sessionId}/opinion-answers`, {
+          method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ data: { answers: opinionAnswers } })
+        });
+        if (!opinionSave.ok) throw new Error(`观点答案保存失败（${opinionSave.status}）`);
+
+        showProgress('系统正在生成社交情景题，请稍候…');
+        const socialResponse = await requestBackend(`/v1/twin/initializations/${sessionId}/social-questions`, {
+          method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ count: 3 })
+        });
+        if (!socialResponse.ok) throw new Error(`社交题生成失败（${socialResponse.status}）`);
+        hideProgress();
+        const socialQuestions = (await socialResponse.json()).questions || [];
+        const socialAnswers = await collectInitializationAnswers(form, '社交情景题', socialQuestions, true);
+        const socialSave = await requestBackend(`/v1/twin/initializations/${sessionId}/social-answers`, {
+          method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ data: { answers: socialAnswers } })
+        });
+        if (!socialSave.ok) throw new Error(`社交答案保存失败（${socialSave.status}）`);
+
+        showProgress('系统正在生成用户画像，请稍候…');
+        const previewResponse = await requestBackend(`/v1/twin/initializations/${sessionId}/complete`, {
+          method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ identity: {}, confirmed: false })
+        });
+        if (!previewResponse.ok) throw new Error(`画像草稿生成失败（${previewResponse.status}）`);
+        hideProgress();
+        const preview = await previewResponse.json();
+        const confirmedProfile = await confirmGeneratedProfile(form, preview.profile || {});
+        if (!confirmedProfile) throw new Error('用户取消了画像确认');
+        showProgress('系统正在保存确认后的数字分身，请稍候…');
+        const complete = await requestBackend(`/v1/twin/initializations/${sessionId}/complete`, {
+          method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ identity: {}, profile: confirmedProfile, confirmed: true })
+        });
+        if (!complete.ok) throw new Error(`画像生成失败（${complete.status}）`);
+        hideProgress();
+        // 完成接口已在后端事务中激活数字分身；直接切换路由，避免整页刷新再次读到旧的 not_created 状态。
+        // 后续重新打开页面时仍会通过 /api/v1/me 做真实状态校验，不在前端伪造持久化状态。
+        authView.hidden = true;
+        form.hidden = true;
+        authStartButton.hidden = false;
+        authStartButton.disabled = false;
+        window.location.hash = 'intro';
+        setView();
+      }
+
+      /** 将画像草稿解析为可编辑字段，等待用户明确确认后再继续落库。 */
+      function confirmGeneratedProfile(form, profile) {
+        const lines = (value) => Array.isArray(value) ? value.map((item) => typeof item === 'string' ? item : JSON.stringify(item)).join('\n') : '';
+        const json = (value) => JSON.stringify(value || {}, null, 2);
+        profileReviewContent.innerHTML = `<h2 id="profile-review-title">确认你的初始画像</h2>
+          <p>这是根据知乎资料和答题结果生成的草稿，你可以修改后再确认。</p>
+          <div class="profile-field"><label for="profile-summary">画像摘要</label><textarea id="profile-summary" rows="4">${escapeHtml(profile.summary || '')}</textarea></div>
+          <div class="profile-field"><label for="profile-style">表达风格（JSON）</label><textarea id="profile-style" rows="5">${escapeHtml(json(profile.style))}</textarea></div>
+          <div class="profile-field"><label for="profile-interests">感兴趣的方向（每行一项）</label><textarea id="profile-interests" rows="4">${escapeHtml(lines(profile.interests))}</textarea></div>
+          <div class="profile-field"><label for="profile-expertise">擅长的方向（每行一项）</label><textarea id="profile-expertise" rows="4">${escapeHtml(lines(profile.expertise))}</textarea></div>
+          <div class="profile-field"><label for="profile-opinions">观点（JSON）</label><textarea id="profile-opinions" rows="5">${escapeHtml(json(profile.opinions))}</textarea></div>
+          <div class="profile-field"><label for="profile-behaviors">行为倾向（JSON）</label><textarea id="profile-behaviors" rows="5">${escapeHtml(json(profile.behaviors))}</textarea></div>
+          <p id="profile-review-error" role="alert" hidden></p>
+          <button class="primary-button" id="confirm-profile" type="button">确认并完成初始化</button>`;
+        profileReviewDialog.showModal();
+        return new Promise((resolve) => document.getElementById('confirm-profile').addEventListener('click', () => {
+          try {
+            const parseJson = (id, fallback) => { const value = document.getElementById(id).value.trim(); return value ? JSON.parse(value) : fallback; };
+            const toLines = (id) => document.getElementById(id).value.split(/\r?\n/).map((item) => item.trim()).filter(Boolean);
+            const result = {
+              summary: document.getElementById('profile-summary').value.trim(),
+              style: parseJson('profile-style', {}),
+              interests: toLines('profile-interests'),
+              expertise: toLines('profile-expertise'),
+              opinions: parseJson('profile-opinions', {}),
+              behaviors: parseJson('profile-behaviors', {})
+            };
+            profileReviewDialog.close();
+            resolve(result);
+          } catch (error) {
+            const errorNode = document.getElementById('profile-review-error');
+            errorNode.hidden = false;
+            errorNode.textContent = `画像格式有误：${error.message}`;
+          }
+        }));
+      }
+
+      /** 将模型文本安全地写入画像编辑器，避免生成内容破坏页面结构。 */
+      function escapeHtml(value) {
+        return String(value).replace(/[&<>"']/g, (char) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[char]));
+      }
+
+      /**
+       * 渲染一组单选题并等待用户提交；社交题逐题向后端登记展示时间。
+       */
+      async function collectInitializationAnswers(form, title, questions, timed) {
+        form.hidden = false;
+        authStartButton.hidden = true;
+        form.innerHTML = `<h2>${title}</h2>` + questions.map((question, index) => `
+          <fieldset data-question-id="${question.question_id}" data-presented-at="${timed ? '' : 'none'}">
+            <legend>${index + 1}. ${question.prompt || question.scene}</legend>
+            ${(question.options || []).map((option) => `<label><input type="radio" name="q-${question.question_id}" value="${option.id}"> ${option.label}</label>`).join('')}
+          </fieldset>`).join('') + '<button class="primary-button" id="initialization-next" type="button">继续</button>';
+        if (timed) {
+          await Promise.all(questions.map(async (question) => {
+            const response = await requestBackend(`/v1/twin/social-questions/${question.question_id}/present`, { method: 'POST' });
+            const value = response.ok ? await response.json() : {};
+            const field = form.querySelector(`[data-question-id="${question.question_id}"]`);
+            if (field) field.dataset.presentedAt = value.presented_at || new Date().toISOString();
+          }));
+        }
+        return new Promise((resolve) => {
+          form.querySelector('#initialization-next').addEventListener('click', () => {
+            const answers = questions.map((question) => {
+              const selected = form.querySelector(`input[name="q-${question.question_id}"]:checked`);
+              const field = form.querySelector(`[data-question-id="${question.question_id}"]`);
+              const presented = field?.dataset.presentedAt;
+              const elapsed = timed && presented ? Math.max(0, (Date.now() - Date.parse(presented)) / 1000) : undefined;
+              return { question_id: question.question_id, selected_option_id: selected?.value || null, elapsed_seconds: elapsed };
+            });
+            resolve(answers);
+          });
+        });
+      }
 
       const sceneConfig = {
         tavern: { title: '酒馆', background: './美术素材/场景酒吧.png' },
@@ -356,6 +691,7 @@
 
       function setView() {
         const route = location.hash.slice(1).split('?')[0];
+        const isAuth = route === 'auth';
         const isEncounter = route === 'encounter';
         const sceneKey = route.endsWith('-scene') ? route.slice(0, -6) : '';
         const isScene = Boolean(sceneConfig[sceneKey]);
@@ -363,8 +699,10 @@
         const activeRoute = isEncounter ? 'encounter' : isProfile ? 'profile' : 'home';
         siteNavLinks.forEach((link) => link.classList.toggle('is-active', link.dataset.route === activeRoute));
         home.hidden = isEncounter || isScene || isProfile;
+        authView.hidden = !isAuth;
+        if (isAuth) home.hidden = true;
         encounter.hidden = !isEncounter;
-        town.hidden = isEncounter || isScene || isProfile;
+        town.hidden = isEncounter || isScene || isProfile || isAuth;
         tavern.hidden = !isScene;
         profile.hidden = !isProfile;
         document.body.classList.toggle('is-scene-view', isScene);
@@ -380,9 +718,38 @@
       }
       document.querySelectorAll('.town-building[data-scene]').forEach((building) => {
         building.addEventListener('click', () => {
+          loadSceneCandidates(building.dataset.scene);
           window.location.hash = `${building.dataset.scene}-scene`;
         });
       });
+
+      /**
+       * 从后端数据库读取当前场景的随机候选，并覆盖场景中的静态示例资料。
+       */
+      async function loadSceneCandidates(sceneId) {
+        try {
+          const response = await requestBackend(`/v1/twin/scenes/${sceneId}/avatars`);
+          if (!response.ok) return;
+          const payload = await response.json();
+          const candidates = payload.items || [];
+          tavernGuests.forEach((guest, index) => {
+            const candidate = candidates[index];
+            guest.hidden = !candidate;
+            if (!candidate) return;
+            const summary = candidate.display_summary || {};
+            guest.dataset.name = candidate.display_name || summary.name || '看山';
+            guest.dataset.meta = summary.meta || '';
+            guest.dataset.personality = summary.personality || '正在了解中';
+            guest.dataset.interests = summary.interests || '等待交流';
+            guest.dataset.intro = summary.intro || '来自当前场景的随机候选看山。';
+            const label = guest.querySelector('.tavern-character__label');
+            if (label) label.textContent = guest.dataset.name;
+            guest.setAttribute('aria-label', `看山：${guest.dataset.name}`);
+          });
+        } catch (error) {
+          console.warn('场景候选加载失败：', error);
+        }
+      }
       const tavernGuests = [...document.querySelectorAll('.tavern-guest')];
       function resetTavernConversation() {
         tavern.classList.remove('is-conversation');
@@ -407,6 +774,8 @@
       renderList();
       window.addEventListener('hashchange', setView);
       setView();
+      // 页面启动即校验登录状态；授权成功后后端会回到 /#intro。
+      resolveAuthenticationState();
     </script>
   </body>
 </html>

@@ -1,0 +1,467 @@
+{
+  "ok": true,
+  "embedding": {
+    "model": "qwen3.7-text-embedding-flash",
+    "base_url": "https://ws-ckodp3rtscj45la2.cn-beijing.maas.aliyuncs.com/compatible-mode/v1",
+    "dimension": 1024,
+    "input_length": 55
+  },
+  "vector_sync": {
+    "processed": 0,
+    "failed": 0
+  },
+  "retrieval": {
+    "query": {
+      "original_question": "请结合我的技术教育兴趣、原始资料和过去讨论，说明技术如何改善学习效率，并明确区分原始事实、个人判断和不确定性。",
+      "rewritten_question": "请结合我的技术教育兴趣、原始资料和过去讨论，说明技术如何改善学习效率，并明确区分原始事实、个人判断和不确定性。",
+      "topics": [
+        "请结合我的技术教育兴趣",
+        "原始资料和过去讨论",
+        "说明技术如何改善学习效率",
+        "并明确区分原始事实",
+        "个人判断和不确定性"
+      ],
+      "intent": "general_query",
+      "needs": [
+        "experience",
+        "opinion",
+        "expertise",
+        "interest",
+        "source_document",
+        "chat_history"
+      ],
+      "keywords": [
+        "请结合我的技术教育兴趣",
+        "原始资料和过去讨论",
+        "说明技术如何改善学习效率",
+        "并明确区分原始事实",
+        "个人判断和不确定性"
+      ]
+    },
+    "retrieval_meta": {
+      "memory_count": 5,
+      "document_count": 3,
+      "chat_message_count": 0,
+      "generated_at": "2026-09-14T19:09:39.413992+00:00"
+    },
+    "retrieved_memories": {
+      "experiences": [
+        {
+          "memory_id": "20d3a095-43bd-4c9b-9fec-df173b6bd3f0",
+          "memory_type": "experience",
+          "topic": "工作经历",
+          "content": "有持续参与项目协作、资料整理和复盘总结的经历，偏好用事实验证判断。",
+          "structured_data": {
+            "seed": "rich_profile",
+            "external_id": "xie",
+            "similar_interest": false
+          },
+          "level": "middle",
+          "score": "0.7600",
+          "confidence": "0.8200",
+          "status": "confirmed",
+          "privacy": "private",
+          "valid_from": null,
+          "valid_until": null,
+          "evidence_count": 1,
+          "keyword_score": 0.0,
+          "semantic_score": 0.0,
+          "relevance_score": 0.307
+        }
+      ],
+      "opinions": [
+        {
+          "memory_id": "47aa2d8b-1da6-482a-86fe-1c1880489d7e",
+          "memory_type": "opinion",
+          "topic": "信息质量",
+          "content": "认为好的回答应区分事实、推断和个人观点，并给出可追溯依据。",
+          "structured_data": {
+            "seed": "rich_profile",
+            "external_id": "xie",
+            "similar_interest": false
+          },
+          "level": "middle",
+          "score": "0.8800",
+          "confidence": "0.8200",
+          "status": "confirmed",
+          "privacy": "private",
+          "valid_from": null,
+          "valid_until": null,
+          "evidence_count": 1,
+          "keyword_score": 0.0,
+          "semantic_score": 0.0,
+          "relevance_score": 0.307
+        }
+      ],
+      "behavior_memories": [],
+      "expertise": [],
+      "interests": [
+        {
+          "memory_id": "425ae263-02ac-4df2-86e3-58c8eeaa5f2d",
+          "memory_type": "interest",
+          "topic": "技术与教育",
+          "content": "关注技术如何改善学习效率、知识获取与普通人的决策质量。",
+          "structured_data": {
+            "seed": "rich_profile",
+            "external_id": "xie",
+            "similar_interest": false
+          },
+          "level": "middle",
+          "score": "0.9200",
+          "confidence": "0.8200",
+          "status": "confirmed",
+          "privacy": "private",
+          "valid_from": null,
+          "valid_until": null,
+          "evidence_count": 1,
+          "keyword_score": 0.0,
+          "semantic_score": 0.31839293241500854,
+          "relevance_score": 0.41843752634525294
+        },
+        {
+          "memory_id": "12f5367c-8aad-47c6-acab-682d6eeb6dc0",
+          "memory_type": "interest",
+          "topic": "接口联调",
+          "content": "关注数字分身后端接口的正确性与可观测性。",
+          "structured_data": {
+            "simulated_login": true
+          },
+          "level": "middle",
+          "score": null,
+          "confidence": "0.5000",
+          "status": "unconfirmed",
+          "privacy": "private",
+          "valid_from": null,
+          "valid_until": null,
+          "evidence_count": 0,
+          "keyword_score": 0.0,
+          "semantic_score": 0.0,
+          "relevance_score": 0.21500000000000002
+        },
+        {
+          "memory_id": "5767ace5-100d-4e01-b80f-6305498d1b29",
+          "memory_type": "interest",
+          "topic": "接口联调",
+          "content": "关注数字分身后端接口的正确性与可观测性。",
+          "structured_data": {
+            "simulated_login": true
+          },
+          "level": "middle",
+          "score": null,
+          "confidence": "0.5000",
+          "status": "unconfirmed",
+          "privacy": "private",
+          "valid_from": null,
+          "valid_until": null,
+          "evidence_count": 0,
+          "keyword_score": 0.0,
+          "semantic_score": 0.0,
+          "relevance_score": 0.21500000000000002
+        }
+      ]
+    },
+    "source_documents": [
+      {
+        "document_id": "ecbc3203-501d-4621-95ec-ca4552b4cf0f",
+        "platform": "zhihu",
+        "external_id": "xie-profile-1",
+        "document_type": "answer",
+        "title": "如何把复杂技术问题讲给非技术用户",
+        "content": "我会先明确问题边界，再用生活化例子解释关键机制，最后列出仍然不确定的部分。这样既保留准确性，也让读者知道下一步如何验证。",
+        "source_url": "https://www.zhihu.com/question/10000016",
+        "published_at": "2026-09-13 23:59:23.054802+08:00",
+        "imported_at": "2026-09-14 23:59:23.054802+08:00",
+        "keyword_score": 0.0,
+        "semantic_score": 0.0,
+        "relevance_score": 0.25
+      },
+      {
+        "document_id": "0f5d607b-a6ec-461e-9b2a-1b393ab47917",
+        "platform": "zhihu",
+        "external_id": "xie-profile-3",
+        "document_type": "answer",
+        "title": "我如何整理长期积累的知识",
+        "content": "我把资料分为事实、案例、观点和待验证线索，并给每条资料保留来源、时间和适用范围。知识库不是收藏夹，而是帮助未来做出更好判断的工具。",
+        "source_url": "https://www.zhihu.com/question/10000018",
+        "published_at": "2026-09-11 23:59:23.054802+08:00",
+        "imported_at": "2026-09-14 23:59:23.054802+08:00",
+        "keyword_score": 0.0,
+        "semantic_score": 0.0,
+        "relevance_score": 0.25
+      },
+      {
+        "document_id": "9019868e-ecb7-4a2f-8f5e-d7fa6b7de2cd",
+        "platform": "zhihu",
+        "external_id": "xie-profile-2",
+        "document_type": "article",
+        "title": "一次项目复盘：从争论到可验证的方案",
+        "content": "团队意见不一致时，与其继续争论偏好，不如把分歧改写成可验证假设，约定指标、时间窗口和失败条件。复盘时记录证据，比记录谁说服了谁更有价值。",
+        "source_url": "https://www.zhihu.com/question/10000017",
+        "published_at": "2026-09-12 23:59:23.054802+08:00",
+        "imported_at": "2026-09-14 23:59:23.054802+08:00",
+        "keyword_score": 0.0,
+        "semantic_score": 0.0,
+        "relevance_score": 0.25
+      }
+    ],
+    "chat_history": []
+  },
+  "context": {
+    "query": {
+      "original_question": "请结合我的技术教育兴趣、原始资料和过去讨论，说明技术如何改善学习效率，并明确区分原始事实、个人判断和不确定性。",
+      "rewritten_question": "请结合我的技术教育兴趣、原始资料和过去讨论，说明技术如何改善学习效率，并明确区分原始事实、个人判断和不确定性。",
+      "topics": [
+        "请结合我的技术教育兴趣",
+        "原始资料和过去讨论",
+        "说明技术如何改善学习效率",
+        "并明确区分原始事实",
+        "个人判断和不确定性"
+      ],
+      "intent": "general_query",
+      "needs": [
+        "experience",
+        "opinion",
+        "expertise",
+        "interest",
+        "source_document",
+        "chat_history"
+      ],
+      "keywords": [
+        "请结合我的技术教育兴趣",
+        "原始资料和过去讨论",
+        "说明技术如何改善学习效率",
+        "并明确区分原始事实",
+        "个人判断和不确定性"
+      ]
+    },
+    "profile": {
+      "avatar_id": "2980dddd-aae5-4722-a04c-be18b6b69c55",
+      "user_id": "40ce0063-2a25-443d-96e7-8f6b50682c27",
+      "avatar_name": "用户xie的数字分身",
+      "avatar_summary": "用于后端接口联调的模拟授权用户数字分身",
+      "version_id": "f326f1ad-244b-4f9c-90ba-4a895444c794",
+      "version_no": 1,
+      "display_name": "用户xie的数字分身",
+      "summary": "关注个人成长、真实经验与可执行的方法论。",
+      "occupation": "产品与技术实践者",
+      "location": "广州",
+      "age": 30,
+      "personality_model": "seed_login",
+      "personality_scores": {
+        "openness": 0.7,
+        "neuroticism": 0.3,
+        "extraversion": 0.5,
+        "agreeableness": 0.7,
+        "conscientiousness": 0.7
+      },
+      "personality_style_tags": [
+        "清晰",
+        "理性"
+      ],
+      "personality_confidence": "0.5000",
+      "personality_status": "unconfirmed",
+      "style_tone": [
+        "清晰"
+      ],
+      "style_structure_rules": [
+        "先给结论",
+        "再说明依据"
+      ],
+      "verbosity": "medium",
+      "technical_density": "medium",
+      "sentence_style": "短句为主",
+      "uncertainty_style": "明确标注不确定性",
+      "preferred_registers": [
+        "chat",
+        "answer"
+      ],
+      "avoid_rules": [
+        "不编造经历"
+      ],
+      "can_use_unconfirmed_memory": false,
+      "can_present_unconfirmed_as_fact": false,
+      "can_invent_user_experience": false,
+      "can_invent_user_opinion": false,
+      "must_show_uncertainty": true,
+      "must_keep_citations": true,
+      "sensitive_attributes_policy": "redact",
+      "external_action_requires_confirmation": true,
+      "custom_rules": {
+        "seed_profile": true,
+        "require_source_citation": true
+      }
+    },
+    "retrieved_memories": {
+      "experiences": [
+        {
+          "memory_id": "20d3a095-43bd-4c9b-9fec-df173b6bd3f0",
+          "memory_type": "experience",
+          "topic": "工作经历",
+          "content": "有持续参与项目协作、资料整理和复盘总结的经历，偏好用事实验证判断。",
+          "structured_data": {
+            "seed": "rich_profile",
+            "external_id": "xie",
+            "similar_interest": false
+          },
+          "level": "middle",
+          "score": "0.7600",
+          "confidence": "0.8200",
+          "status": "confirmed",
+          "privacy": "private",
+          "valid_from": null,
+          "valid_until": null,
+          "evidence_count": 1,
+          "keyword_score": 0.0,
+          "semantic_score": 0.0,
+          "relevance_score": 0.307
+        }
+      ],
+      "opinions": [
+        {
+          "memory_id": "47aa2d8b-1da6-482a-86fe-1c1880489d7e",
+          "memory_type": "opinion",
+          "topic": "信息质量",
+          "content": "认为好的回答应区分事实、推断和个人观点，并给出可追溯依据。",
+          "structured_data": {
+            "seed": "rich_profile",
+            "external_id": "xie",
+            "similar_interest": false
+          },
+          "level": "middle",
+          "score": "0.8800",
+          "confidence": "0.8200",
+          "status": "confirmed",
+          "privacy": "private",
+          "valid_from": null,
+          "valid_until": null,
+          "evidence_count": 1,
+          "keyword_score": 0.0,
+          "semantic_score": 0.0,
+          "relevance_score": 0.307
+        }
+      ],
+      "behavior_memories": [],
+      "expertise": [],
+      "interests": [
+        {
+          "memory_id": "425ae263-02ac-4df2-86e3-58c8eeaa5f2d",
+          "memory_type": "interest",
+          "topic": "技术与教育",
+          "content": "关注技术如何改善学习效率、知识获取与普通人的决策质量。",
+          "structured_data": {
+            "seed": "rich_profile",
+            "external_id": "xie",
+            "similar_interest": false
+          },
+          "level": "middle",
+          "score": "0.9200",
+          "confidence": "0.8200",
+          "status": "confirmed",
+          "privacy": "private",
+          "valid_from": null,
+          "valid_until": null,
+          "evidence_count": 1,
+          "keyword_score": 0.0,
+          "semantic_score": 0.31839293241500854,
+          "relevance_score": 0.41843752634525294
+        },
+        {
+          "memory_id": "12f5367c-8aad-47c6-acab-682d6eeb6dc0",
+          "memory_type": "interest",
+          "topic": "接口联调",
+          "content": "关注数字分身后端接口的正确性与可观测性。",
+          "structured_data": {
+            "simulated_login": true
+          },
+          "level": "middle",
+          "score": null,
+          "confidence": "0.5000",
+          "status": "unconfirmed",
+          "privacy": "private",
+          "valid_from": null,
+          "valid_until": null,
+          "evidence_count": 0,
+          "keyword_score": 0.0,
+          "semantic_score": 0.0,
+          "relevance_score": 0.21500000000000002
+        },
+        {
+          "memory_id": "5767ace5-100d-4e01-b80f-6305498d1b29",
+          "memory_type": "interest",
+          "topic": "接口联调",
+          "content": "关注数字分身后端接口的正确性与可观测性。",
+          "structured_data": {
+            "simulated_login": true
+          },
+          "level": "middle",
+          "score": null,
+          "confidence": "0.5000",
+          "status": "unconfirmed",
+          "privacy": "private",
+          "valid_from": null,
+          "valid_until": null,
+          "evidence_count": 0,
+          "keyword_score": 0.0,
+          "semantic_score": 0.0,
+          "relevance_score": 0.21500000000000002
+        }
+      ]
+    },
+    "source_documents": [
+      {
+        "document_id": "ecbc3203-501d-4621-95ec-ca4552b4cf0f",
+        "platform": "zhihu",
+        "external_id": "xie-profile-1",
+        "document_type": "answer",
+        "title": "如何把复杂技术问题讲给非技术用户",
+        "content": "我会先明确问题边界，再用生活化例子解释关键机制，最后列出仍然不确定的部分。这样既保留准确性，也让读者知道下一步如何验证。",
+        "source_url": "https://www.zhihu.com/question/10000016",
+        "published_at": "2026-09-13 23:59:23.054802+08:00",
+        "imported_at": "2026-09-14 23:59:23.054802+08:00",
+        "keyword_score": 0.0,
+        "semantic_score": 0.0,
+        "relevance_score": 0.25
+      },
+      {
+        "document_id": "0f5d607b-a6ec-461e-9b2a-1b393ab47917",
+        "platform": "zhihu",
+        "external_id": "xie-profile-3",
+        "document_type": "answer",
+        "title": "我如何整理长期积累的知识",
+        "content": "我把资料分为事实、案例、观点和待验证线索，并给每条资料保留来源、时间和适用范围。知识库不是收藏夹，而是帮助未来做出更好判断的工具。",
+        "source_url": "https://www.zhihu.com/question/10000018",
+        "published_at": "2026-09-11 23:59:23.054802+08:00",
+        "imported_at": "2026-09-14 23:59:23.054802+08:00",
+        "keyword_score": 0.0,
+        "semantic_score": 0.0,
+        "relevance_score": 0.25
+      },
+      {
+        "document_id": "9019868e-ecb7-4a2f-8f5e-d7fa6b7de2cd",
+        "platform": "zhihu",
+        "external_id": "xie-profile-2",
+        "document_type": "article",
+        "title": "一次项目复盘：从争论到可验证的方案",
+        "content": "团队意见不一致时，与其继续争论偏好，不如把分歧改写成可验证假设，约定指标、时间窗口和失败条件。复盘时记录证据，比记录谁说服了谁更有价值。",
+        "source_url": "https://www.zhihu.com/question/10000017",
+        "published_at": "2026-09-12 23:59:23.054802+08:00",
+        "imported_at": "2026-09-14 23:59:23.054802+08:00",
+        "keyword_score": 0.0,
+        "semantic_score": 0.0,
+        "relevance_score": 0.25
+      }
+    ],
+    "chat_history": [],
+    "retrieval_meta": {
+      "memory_count": 5,
+      "document_count": 3,
+      "chat_message_count": 0,
+      "generated_at": "2026-09-14T19:09:39.769683+00:00"
+    }
+  },
+  "agent": {
+    "model": "deepseek-v4-pro",
+    "avatar_id": "2980dddd-aae5-4722-a04c-be18b6b69c55",
+    "reply": "我的结论是：技术改善学习效率，主要不是靠工具本身，而是靠把学习过程改造成可记录、可分类、可验证的闭环。\n\n先区分我依据的三类信息。\n\n原始事实：  \n在你提供的原始资料里，有三条可追溯的方法。  \n第一条，讲复杂技术问题时，要先明确问题边界，再用生活化例子解释关键机制，最后列出仍然不确定的部分。  \n第二条，整理长期知识时，要把资料分为事实、案例、观点和待验证线索，并保留来源、时间和适用范围。  \n第三条，项目复盘时，把分歧改写成可验证假设，约定指标、时间窗口和失败条件"
+  }
+}
