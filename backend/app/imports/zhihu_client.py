@@ -16,6 +16,7 @@ from __future__ import annotations
 import json
 import os
 import time
+import socket
 import urllib.error
 import urllib.parse
 import urllib.request
@@ -74,15 +75,23 @@ def _get(path: str, params: dict[str, Any], oauth_token: str) -> dict[str, Any]:
         "Content-Type": "application/json",
     })
 
-    try:
-        with urllib.request.urlopen(req, timeout=_TIMEOUT) as resp:
-            raw = resp.read().decode("utf-8", "replace")
-            status = resp.status
-    except urllib.error.HTTPError as e:
-        raw = e.read().decode("utf-8", "replace")
-        status = e.code
-    except Exception as e:
-        raise ZhihuDataError("NETWORK_ERROR", "无法连接知乎开放平台", 502, str(e)) from e
+    last_error: Exception | None = None
+    for attempt in range(1, 3):
+        try:
+            with urllib.request.urlopen(req, timeout=_TIMEOUT) as resp:
+                raw = resp.read().decode("utf-8", "replace")
+                status = resp.status
+            break
+        except urllib.error.HTTPError as e:
+            raw = e.read().decode("utf-8", "replace")
+            status = e.code
+            break
+        except (urllib.error.URLError, TimeoutError, socket.timeout, ConnectionError) as e:
+            last_error = e
+            print(f"[zhihu-api] GET {path} network attempt {attempt}/2 failed: {e!r}", flush=True)
+            if attempt == 2:
+                raise ZhihuDataError("NETWORK_ERROR", f"无法连接知乎开放平台: {e}", 502, repr(e)) from e
+            time.sleep(0.5)
 
     try:
         data = json.loads(raw)
