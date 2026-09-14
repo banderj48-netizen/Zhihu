@@ -1,21 +1,18 @@
-"""LLM 构建器。
+"""基于官方 OpenAI Python SDK 的 LLM 构建器。
 
-本模块负责从 ``backend/.env``（以及当前进程环境变量）读取模型配置，构造
-OpenAI 兼容协议的 ``LLM`` 实例。业务层只需要调用 ``build_llm``，不需要在
-代码中硬编码 API Key、服务 URL 或模型名称。
+本模块只负责读取配置并包装 SDK 客户端，业务层继续依赖 ``LLM`` 抽象，
+因此不会改变 Agent、检索和对话编排的调用方式。
 """
 
 from __future__ import annotations
 
 import asyncio
-import json
 import os
 from pathlib import Path
 from typing import Any
-from urllib.error import HTTPError, URLError
-from urllib.request import Request, urlopen
 
 from dotenv import dotenv_values
+from openai import OpenAI
 
 from agent.runtime.llm import LLM
 
@@ -33,28 +30,25 @@ def _setting(name: str, values: dict[str, Any], default: str | None = None) -> s
     return str(value).strip()
 
 
-def _post_chat_completion(model: str, prompt: str, options: dict[str, Any], *, api_key: str, base_url: str) -> dict[str, Any]:
-    """向 OpenAI 兼容的 Chat Completions 接口发送同步请求。"""
-    endpoint = base_url.rstrip("/") + "/chat/completions"
+def _post_chat_completion(client: OpenAI, model: str, prompt: str, options: dict[str, Any]) -> dict[str, Any]:
+    """使用官方 SDK 调用 Chat Completions，并转换为项目内部响应格式。"""
     system_prompt = str(options.pop("system_prompt", ""))
     messages = ([{"role": "system", "content": system_prompt}] if system_prompt else [])
     messages.append({"role": "user", "content": prompt})
-    payload = {"model": model, "messages": messages, **options}
-    request = Request(endpoint, data=json.dumps(payload).encode("utf-8"), headers={"Authorization": f"Bearer {api_key}", "Content-Type": "application/json"}, method="POST")
     try:
-        with urlopen(request, timeout=60) as response:  # noqa: S310 - URL 来自用户配置
-            body = json.loads(response.read().decode("utf-8"))
-    except (HTTPError, URLError, TimeoutError) as exc:
+        response = client.chat.completions.create(model=model, messages=messages, **options)
+    except Exception as exc:
+        # 统一包装 SDK 网络、鉴权和服务端错误，避免上层依赖供应商异常类型。
         raise RuntimeError(f"LLM 请求失败：{exc}") from exc
-    choices = body.get("choices") or []
-    if not choices:
+    if not response.choices:
         raise RuntimeError("LLM 返回结果缺少 choices")
-    message = choices[0].get("message") or {}
-    content = message.get("content") or ""
-    tool_calls = message.get("tool_calls") or []
+    message = response.choices[0].message
+    content = message.content or ""
+    tool_calls = [call.model_dump() for call in (message.tool_calls or [])]
     if not content and not tool_calls:
         raise RuntimeError("LLM 返回结果缺少 choices[0].message.content/tool_calls")
-    return {"text": content, "tool_calls": tool_calls, "model": body.get("model") or model, "usage": body.get("usage") or {}, "raw": body}
+    usage = response.usage.model_dump() if response.usage else {}
+    return {"text": content, "tool_calls": tool_calls, "model": response.model or model, "usage": usage, "raw": response.model_dump()}
 
 
 def build_llm(*, env_file: str | Path | None = None, model: str | None = None) -> LLM:
@@ -74,10 +68,11 @@ def build_llm(*, env_file: str | Path | None = None, model: str | None = None) -
     if not model_name:
         raise ValueError(f"未配置 LLM_MODEL 或 OPENAI_MODEL，请在 {path} 中设置")
     assert base_url is not None
+    client = OpenAI(api_key=api_key, base_url=base_url, timeout=60.0)
 
     def requester(selected_model: str, prompt: str, options: dict[str, Any]) -> dict[str, Any]:
         """将 LLM 请求转发到配置的 OpenAI 兼容服务。"""
-        return _post_chat_completion(selected_model, prompt, dict(options), api_key=api_key, base_url=base_url)
+        return _post_chat_completion(client, selected_model, prompt, dict(options))
 
     return LLM(model_name, requester)
 
@@ -93,10 +88,11 @@ def build_evaluator_llm(*, env_file: str | Path | None = None, model: str | None
         raise ValueError(f"未完整配置 EVALUATOR_LLM_API_KEY、EVALUATOR_LLM_BASE_URL、EVALUATOR_LLM_MODEL，请在 {path} 中设置")
     if not base_url:
         base_url = "https://api.openai.com/v1"
+    client = OpenAI(api_key=api_key, base_url=base_url, timeout=60.0)
 
     def requester(selected_model: str, prompt: str, options: dict[str, Any]) -> dict[str, Any]:
         """将评判请求转发到独立的 OpenAI 兼容服务。"""
-        return _post_chat_completion(selected_model, prompt, dict(options), api_key=api_key, base_url=base_url)
+        return _post_chat_completion(client, selected_model, prompt, dict(options))
 
     return LLM(model_name, requester)
 

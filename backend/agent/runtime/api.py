@@ -50,23 +50,31 @@ async def _default_runner(**kwargs: Any):
     """使用现有 Builder、检索服务和聊天仓储运行一次双 Agent 对话。"""
     from db.database import connect
     from agent.retrieval.service import PostgresRetrievalRepository, build_context
+    from agent.adapters.chroma_factory import create_chroma_vector_store
+    from agent.profile.outbox import sync_pending
     from agent.runtime.model_builder import build_llm, build_evaluator_llm
     from agent.runtime.evaluator import DialogueEvaluator
     from agent.runtime.push_gateway import NoopMatchPushGateway
 
     llm_a = build_llm()
     llm_b = build_llm()
+    # 每次运行复用同一个真实 Chroma 适配器；画像、原始资料和聊天消息
+    # 的事实仍从 PostgreSQL 读取，Chroma 只提供候选 ID 和相似度。
+    vector_store = create_chroma_vector_store()
+    await sync_pending(vector_store, limit=100)
     context_repo = PostgresRetrievalRepository(connect)
     async def context_builder(user_id: str, question: str, *, conversation_id: str | None = None):
         """显式组装固定画像与混合检索上下文。"""
-        return await build_context(user_id, question, context_repo, _EmptyVector(), conversation_id=conversation_id)
+        # 每次上下文组装前推进一小批 outbox，保证刚写入的行为记忆可以被后续回合检索。
+        await sync_pending(vector_store, limit=100)
+        return await build_context(user_id, question, context_repo, vector_store, conversation_id=conversation_id)
     evaluator = None
     try:
         evaluator = DialogueEvaluator(build_evaluator_llm())
     except Exception:
         evaluator = None
     from agent.profile.chat_repository import ChatRepository
-    return await run_agent_dialogue(llm_a=llm_a, llm_b=llm_b, context_builder=context_builder, chat_repository=ChatRepository(), evaluator=evaluator, push_gateway=NoopMatchPushGateway(), vector_store=_EmptyVector(), **kwargs)
+    return await run_agent_dialogue(llm_a=llm_a, llm_b=llm_b, context_builder=context_builder, chat_repository=ChatRepository(), evaluator=evaluator, push_gateway=NoopMatchPushGateway(), vector_store=vector_store, **kwargs)
 
 
 _dialogues = DialogueManager(_default_runner, max_dialogues=int(os.getenv("MAX_AGENT_DIALOGUES", "10")), presence=_presence)

@@ -22,3 +22,10 @@
 - 初始化出题接口位于 `/v1/twin/initializations/{id}/opinion-questions|social-questions` 与 `/v1/twin/social-questions/{qid}/present`；生成逻辑在 `backend/agent/domains/question_generator.py`，LLM 可用（`LLM_API_KEY`）时结合知乎素材动态出题，否则回退内置模板题库，社交题 `presented_at` 由服务端打点、限时 13 秒。
 - 性格测评与领域选择模块使用 TEXT 主键的 `avatars/personality_assessments/avatar_domain_selections` 兼容表，建表脚本为 `backend/db/postgresql_legacy_compat.sql`，需在 8 个正式脚本（`initialize_formal`）之后执行；用户归属由仓储层先 upsert `users`（UUID 直接作主键，其余登记 `external_id`）维护。
 - 初始化全流程端到端脚本位于 `backend/reports/e2e_initialization_flow.py`，后端启动后执行 `python backend/reports/e2e_initialization_flow.py [user_id]` 可一键回归六步流程。
+- `backend/db/postgresql_seed_six_avatars.sql` 用于数据库种子数据：为指定真实账号创建 1 个数字分身，并为 5 个带 `seed-similar-avatar-*` 标记的合成测试用户各创建 1 个相似但不相同的数字分身，供后续 Agent 对话模拟；执行前连接 `zhihu` 数据库并通过 psql 变量 `target_user_key` 指定真实用户 ID 或 `external_id`，脚本不会写入 Chroma。
+- `backend/db/postgresql_seed_six_login_users.sql` 用于后端接口联调：创建 `xie` 与 5 个 `seed-login-user-*` 模拟授权用户，并按用户、数字分身、画像版本、身份、性格、风格、记忆规则、策略和兴趣记忆的依赖顺序幂等写入；OAuth 登录不保存本地密码，执行前连接 `zhihu` 数据库。
+- `backend/db/postgresql_enrich_all_user_profiles.sql` 用于为当前所有未删除用户补齐丰富画像、四类可检索记忆、三篇知乎原始资料和表达样例，并更新检索/安全策略；`seed-login-user-2` 与 `seed-login-user-3` 的技术教育兴趣高度相似，但职业和表达定位不同。
+- `backend/agent/runtime/model_builder.py` 使用官方 `openai` Python SDK 构造 OpenAI 兼容客户端；主模型读取 `LLM_API_KEY`、`LLM_BASE_URL`、`LLM_MODEL`，评判模型读取对应 `EVALUATOR_LLM_*` 变量，禁止在代码中硬编码密钥。
+- `backend/db/postgresql_seed_agent_presence_test.sql` 用于手动接口测试前为 `xie` 与 `seed-login-user-2` 在 `cafe`、`library`、`bar`、`theater`、`lecture` 五个已实现���景登记 `idle` 在场记录，并清理残留占用；仅用于测试夹具准备。
+- 阿里云百炼 `qwen3.7-text-embedding-flash` 的 Embedding 配置使用 `EMBEDDING_API_KEY`、`EMBEDDING_BASE_URL`、`EMBEDDING_MODEL` 和 `EMBEDDING_BATCH_SIZE`；Chroma 使用 `CHROMA_MODE=persistent` 与 `CHROMA_PERSIST_DIRECTORY`，集合分别为 `avatar_memories`、`source_documents`、`chat_messages`。PostgreSQL 是事实源，Chroma 只保存向量、候选 ID 和检索元数据。
+- `backend/agent/profile/outbox.py` 在进程内异步消费 `vector_sync_outbox`，不引入 MQ；应用启动时会为历史画像、原始资料和聊天消息补建待同步任务，并在后台重试向量写入。

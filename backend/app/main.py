@@ -7,6 +7,7 @@
 
 # 必须在导入任何读取环境变量的模块之前加载 .env
 import json
+import asyncio
 
 from app.config import load_env as _load_env
 _ENV_LOADED=_load_env()
@@ -36,10 +37,14 @@ from app.imports import zhihu_client as _zhihu_client
 app=FastAPI(title='TwinLoop API',version='0.1.0')
 app.include_router(domains_router)
 
+_vector_sync_task = None
+_vector_sync_stop = None
+
 # 前端与后端分端口时需要放行凭证跨域，否则浏览器不会带上 HttpOnly Cookie。
 # allow_credentials=True 时不能使用通配来源，必须逐个列出。
 import os as _os
-_origins=[o.strip() for o in _os.environ.get('TWINLOOP_CORS_ORIGINS','http://127.0.0.1,http://localhost,http://127.0.0.1:3000,http://localhost:3000,http://127.0.0.1:5173,http://localhost:5173,http://127.0.0.1:8000,http://localhost:8000').split(',') if o.strip()]
+# Origin 规范中不包含路径和末尾斜杠；统一清理配置，避免浏览器预检因字符串不一致返回 400。
+_origins=[o.strip().rstrip('/') for o in _os.environ.get('TWINLOOP_CORS_ORIGINS','http://127.0.0.1,http://localhost,http://127.0.0.1:3000,http://localhost:3000,http://127.0.0.1:5173,http://localhost:5173,http://127.0.0.1:8000,http://localhost:8000').split(',') if o.strip()]
 app.add_middleware(CORSMiddleware,allow_origins=_origins,allow_credentials=True,allow_methods=['*'],allow_headers=['*'])
 
 @app.exception_handler(auth_service.AuthError)
@@ -71,6 +76,33 @@ def _report_oauth_config():
  print('[consent] 知乎 OAuth 配置:', '完整' if _zhihu_oauth.is_configured() else '!! 不完整，请设置 ZHIHU_OAUTH_APP_ID / APP_KEY / REDIRECT_URI')
  if _zhihu_oauth.REDIRECT_URI: print('[consent] redirect_uri =',_zhihu_oauth.REDIRECT_URI)
  print('[imports] Access Secret:', '已配置' if _zhihu_client.is_configured() else '!! 未配置 ZHIHU_ACCESS_SECRET，无法读取用户数据')
+
+@app.on_event('startup')
+async def _start_vector_sync_worker():
+ """启动进程内向量 outbox 消费者；缺少 Embedding 配置时保持 API 可用。"""
+ global _vector_sync_task, _vector_sync_stop
+ try:
+  from agent.adapters.chroma_factory import create_chroma_vector_store
+  from agent.profile.outbox import enqueue_missing_vectors, run_sync_loop
+  vector_store = create_chroma_vector_store()
+  # 首次启动将历史画像、原始资料和聊天消息补入异步队列。
+  enqueue_missing_vectors(limit=5000)
+  _vector_sync_stop = asyncio.Event()
+  _vector_sync_task = asyncio.create_task(run_sync_loop(vector_store, _vector_sync_stop))
+  print('[chroma] 向量同步 worker 已启动', flush=True)
+ except Exception as exc:
+  print(f'[chroma] 向量同步 worker 未启动：{exc}', flush=True)
+
+@app.on_event('shutdown')
+async def _stop_vector_sync_worker():
+ """停止进程内向量同步任务并等待其退出。"""
+ global _vector_sync_task, _vector_sync_stop
+ if _vector_sync_stop is not None:
+  _vector_sync_stop.set()
+ if _vector_sync_task is not None:
+  await asyncio.gather(_vector_sync_task, return_exceptions=True)
+ _vector_sync_task = None
+ _vector_sync_stop = None
 lock=Lock(); tasks={}; profiles={}; versions={}
 def now(): return datetime.now(timezone.utc).isoformat()
 def uid(x): return x or 'local-demo-user'
