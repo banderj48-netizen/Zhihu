@@ -10,6 +10,8 @@
 
 from __future__ import annotations
 
+import os
+
 from fastapi import APIRouter, Query, Request
 from fastapi.responses import JSONResponse, RedirectResponse
 
@@ -77,8 +79,7 @@ async def callback(
         zhihu_token_expires_at=result["token_expires_at"],
     )
 
-    # 本地开发固定回到 Next.js 前端；避免旧进程环境变量或 Nginx 配置将用户带回 8000。
-    frontend_url = "http://127.0.0.1:3000/"
+    frontend_url = os.environ.get("TWINLOOP_FRONTEND_URL", "http://127.0.0.1:3000/")
     resp = RedirectResponse(url=frontend_url, status_code=302)
     session.set_session_cookie(resp, session_id)
     return resp
