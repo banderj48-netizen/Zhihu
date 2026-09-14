@@ -54,14 +54,13 @@ app.include_router(consent_router)
 app.include_router(imports_router)
 app.include_router(twin_runtime_router)
 
-# 本地登录测试页：与后端同源，省去跨域配置
-from fastapi.responses import FileResponse as _FileResponse
-from pathlib import Path as _Path
-_LOGIN_PAGE=_Path(__file__).resolve().parent/'static'/'login_test.html'
+# 本地浏览器入口统一导向 Next.js 前端。
+from fastapi.responses import RedirectResponse
 @app.get('/',include_in_schema=False)
 def _login_test_page():
- if _LOGIN_PAGE.exists(): return _FileResponse(str(_LOGIN_PAGE))
- return {'service':'twinloop-api','docs':'/docs'}
+ # 本地前后端分端口运行时，访问 API 根路径也回到前端，避免 OAuth
+ # 成功后因旧回调/书签停留在 8000 的后端测试页。
+ return RedirectResponse('http://127.0.0.1:3000/', status_code=307)
 
 @app.on_event('startup')
 def _report_oauth_config():

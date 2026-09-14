@@ -107,6 +107,7 @@ def main() -> int:
     s = get_state(c2)
     r = c2.get(f"/api/v1/sources/zhihu/callback?authorization_code=good&state={s}")
     check("回调返回 302", r.status_code == 302, f"实际 {r.status_code}")
+    check("回调跳转到本地前端", r.headers.get("location") == "http://127.0.0.1:3000/")
     sc = r.headers.get("set-cookie", "")
     check("下发会话 Cookie", "twinloop_session" in sc)
     check("Cookie 带 HttpOnly", "httponly" in sc.lower())
