@@ -89,6 +89,7 @@ def _get(path: str, params: dict[str, Any], oauth_token: str) -> dict[str, Any]:
     except ValueError:
         raise ZhihuDataError("INVALID_RESPONSE", "知乎返回非 JSON 内容", 502, raw[:500]) from None
 
+    print(f"[zhihu-api] GET {path} HTTP {status} raw={json.dumps(data, ensure_ascii=False, default=str)}", flush=True)
     code = data.get("Code")
     if code != 0:
         mapped = _CODE_MAP.get(code)

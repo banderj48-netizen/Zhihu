@@ -6,6 +6,8 @@
 """
 
 # 必须在导入任何读取环境变量的模块之前加载 .env
+import json
+
 from app.config import load_env as _load_env
 _ENV_LOADED=_load_env()
 
@@ -22,6 +24,7 @@ from agent.personality.repository import latest_assessment, save_assessment, sav
 from agent.domains.api import router as domains_router
 from agent.domains.repository import get_selections
 from app.auth import service as auth_service
+from app.auth import session as auth_session
 from app.auth.router import router as auth_router
 from app.auth.schemas import fail as auth_fail, new_request_id
 from app.consent import service as consent_service
@@ -81,10 +84,28 @@ class PersonalityAssessment(BaseModel):
  notes:str|None=None
  request_key:str|None=None
 class PersonalitySkip(BaseModel): request_key:str|None=None
-def run(tid,user):
- for status,progress,msg in [('fetching',15,'正在读取已授权数据'),('storing_raw',30,'保存原始数据'),('extracting',60,'抽取事实、领域、观点与风格'),('review',85,'等待用户确认画像'),('completed',100,'画像草稿已生成')]:
-  with lock: tasks[tid].update(status=status,progress=progress,message=msg,updated_at=now())
-  if status=='completed': profiles[user]={'revision':0,'status':'draft','data':{'facts':[],'domains':[],'stances':[],'style':{},'memories':[]},'evidence':[]}
+def run(tid,user,oauth_token=None):
+ try:
+  with lock: tasks[tid].update(status='fetching',progress=15,message='正在读取已授权数据',updated_at=now())
+  if not oauth_token: raise RuntimeError('知乎会话 token 不存在或已过期')
+  results = {}
+  for name, fn in (
+   ('contents', _zhihu_client.fetch_contents),
+   ('followees', _zhihu_client.fetch_followees),
+   ('favlists', _zhihu_client.fetch_favlists),
+   ('collections', _zhihu_client.fetch_collections),
+  ):
+   try:
+    results[name] = fn(oauth_token)
+    print(f'[import-job] {name} parsed response:', json.dumps(results[name], ensure_ascii=False, default=str), flush=True)
+   except Exception as exc:
+    results[name] = {'error': type(exc).__name__, 'message': str(exc)}
+    print(f'[import-job] {name} error:', repr(exc), flush=True)
+  print('[import-job] zhihu raw response:', json.dumps(results, ensure_ascii=False, default=str), flush=True)
+  with lock: tasks[tid].update(status='completed',progress=100,message='知乎数据读取完成',result=results,updated_at=now())
+ except Exception as exc:
+  print('[import-job] zhihu fetch error:', repr(exc), flush=True)
+  with lock: tasks[tid].update(status='failed',progress=100,message=str(exc),updated_at=now())
 @app.get('/health')
 def health(): return {'ok':True,'service':'twinloop-api','time':now()}
 @app.get('/v1/me')
@@ -95,8 +116,9 @@ def consent(body:Consent,x_user_id:str|None=Header(default=None)):
  if not body.granted: raise HTTPException(400,'未获得数据授权')
  return {'id':'consent_'+uuid4().hex,'user_id':uid(x_user_id),'provider':body.provider,'scopes':body.scopes,'status':'active','created_at':now()}
 @app.post('/v1/import-jobs',status_code=202)
-def create_job(body:ImportJob,bg:BackgroundTasks,x_user_id:str|None=Header(default=None)):
- t={'id':'job_'+uuid4().hex,'user_id':uid(x_user_id),'source':body.source,'status':'queued','progress':0,'message':'任务已排队','created_at':now(),'updated_at':now()}; tasks[t['id']]=t; bg.add_task(run,t['id'],t['user_id']); return t
+def create_job(request:Request,body:ImportJob,bg:BackgroundTasks,x_user_id:str|None=Header(default=None)):
+ user=uid(x_user_id); token=auth_session.get_zhihu_token(auth_session.read_session_id(request))
+ t={'id':'job_'+uuid4().hex,'user_id':user,'source':body.source,'status':'queued','progress':0,'message':'任务已排队','created_at':now(),'updated_at':now()}; tasks[t['id']]=t; bg.add_task(run,t['id'],user,token); return t
 @app.get('/v1/import-jobs/{tid}')
 def get_job(tid:str,x_user_id:str|None=Header(default=None)):
  t=tasks.get(tid)

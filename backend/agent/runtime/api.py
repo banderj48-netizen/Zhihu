@@ -115,28 +115,28 @@ class QuestionRequest(BaseModel):
 
 
 @router.post("/initializations")
-def create_initialization(body: InitCreate, x_user_id: str | None = Header(default=None)):
+def create_initialization(request: Request, body: InitCreate, x_user_id: str | None = Header(default=None)):
     """创建或恢复当前用户的唯一初始化会话。"""
     try:
-        return _initializations.create(x_user_id or "local-demo-user", body.import_job_id)
+        return _initializations.create(_resolved_user(request, x_user_id), body.import_job_id)
     except Exception as exc:
         raise HTTPException(503, "初始化会话暂不可用") from exc
 
 
 @router.get("/initializations/{session_id}")
-def get_initialization(session_id: str, x_user_id: str | None = Header(default=None)):
+def get_initialization(request: Request, session_id: str, x_user_id: str | None = Header(default=None)):
     """读取初始化会话状态。"""
-    value = _initializations.get(session_id, user_id=x_user_id)
+    value = _initializations.get(session_id, user_id=_resolved_user(request, x_user_id))
     if not value:
         raise HTTPException(404, "初始化会话不存在")
     return value
 
 
 @router.post("/initializations/{session_id}/complete")
-async def complete_initialization(session_id: str, body: InitComplete, x_user_id: str | None = Header(default=None)):
+async def complete_initialization(request: Request, session_id: str, body: InitComplete, x_user_id: str | None = Header(default=None)):
     """生成并激活初始画像。"""
     try:
-        return await _initializations.complete(session_id, body.identity, user_id=x_user_id)
+        return await _initializations.complete(session_id, body.identity, user_id=_resolved_user(request, x_user_id))
     except ValueError as exc:
         raise HTTPException(400, str(exc)) from exc
 
@@ -173,10 +173,10 @@ def present_social_question(question_id: str):
 
 
 @router.post("/initializations/{session_id}/{step}")
-def save_initialization_step(session_id: str, step: str, body: InitStep, x_user_id: str | None = Header(default=None)):
+def save_initialization_step(request: Request, session_id: str, step: str, body: InitStep, x_user_id: str | None = Header(default=None)):
     """保存性格、领域或问卷步骤。"""
     try:
-        return _initializations.save_step(session_id, step, body.data, user_id=x_user_id)
+        return _initializations.save_step(session_id, step, body.data, user_id=_resolved_user(request, x_user_id))
     except ValueError as exc:
         raise HTTPException(404, str(exc)) from exc
 
