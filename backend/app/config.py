@@ -18,7 +18,7 @@ from pathlib import Path
 
 # backend/ 目录
 BASE_DIR = Path(__file__).resolve().parent.parent
-ENV_FILE = BASE_DIR / ".env"
+ENV_FILE = Path(os.environ.get("TWINLOOP_ENV_FILE", str(BASE_DIR / ".env")))
 
 # --------------------------------------------------------------------------
 # 内置默认配置：本地开发免配置直接启动
