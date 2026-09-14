@@ -284,7 +284,7 @@ export default function DomainsStep({ session, catalog, onDone, onBack }: StepPr
                                   : 'border-[#e3e6e8] bg-white text-[#646a73] hover:border-[#c9dcf2]')
                               }
                             >
-                              {leaf.label.replace(`${category.label}·`, '')}
+                              {leaf.label}
                             </button>
                           );
                         })}

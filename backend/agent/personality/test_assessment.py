@@ -6,10 +6,16 @@ from .assessment import ITEMS, export_personality, public_questions, score_asses
 
 
 class PersonalityAssessmentTests(unittest.TestCase):
-    def test_public_questionnaire_has_fifty_items_without_key_direction(self) -> None:
+    def test_public_questionnaire_has_25_items_without_key_direction(self) -> None:
         payload = public_questions()
-        self.assertEqual(len(payload["items"]), 50)
+        self.assertEqual(len(payload["items"]), 25)
+        self.assertEqual(payload["instrument_version"], "bfi2-s-style-25-zh-v1")
         self.assertTrue(all("reverse" not in item for item in payload["items"]))
+        # 每个维度 5 题，且正反向计分平衡。
+        counts: dict[str, int] = {}
+        for item in ITEMS:
+            counts[item.dimension] = counts.get(item.dimension, 0) + 1
+        self.assertEqual(set(counts.values()), {5})
 
     def test_neutral_answers_map_to_five(self) -> None:
         result = score_assessment({item.id: 3 for item in ITEMS}, "assessment_test")
@@ -19,7 +25,7 @@ class PersonalityAssessmentTests(unittest.TestCase):
 
     def test_reverse_keyed_item_is_reversed(self) -> None:
         answers = {item.id: 3 for item in ITEMS}
-        answers["E06"] = 1
+        answers["E03"] = 1
         result = score_assessment(answers, "assessment_test")
         self.assertGreater(result["scores"]["extraversion"], 5.0)
 

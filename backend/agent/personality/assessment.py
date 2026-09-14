@@ -1,8 +1,9 @@
-"""Research-informed IPIP Big Five 50-item assessment.
+"""Research-informed 25-item Big Five assessment (BFI-2-S methodology).
 
-IPIP items are public-domain. The Chinese text is a product translation of the
-official public-domain item content; it is kept versioned so a later validated
-translation can be introduced without changing historic results.
+参照 Soto & John (2017) 的 BFI-2 / BFI-2-S 短版方法论：五个大五维度，每维度
+5 题、覆盖该维度的三个侧面（facet），正反向计分平衡；题干采用工作、社交、
+情绪与决策场景的综合描述，适合轻量初始化问卷。量表版本化保存，便于后续
+替换为经过效度检验的正式中文版而不影响历史结果。
 """
 
 from __future__ import annotations
@@ -11,7 +12,7 @@ from dataclasses import dataclass
 from typing import Any
 
 
-INSTRUMENT_VERSION = "ipip-big-five-50-zh-v1"
+INSTRUMENT_VERSION = "bfi2-s-style-25-zh-v1"
 DIMENSIONS = ("extraversion", "agreeableness", "conscientiousness", "neuroticism", "openness")
 DIMENSION_LABELS = {
     "extraversion": "外向性",
@@ -28,64 +29,45 @@ class Item:
     id: str
     dimension: str
     text: str
+    facet: str = ""
     reverse: bool = False
 
 
-# 10 public-domain IPIP markers per broad factor. We use translated wording,
-# preserving the official keyed direction and item identity for scoring.
+# 每维度 5 题：覆盖 BFI-2 的三个侧面，反向题保持平衡，题目为综合情景描述。
 ITEMS: tuple[Item, ...] = (
-    Item("E01", "extraversion", "我是聚会中活跃的人。"),
-    Item("E02", "extraversion", "和别人待在一起时，我感到自在。"),
-    Item("E03", "extraversion", "我会主动开启聊天。"),
-    Item("E04", "extraversion", "在聚会中，我会和很多不同的人交谈。"),
-    Item("E05", "extraversion", "我不介意成为大家关注的中心。"),
-    Item("E06", "extraversion", "我不太爱说话。", True),
-    Item("E07", "extraversion", "在人群中，我通常待在比较靠后的位置。", True),
-    Item("E08", "extraversion", "我觉得自己没有太多可说的。", True),
-    Item("E09", "extraversion", "我不喜欢吸引别人的注意。", True),
-    Item("E10", "extraversion", "面对陌生人时，我通常比较安静。", True),
-    Item("A01", "agreeableness", "我对他人感兴趣。"),
-    Item("A02", "agreeableness", "我能体会别人的感受。"),
-    Item("A03", "agreeableness", "我内心柔软，容易被他人的处境触动。"),
-    Item("A04", "agreeableness", "我愿意抽时间帮助别人。"),
-    Item("A05", "agreeableness", "我能感受到别人的情绪。"),
-    Item("A06", "agreeableness", "我能让别人和我相处时感到自在。"),
-    Item("A07", "agreeableness", "我对别人的问题不太感兴趣。", True),
-    Item("A08", "agreeableness", "我会用言语伤害别人。", True),
-    Item("A09", "agreeableness", "我很少关心别人的烦恼。", True),
-    Item("A10", "agreeableness", "我并不怎么在意别人。", True),
-    Item("C01", "conscientiousness", "我总是提前做好准备。"),
-    Item("C02", "conscientiousness", "我会注意细节。"),
-    Item("C03", "conscientiousness", "家务或待办事项我通常会马上处理。"),
-    Item("C04", "conscientiousness", "我喜欢有秩序。"),
-    Item("C05", "conscientiousness", "我会按照日程安排做事。"),
-    Item("C06", "conscientiousness", "我对自己的工作要求严格。"),
-    Item("C07", "conscientiousness", "我会把东西随手乱放。", True),
-    Item("C08", "conscientiousness", "我常常把事情弄得一团糟。", True),
-    Item("C09", "conscientiousness", "我经常忘记把东西放回原处。", True),
-    Item("C10", "conscientiousness", "我会逃避自己应尽的责任。", True),
-    Item("N01", "neuroticism", "我大多数时候都很放松。", True),
-    Item("N02", "neuroticism", "我很少感到情绪低落。", True),
-    Item("N03", "neuroticism", "我很容易感到压力。"),
-    Item("N04", "neuroticism", "我会担心各种事情。"),
-    Item("N05", "neuroticism", "我很容易受到干扰。"),
-    Item("N06", "neuroticism", "我很容易烦恼。"),
-    Item("N07", "neuroticism", "我的情绪变化比较大。"),
-    Item("N08", "neuroticism", "我的情绪起伏比较频繁。"),
-    Item("N09", "neuroticism", "我很容易被激怒。"),
-    Item("N10", "neuroticism", "我经常感到情绪低落。"),
-    Item("O01", "openness", "我的词汇量比较丰富。"),
-    Item("O02", "openness", "我的想象力很丰富。"),
-    Item("O03", "openness", "我经常有很好的想法。"),
-    Item("O04", "openness", "我理解事物很快。"),
-    Item("O05", "openness", "我会使用比较复杂的词语。"),
-    Item("O06", "openness", "我会花时间思考各种事情。"),
-    Item("O07", "openness", "我脑子里经常冒出很多想法。"),
-    Item("O08", "openness", "我很难理解抽象的想法。", True),
-    Item("O09", "openness", "我对抽象的想法不感兴趣。", True),
-    Item("O10", "openness", "我的想象力不太好。", True),
+    # 外向性：社交性 / 果断性 / 活力水平
+    Item("E01", "extraversion", "在陌生的场合，我很快就能和周围的人聊起来，还常常成为带动气氛的那一个。", "sociability+energy"),
+    Item("E02", "extraversion", "小组讨论时我习惯第一个发言，也愿意牵头组织大家一起做事。", "assertiveness"),
+    Item("E03", "extraversion", "热闹的聚会结束后我需要很久才能缓过来，平时也更喜欢一个人安静地做事。", "sociability", True),
+    Item("E04", "extraversion", "需要当众表达观点或为自己争取机会时，我倾向于等别人先开口。", "assertiveness", True),
+    Item("E05", "extraversion", "和陌生人同桌吃饭，我也能自然地找到话题，并享受这个过程。", "sociability"),
+    # 宜人性：同情心 / 尊重他人 / 信任
+    Item("A01", "agreeableness", "看到别人遇到难处，我会主动询问并尽力搭把手，即使我们并不熟。", "compassion"),
+    Item("A02", "agreeableness", "意见不合时，我也会先完整听完对方的理由，再平和地说出自己的看法。", "respectfulness"),
+    Item("A03", "agreeableness", "讨论问题时我更关注把事情说清楚，常常顾不上照顾对方的情绪。", "compassion", True),
+    Item("A04", "agreeableness", "我默认大多数人是善意的，愿意把重要的事托付给别人。", "trust"),
+    Item("A05", "agreeableness", "别人的情绪起伏不太会影响我，我很少为别人的处境分心。", "compassion", True),
+    # 尽责性：条理性 / 勤奋高效 / 责任感
+    Item("C01", "conscientiousness", "我的日程、文件和待办都有清晰的安排，并且会按计划推进到完成。", "organization+diligence"),
+    Item("C02", "conscientiousness", "做重要决定前，我会系统地收集信息、评估风险，而不是边走边看。", "productiveness"),
+    Item("C03", "conscientiousness", "我经常拖到截止日期前才突击，东西也常常随手放了就忘。", "organization", True),
+    Item("C04", "conscientiousness", "答应别人的事，哪怕自己吃亏，我也会按时做到。", "responsibility"),
+    Item("C05", "conscientiousness", "我喜欢随机应变，太详细的计划对我来说反而是一种束缚。", "productiveness", True),
+    # 情绪敏感性（负面情绪性）：焦虑 / 情绪波动 / 恢复力
+    Item("N01", "neuroticism", "任务还没有完成时，我会反复担心结果，晚上也容易因此睡不踏实。", "anxiety"),
+    Item("N02", "neuroticism", "遇到突发状况或被批评时，我能较快平静下来并着手处理。", "emotional_volatility", True),
+    Item("N03", "neuroticism", "我的情绪容易被小事带动，一天之内可能起落好几次。", "emotional_volatility"),
+    Item("N04", "neuroticism", "我时常莫名感到低落，或对平时喜欢的事提不起劲。", "depression"),
+    Item("N05", "neuroticism", "即使压力很大的阶段，我依然能保持胃口、睡眠和基本的好心情。", "anxiety", True),
+    # 开放性：智识好奇 / 审美敏感 / 创造想象
+    Item("O01", "openness", "接触新概念、新工具或跨领域话题时，我会主动花时间深入钻研。", "intellectual_curiosity"),
+    Item("O02", "openness", "我常被艺术、设计或自然中的美打动，也会专门安排时间去体验。", "aesthetic_sensitivity"),
+    Item("O03", "openness", "我常有一些跳出常规的想法，喜欢把不同领域的东西联系起来尝试。", "creative_imagination"),
+    Item("O04", "openness", "我偏好成熟稳妥的做法，对新奇但还没被验证过的方案兴趣不大。", "intellectual_curiosity", True),
+    Item("O05", "openness", "抽象的理论讨论让我觉得离实际太远，我更愿意谈具体怎么做。", "creative_imagination", True),
 )
 ITEM_BY_ID = {item.id: item for item in ITEMS}
+ITEMS_PER_DIMENSION = {dimension: sum(1 for item in ITEMS if item.dimension == dimension) for dimension in DIMENSIONS}
 
 
 def public_questions() -> dict[str, Any]:
@@ -94,7 +76,7 @@ def public_questions() -> dict[str, Any]:
     return {
         "instrument_version": INSTRUMENT_VERSION,
         "model": "big_five",
-        "source": "IPIP public-domain Big-Five Factor Markers",
+        "source": "BFI-2-S methodology (Soto & John, 2017) adapted 25-item zh version",
         "scale": {"min": 1, "max": 5, "labels": SCALE_LABELS},
         "dimensions": [{"id": key, "label": DIMENSION_LABELS[key]} for key in DIMENSIONS],
         "items": [{"id": item.id, "text": item.text} for item in ITEMS],
@@ -122,6 +104,7 @@ def score_assessment(answers: dict[str, int], assessment_id: str, notes: str | N
     if unknown or invalid:
         raise ValueError(f"invalid_answers: unknown={unknown}, invalid={invalid}")
 
+    total = len(ITEMS)
     values: dict[str, list[int]] = {dimension: [] for dimension in DIMENSIONS}
     for item in ITEMS:
         if item.id in answers:
@@ -132,7 +115,7 @@ def score_assessment(answers: dict[str, int], assessment_id: str, notes: str | N
     means: dict[str, float | None] = {}
     completeness: dict[str, float] = {}
     for dimension, dimension_values in values.items():
-        completeness[dimension] = round(len(dimension_values) / 10, 2)
+        completeness[dimension] = round(len(dimension_values) / ITEMS_PER_DIMENSION[dimension], 2)
         if not dimension_values:
             means[dimension] = None
             scores[dimension] = None
@@ -143,28 +126,32 @@ def score_assessment(answers: dict[str, int], assessment_id: str, notes: str | N
 
     count = len(answers)
     frequency = {value: list(answers.values()).count(value) for value in range(1, 6)}
-    straightline = count >= 20 and max(frequency.values()) == count
-    status = "completed" if count == len(ITEMS) and not straightline else "quality_review" if count == len(ITEMS) else "partial"
+    # 直线作答检查：过半题目选择同一档且无变化视为无效作答倾向。
+    straightline = count >= max(10, total // 2) and max(frequency.values()) == count
+    status = "completed" if count == total and not straightline else "quality_review" if count == total else "partial"
     flags: list[str] = []
-    if count < len(ITEMS):
+    if count < total:
         flags.append("missing_answers")
     if straightline:
         flags.append("straightline_response")
-    if any(len(dimension_values) < 8 for dimension_values in values.values()):
+    # 单维度作答率低于 80% 视为维度不完整。
+    if any(len(dimension_values) < int(ITEMS_PER_DIMENSION[dimension] * 0.8) for dimension, dimension_values in values.items()):
         flags.append("dimension_incomplete")
-    data_quality = round(max(0.0, min(1.0, (count / len(ITEMS)) * (0.7 if straightline else 1.0))), 2)
+    data_quality = round(max(0.0, min(1.0, (count / total) * (0.7 if straightline else 1.0))), 2)
+    usable_threshold = int(total * 0.8)
     return {
         "model": "big_five",
         "instrument_version": INSTRUMENT_VERSION,
         "assessment_id": assessment_id,
         "scores": scores,
         "raw_means": means,
+        "completeness": completeness,
         "data_quality": data_quality,
         "confidence": data_quality,
         "status": status,
         "source": "self_report",
         "style_tags": _style_tags(scores),
-        "validity": {"answered_count": count, "total_count": len(ITEMS), "flags": flags, "usable": count >= 40 and not straightline},
+        "validity": {"answered_count": count, "total_count": total, "flags": flags, "usable": count >= usable_threshold and not straightline},
         "notes": notes,
         "raw_answers": answers,
         "privacy": "private",

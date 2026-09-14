@@ -132,7 +132,7 @@ export default function PersonalityStep({ session, onDone, onBack }: StepProps) 
       step={2}
       total={6}
       title="性格测试"
-      description="共 50 道描述题，请按自己的真实情况作答，没有对错之分。结果只用于生成数字分身的性格画像。"
+      description={`共 ${items.length} 道综合情景描述题（基于大五人格 BFI-2 短版方法论），请按真实情况作答，没有对错之分。结果只用于生成数字分身的性格画像。`}
     >
       <div className="mb-4 flex items-center justify-between text-xs text-[#8590a6]">
         <span>
