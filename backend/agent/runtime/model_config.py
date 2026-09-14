@@ -40,4 +40,11 @@ def model_setting(name: str, values: dict[str, Any], default: str | None = None)
     return str(value).strip()
 
 
-__all__ = ["MODEL_ENV_FILENAME", "model_env_path", "load_model_values", "model_setting"]
+def is_placeholder(value: str | None) -> bool:
+    """判断配置是否仍是模板占位符，避免把占位符发送给供应商。"""
+    if not value:
+        return True
+    return value.startswith(("replace_with_", "<"))
+
+
+__all__ = ["MODEL_ENV_FILENAME", "model_env_path", "load_model_values", "model_setting", "is_placeholder"]

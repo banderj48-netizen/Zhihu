@@ -13,7 +13,7 @@ from typing import Any
 from openai import OpenAI
 
 from agent.runtime.llm import LLM
-from agent.runtime.model_config import load_model_values, model_env_path, model_setting
+from agent.runtime.model_config import is_placeholder, load_model_values, model_env_path, model_setting
 
 
 def _post_chat_completion(client: OpenAI, model: str, prompt: str, options: dict[str, Any]) -> dict[str, Any]:
@@ -49,7 +49,7 @@ def build_llm(*, env_file: str | Path | None = None, model: str | None = None) -
     api_key = model_setting("LLM_API_KEY", values) or model_setting("OPENAI_API_KEY", values)
     base_url = model_setting("LLM_BASE_URL", values) or model_setting("OPENAI_BASE_URL", values, "https://api.openai.com/v1")
     model_name = model or model_setting("LLM_MODEL", values) or model_setting("OPENAI_MODEL", values)
-    if not api_key:
+    if is_placeholder(api_key):
         raise ValueError(f"未配置 LLM_API_KEY 或 OPENAI_API_KEY，请在 {path} 中设置")
     if not model_name:
         raise ValueError(f"未配置 LLM_MODEL 或 OPENAI_MODEL，请在 {path} 中设置")
@@ -70,7 +70,7 @@ def build_evaluator_llm(*, env_file: str | Path | None = None, model: str | None
     api_key = model_setting("EVALUATOR_LLM_API_KEY", values)
     base_url = model_setting("EVALUATOR_LLM_BASE_URL", values)
     model_name = model or model_setting("EVALUATOR_LLM_MODEL", values)
-    if not api_key or not model_name:
+    if is_placeholder(api_key) or not model_name:
         raise ValueError(f"未完整配置 EVALUATOR_LLM_API_KEY、EVALUATOR_LLM_BASE_URL、EVALUATOR_LLM_MODEL，请在 {path} 中设置")
     if not base_url:
         base_url = "https://api.openai.com/v1"

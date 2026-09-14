@@ -11,7 +11,7 @@ from dotenv import dotenv_values
 
 from agent.adapters.embedding import DashScopeEmbeddingFunction
 from agent.adapters.vector_search import ChromaVectorSearchAdapter
-from agent.runtime.model_config import load_model_values, model_env_path, model_setting
+from agent.runtime.model_config import is_placeholder, load_model_values, model_env_path, model_setting
 
 
 BACKEND_ROOT = Path(__file__).resolve().parents[2]
@@ -50,7 +50,7 @@ def embedding_config(env_file: str | Path | None = None) -> dict[str, str]:
     api_key = model_setting("EMBEDDING_API_KEY", values)
     base_url = model_setting("EMBEDDING_BASE_URL", values, "https://dashscope.aliyuncs.com/compatible-mode/v1")
     model = model_setting("EMBEDDING_MODEL", values, "qwen3.7-text-embedding-flash")
-    if not api_key:
+    if is_placeholder(api_key):
         raise ValueError(f"未配置 EMBEDDING_API_KEY，请在 {path} 中设置")
     assert base_url and model
     batch_size = model_setting("EMBEDDING_BATCH_SIZE", values, "10") or "10"
