@@ -16,6 +16,7 @@ from agent.runtime.evaluator import DialogueEvaluation, DialogueEvaluator
 from agent.runtime.llm import LLM
 from agent.runtime.push_gateway import MatchPushGateway
 from agent.runtime.topic_gate import TopicGateGraph, TopicGateState
+from agent.runtime.notifications import NotificationService
 
 
 @dataclass(frozen=True)
@@ -90,15 +91,23 @@ async def run_agent_dialogue(avatar_a_id: str, avatar_b_id: str, *, user_id_a: s
             return DialogueResult(run_id, conversation_id, chat_no, "completed", 0, None)
         # 由 A 先围绕选定主题发起自然开场，再交给 B 回答。
         await check_cancel()
-        opening = await _run_turn(graph_a, user_id_a, avatar_a_id, conversation_id, f"请在{scene_id or '当前场景'}自然开启关于‘{topic}’的闲聊，只输出一句话。", 0, scene_id=scene_id, history=transcript)
+        opening_result = await _run_turn(graph_a, user_id_a, avatar_a_id, conversation_id, f"请在{scene_id or '当前场景'}自然开启关于‘{topic}’的闲聊，只输出一句话。", 0, scene_id=scene_id, history=transcript)
+        opening = opening_result["answer"]
         await _persist(chat_repository, vector_store, conversation_id, participant_a, opening, run_id, "A", 0, metadata={"event": "topic_opening", "topic_source": gate.get("topic_source", "manual"), "topic": topic, "topic_score": (gate.get("shared_topics") or [{}])[0].get("score")})
         await emit("message", round=0, speaker="A", content=opening)
         transcript.append({"role": "A", "content": opening})
         question = opening
         for round_no in range(1, max_rounds + 1):
             await check_cancel()
-            answer_b = await _run_turn(graph_b, user_id_b, avatar_b_id, conversation_id, question, round_no, scene_id=scene_id, history=transcript)
+            answer_b_result = await _run_turn(graph_b, user_id_b, avatar_b_id, conversation_id, question, round_no, scene_id=scene_id, history=transcript)
+            answer_b = answer_b_result["answer"]
+            unknown_b = _save_unknown_if_needed(user_id_b, avatar_b_id, conversation_id, run_id, question, answer_b_result)
             await _persist(chat_repository, vector_store, conversation_id, participant_b, answer_b, run_id, "B", round_no)
+            if unknown_b:
+                try:
+                    NotificationService().attach_unknown_message(unknown_b, _latest_message_id(conversation_id, participant_b))
+                except Exception:
+                    pass
             await emit("message", round=round_no, speaker="B", content=answer_b)
             await emit("round_progress", round=round_no, completed_messages=len(transcript) + 1)
             transcript.append({"role": "B", "content": answer_b})
@@ -109,8 +118,15 @@ async def run_agent_dialogue(avatar_a_id: str, avatar_b_id: str, *, user_id_a: s
             # 开场消息已经计入 A 的首条消息；最后一轮只保留 B 的回答，确保总消息数不超过20条。
             if round_no < max_rounds:
                 await check_cancel()
-                answer_a = await _run_turn(graph_a, user_id_a, avatar_a_id, conversation_id, question, round_no, scene_id=scene_id, history=transcript)
+                answer_a_result = await _run_turn(graph_a, user_id_a, avatar_a_id, conversation_id, question, round_no, scene_id=scene_id, history=transcript)
+                answer_a = answer_a_result["answer"]
+                unknown_a = _save_unknown_if_needed(user_id_a, avatar_a_id, conversation_id, run_id, question, answer_a_result)
                 await _persist(chat_repository, vector_store, conversation_id, participant_a, answer_a, run_id, "A", round_no)
+                if unknown_a:
+                    try:
+                        NotificationService().attach_unknown_message(unknown_a, _latest_message_id(conversation_id, participant_a))
+                    except Exception:
+                        pass
                 await emit("message", round=round_no, speaker="A", content=answer_a)
                 transcript.append({"role": "A", "content": answer_a})
                 question = answer_a
@@ -128,8 +144,19 @@ async def run_agent_dialogue(avatar_a_id: str, avatar_b_id: str, *, user_id_a: s
                 # 评判失败不应回滚已经完成的聊天事实；运行仍可正常结束但不推送。
                 evaluation_failed = True
         _update_run(run_id, conversation_id, avatar_a_id, avatar_b_id, user_id_a, user_id_b, "evaluation_failed" if evaluation_failed else "completed", completed_rounds, max_rounds, {"evaluation_failed": evaluation_failed})
-        if evaluation and push_gateway and evaluation.score > float(os.getenv("GREAT_SCORE", "0.8")):
-            await push_gateway.push_profile_urls(user_id_a, user_id_b, None, None, evaluation.score)
+        if evaluation and evaluation.score > float(os.getenv("GREAT_SCORE", "0.8")):
+            # 评分达标后把交友邀请写入统一通知表；事务幂等保证后台重试不会重复推送。
+            try:
+                NotificationService().create_friendship_notifications(
+                    dialogue_run_id=run_id, user_a_id=user_id_a, user_b_id=user_id_b,
+                    avatar_a_id=avatar_a_id, avatar_b_id=avatar_b_id,
+                    score=evaluation.score, threshold=float(os.getenv("GREAT_SCORE", "0.8")),
+                    summary=evaluation.summary,
+                )
+            except Exception:
+                # 通知故障不回滚已经完成的聊天和评分事实，后续任务可按 run_id 补偿。
+                if push_gateway:
+                    await push_gateway.push_profile_urls(user_id_a, user_id_b, None, None, evaluation.score)
         _update_chat_group(chat_no, "completed", {})
         await emit("evaluation", score=evaluation.score if evaluation else None)
         await emit("status", status="evaluation_failed" if evaluation_failed else "completed")
@@ -209,8 +236,8 @@ def _is_end_intent(text: str) -> bool:
     return any(mark in normalized for mark in ("再见", "先聊到这里", "下次再聊", "结束对话"))
 
 
-async def _run_turn(graph: Any, user_id: str, avatar_id: str, conversation_id: str, question: str, turn_no: int, *, scene_id: str = "", history: list[dict[str, Any]] | None = None) -> str:
-    """执行一个 Agent 图回合并返回文本回答。"""
+async def _run_turn(graph: Any, user_id: str, avatar_id: str, conversation_id: str, question: str, turn_no: int, *, scene_id: str = "", history: list[dict[str, Any]] | None = None) -> dict[str, Any]:
+    """执行一个 Agent 图回合并返回文本回答和检索上下文。"""
     result = await graph.ainvoke(AgentTurnState(
         avatar_id=avatar_id,
         user_id=user_id,
@@ -225,7 +252,34 @@ async def _run_turn(graph: Any, user_id: str, avatar_id: str, conversation_id: s
         scene_id=scene_id,
         turn_no=turn_no,
     ))
-    return str(result.get("last_answer") or "")
+    return {"answer": str(result.get("last_answer") or ""), "context": result.get("context") or {}}
+
+
+def _save_unknown_if_needed(user_id: str, avatar_id: str, conversation_id: str, run_id: str, question: str, result: dict[str, Any]) -> str | None:
+    """当本轮没有达到记忆相关度阈值时保存陌生回答事实。"""
+    context = result.get("context") or {}
+    memories = context.get("retrieved_memories") or {}
+    scores = [float(item.get("relevance_score") or 0) for values in memories.values() if isinstance(values, list) for item in values if isinstance(item, dict)]
+    threshold = float(os.getenv("UNKNOWN_MEMORY_THRESHOLD", "0.5"))
+    if scores and max(scores) >= threshold:
+        return None
+    if not scores and context.get("profile") is None:
+        return None
+    meta = dict(context.get("retrieval_meta") or {})
+    meta.update({"unknown_threshold": threshold, "top_memory_score": max(scores) if scores else 0.0, "memory_count": len(scores)})
+    try:
+        return NotificationService().create_unknown_response(user_id=user_id, avatar_id=avatar_id, question=question, answer=str(result.get("answer") or ""), retrieval_meta=meta, dialogue_run_id=run_id, conversation_id=conversation_id)
+    except Exception:
+        # 通知表尚未迁移或反馈写入失败时，不阻断已经生成的 Agent 回复。
+        return None
+
+
+def _latest_message_id(conversation_id: str, participant_id: str) -> str:
+    """读取刚写入参与者的最新消息 ID，用于关联陌生回答事实。"""
+    from db.database import connect
+    with connect() as db:
+        row = db.execute("SELECT id FROM chat_messages WHERE conversation_id=%s AND participant_id=%s ORDER BY sequence_no DESC LIMIT 1", (conversation_id, participant_id)).fetchone()
+    return str(row["id"]) if row else ""
 
 
 async def _persist(repository: ChatRepository, vector_store: VectorSearchAdapter | None, conversation_id: str, participant_id: str, content: str, run_id: str, role: str, turn_no: int, metadata: dict[str, Any] | None = None) -> None:

@@ -1,0 +1,23 @@
+<!doctype html>
+<html lang="zh-CN">
+<head><meta charset="utf-8"><title>数字分身答题测试</title>
+<style>body{font-family:Arial,sans-serif;max-width:900px;margin:24px auto;padding:0 16px}input,button{padding:8px;margin:4px}textarea{width:100%;height:90px}.q{border:1px solid #ccc;border-radius:8px;padding:14px;margin:12px 0}.log{background:#111;color:#0f0;padding:12px;white-space:pre-wrap;max-height:420px;overflow:auto;font:12px monospace}</style>
+</head><body>
+<h1>初始化观点题测试</h1>
+<label>后端地址 <input id="base" value="http://127.0.0.1:8000"></label><br>
+<label>session_id <input id="sid" size="42" placeholder="初始化接口返回的 id"></label><br>
+<label>领域 ID（可选，逗号分隔） <input id="domains" size="60" value="computer.02.02"></label><br>
+<label>题目数量 <input id="count" type="number" min="1" max="10" value="5"></label>
+<label><input id="mock" type="checkbox" checked>模拟请求（不访问后端）</label>
+<button onclick="loadQuestions()">获取题目</button>
+<button onclick="submitAnswers()">提交答案</button>
+<div id="questions"></div>
+<h3>详细日志</h3><div id="log" class="log"></div>
+<script>
+const $=id=>document.getElementById(id);
+function log(label,value){$('log').textContent+=`\n[${new Date().toISOString()}] ${label}\n${typeof value==='string'?value:JSON.stringify(value,null,2)}\n`;}
+async function request(url,options={}){log('REQUEST', {url,options}); const r=await fetch(url,{credentials:'include',...options,headers:{'Content-Type':'application/json',...(options.headers||{})}}); const text=await r.text(); let data; try{data=JSON.parse(text)}catch{data=text} log('RESPONSE '+r.status,data); if(!r.ok)throw new Error(text); return data;}
+let questions=[];
+async function loadQuestions(){try{const sid=$('sid').value.trim()||'mock-session'; const ids=$('domains').value.split(',').map(x=>x.trim()).filter(Boolean); const body={domain_ids:ids,count:Number($('count').value)||5}; let data; if($('mock').checked){log('MOCK REQUEST',{url:`/v1/twin/initializations/${sid}/opinion-questions`,method:'POST',body}); data={session_id:sid,questions:Array.from({length:body.count},(_,i)=>({question_id:`mock_opinion_${i+1}`,prompt:`这是第 ${i+1} 道模拟判断题：该说法是否正确？`,options:[{id:'true',label:'对'},{id:'false',label:'不对'}]}))}; log('MOCK RESPONSE',data);}else{if(!sid||sid==='mock-session')throw new Error('请填写 session_id'); data=await request(`${$('base').value}/v1/twin/initializations/${encodeURIComponent(sid)}/opinion-questions`,{method:'POST',body:JSON.stringify(body)});} questions=data.questions||[]; $('questions').innerHTML=questions.map((q,i)=>`<div class="q"><b>${i+1}. ${q.prompt||q.question||''}</b><br><label><input type="radio" name="q${i}" value="true">对</label><label><input type="radio" name="q${i}" value="false">不对</label><pre>${JSON.stringify(q.options||[],null,2)}</pre></div>`).join(''); log('QUESTIONS_PARSED',questions);}catch(e){log('ERROR',e.stack||String(e));}}
+async function submitAnswers(){try{const sid=$('sid').value.trim()||'mock-session'; if(!$('mock').checked&&!sid)throw new Error('请填写 session_id'); const answers=questions.map((q,i)=>{const v=document.querySelector(`input[name=q${i}]:checked`); return {question_id:q.question_id,answer:v?v.value==='true':null,correct:v?v.value==='true':null};}); const body={data:{answers,source:'test/opinion_questions.html'}}; if($('mock').checked){log('MOCK REQUEST',{url:`/v1/twin/initializations/${sid}/opinion-answers`,method:'POST',body}); log('MOCK RESPONSE',{session_id:sid,saved:true,data:body.data});}else{const data=await request(`${$('base').value}/v1/twin/initializations/${encodeURIComponent(sid)}/opinion-answers`,{method:'POST',body:JSON.stringify(body.data)}); log('SUBMIT_RESULT',data);}}catch(e){log('ERROR',e.stack||String(e));}}
+</script></body></html>

@@ -447,7 +447,28 @@ async def generate_opinion_questions(domain_ids: list[str], count: int = 5, llm=
             if len(questions) >= count:
                 break
             questions.append(_format_template(template, usable[0] if usable else "methods"))
-    return questions[:count]
+    # 初始化问卷采用二选一模式：只保留前两个主要决策方向，去掉
+    # opt_custom/不知道等附加项，避免前端出现超过两个答案。
+    normalized: list[dict[str, Any]] = []
+    for question in questions[:count]:
+        item = dict(question)
+        source_options = [
+            option for option in (question.get("options") or [])
+            if isinstance(option, dict)
+            and option.get("id") not in {"opt_custom", "opt_unknown"}
+            and option.get("label")
+        ]
+        if len(source_options) < 2:
+            source_options = [
+                {"id": "opt_a", "label": "倾向采取第一种做法"},
+                {"id": "opt_b", "label": "倾向采取第二种做法"},
+            ]
+        item["options"] = [
+            {"id": "opt_a", "label": str(source_options[0]["label"])},
+            {"id": "opt_b", "label": str(source_options[1]["label"])},
+        ]
+        normalized.append(item)
+    return normalized
 
 
 async def generate_social_questions(count: int = 5) -> list[dict[str, Any]]:
