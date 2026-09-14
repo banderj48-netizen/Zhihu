@@ -6,6 +6,8 @@
 """
 
 # 必须在导入任何读取环境变量的模块之前加载 .env
+import json
+
 from app.config import load_env as _load_env
 _ENV_LOADED=_load_env()
 
