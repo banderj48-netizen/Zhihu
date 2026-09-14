@@ -1,0 +1,412 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="数字分身小镇入口页面" />
+    <title>在小镇里，遇见日常的新鲜想法</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <header class="topbar site-topbar" id="site-topbar" aria-label="页面导航">
+      <div class="topbar__brand"><img src="./美术素材/logo.jpg" alt="看山小镇 Logo" /><span>看山小镇</span></div>
+      <nav class="topbar__nav">
+        <a data-route="home" class="is-active" href="#intro">小镇</a>
+        <a data-route="encounter" href="#encounter">相遇</a>
+        <a data-route="profile" href="#profile">分身</a>
+      </nav>
+      <div class="message-box message-box--empty" aria-label="消息盒子" role="img">
+        <img class="message-box__asset message-box__asset--empty" src="./美术素材/消息盒子（没有消息）.svg" alt="" aria-hidden="true" />
+        <img class="message-box__asset message-box__asset--unread" src="./美术素材/消息盒子（有消息）.svg" alt="" aria-hidden="true" />
+      </div>
+    </header>
+    <div class="page-shell" id="home-view">
+
+      <main class="main-content">
+        <section class="hero-card" id="intro">
+          <div class="hero-copy">
+            <p class="eyebrow">小镇</p>
+            <h1>在小镇里，<br />遇见日常的新鲜想法</h1>
+            <div class="copy-body">
+              <p>
+                数字分身的设计理念来自于酒馆，一种专门用于角色扮演的提示词工程。分身人格存放在一张结构化的角色卡中，每次发言前按固定顺序组装成 prompt，交给模型生成回应。
+              </p>
+              <p class="copy-body__en">
+                The design concept of a digital avatar comes from taverns, a kind of prompt engineering specifically for role-playing. The avatar’s personality is stored in a structured character card, and before each line is spoken, it’s assembled into a prompt in a fixed order.
+              </p>
+            </div>
+            <a class="primary-button" href="#town-panorama">去交流</a>
+          </div>
+
+          <div class="hero-visual" aria-label="咖啡馆插画">
+            <img src="./美术素材/建筑咖啡店.png" alt="咖啡馆建筑" />
+          </div>
+        </section>
+
+        <section class="scene-strip" id="scenes" aria-label="场景预览">
+          <span>在不同场景里，和不同的想法相遇</span>
+          <span class="scene-strip__arrow">↗</span>
+        </section>
+
+      </main>
+    </div>
+
+    <main class="encounter-view" id="encounter-view" aria-labelledby="encounter-title">
+
+      <section class="encounter-heading">
+        <h1 id="encounter-title">相遇</h1>
+        <p>你的看山在具体场景里，遇见了这些人。</p>
+      </section>
+
+      <section class="encounter-layout" id="encounter-layout">
+        <div class="encounter-list-panel">
+          <div class="encounter-list" id="encounter-list"></div>
+        </div>
+
+        <aside class="chat-panel" id="chat-panel" aria-live="polite">
+          <div class="chat-panel__content" id="chat-content"></div>
+        </aside>
+        <button class="chat-close" id="chat-close" type="button" aria-label="关闭聊天">›</button>
+      </section>
+      <section class="chat-record-overlay" id="chat-record-overlay" aria-hidden="true">
+        <div class="chat-record-modal" role="dialog" aria-modal="true" aria-labelledby="chat-record-title">
+          <button class="chat-record-close" id="chat-record-close" type="button" aria-label="关闭完整记录">×</button>
+          <h2 id="chat-record-title">完整聊天记录</h2>
+          <p class="chat-record-subtitle" id="chat-record-subtitle"></p>
+          <div class="chat-record-list" id="chat-record-list"></div>
+        </div>
+      </section>
+    </main>
+
+    <section class="town-panorama" id="town-panorama" aria-label="小镇全景">
+      <div class="town-map">
+        <img class="town-map__image" src="./美术素材/小镇地图.jpg" alt="小镇地图" />
+        <img class="town-building-art town-building-art--theater" src="./美术素材/建筑剧院-cut.png" alt="" aria-hidden="true" />
+        <img class="town-building-art town-building-art--podium" src="./美术素材/建筑讲台-cut.png" alt="" aria-hidden="true" />
+        <img class="town-building-art town-building-art--cafe" src="./美术素材/建筑咖啡店-cut.png" alt="" aria-hidden="true" />
+        <img class="town-building-art town-building-art--library" src="./美术素材/建筑图书馆-cut.png" alt="" aria-hidden="true" />
+        <img class="town-building-art town-building-art--tavern" src="./美术素材/建筑酒馆-cut.png" alt="" aria-hidden="true" />
+        <button class="town-building town-building--theater" type="button" aria-label="剧院" data-scene="theater"></button>
+        <button class="town-building town-building--podium" type="button" aria-label="讲台" data-scene="podium"></button>
+        <button class="town-building town-building--cafe" type="button" aria-label="咖啡店" data-scene="cafe"></button>
+        <button class="town-building town-building--library" type="button" aria-label="图书馆" data-scene="library"></button>
+        <button class="town-building town-building--tavern" type="button" aria-label="酒馆" data-scene="tavern"></button>
+        <span class="town-building-name town-building-name--theater">剧院</span>
+        <span class="town-building-name town-building-name--podium">讲台</span>
+        <span class="town-building-name town-building-name--cafe">咖啡店</span>
+        <span class="town-building-name town-building-name--library">图书馆</span>
+        <span class="town-building-name town-building-name--tavern">酒馆</span>
+      </div>
+    </section>
+
+    <main class="tavern-view" id="tavern-view" aria-labelledby="tavern-title" hidden>
+      <img class="tavern-view__background" id="scene-background" src="./美术素材/场景酒吧.png" alt="酒馆场景" />
+      <a class="tavern-back" href="#town-panorama">← 返回小镇</a>
+      <h1 class="tavern-title" id="tavern-title">酒馆</h1>
+      <div class="tavern-conversation-heading" id="tavern-conversation-heading" aria-live="polite">开始与看山交谈</div>
+      <button class="tavern-selection-back" id="tavern-selection-back" type="button">返回选择看山</button>
+      <aside class="tavern-detail-card" id="tavern-detail-card" aria-live="polite" hidden>
+        <div class="tavern-detail-card__head"><span>看山资料</span><b id="tavern-detail-name">林夏</b></div>
+        <p class="tavern-detail-card__meta" id="tavern-detail-meta">女 · 26 岁</p>
+        <dl>
+          <div><dt>性格</dt><dd id="tavern-detail-personality"></dd></div>
+          <div><dt>感兴趣的方向</dt><dd id="tavern-detail-interests"></dd></div>
+          <div><dt>想聊聊</dt><dd id="tavern-detail-intro"></dd></div>
+        </dl>
+      </aside>
+      <section class="tavern-characters" aria-label="酒馆里的看山">
+        <div class="tavern-character tavern-character--mine">
+          <img src="./美术素材/男看山-正面.png" alt="我的看山" />
+          <span class="tavern-character__label">我的看山</span>
+        </div>
+        <button class="tavern-character tavern-character--guest-one tavern-guest" type="button" aria-label="看山：林夏" data-name="林夏" data-meta="女 · 26 岁" data-personality="温柔、好奇，喜欢观察生活" data-interests="摄影 · 城市漫步 · 电影" data-intro="喜欢从日常细节出发，交换那些让人停下来的一瞬间。">
+          <img src="./美术素材/女看山-正面.png" alt="林夏" />
+          <span class="tavern-character__label">林夏</span>
+          <span class="tavern-profile" role="tooltip"><b>林夏</b><small>女 · 26 岁</small><span>温柔、好奇，喜欢观察生活</span><em>摄影 · 城市漫步 · 电影</em></span>
+        </button>
+        <button class="tavern-character tavern-character--guest-two tavern-guest" type="button" aria-label="看山：周野" data-name="周野" data-meta="男 · 29 岁" data-personality="直接、热情，喜欢把想法变成行动" data-interests="音乐 · 徒步 · 创业" data-intro="总有新的计划正在路上，也愿意听听别人如何把想法落到生活里。">
+          <img src="./美术素材/男看山-正面.png" alt="周野" />
+          <span class="tavern-character__label">周野</span>
+          <span class="tavern-profile" role="tooltip"><b>周野</b><small>男 · 29 岁</small><span>直接、热情，喜欢把想法变成行动</span><em>音乐 · 徒步 · 创业</em></span>
+        </button>
+        <button class="tavern-character tavern-character--guest-three tavern-guest" type="button" aria-label="看山：许宁" data-name="许宁" data-meta="女 · 31 岁" data-personality="安静、细腻，重视长期的关系" data-interests="阅读 · 建筑 · 手作" data-intro="喜欢慢慢了解一件事，也在意人与人之间自然形成的默契。">
+          <img src="./美术素材/女看山-正面.png" alt="许宁" />
+          <span class="tavern-character__label">许宁</span>
+          <span class="tavern-profile" role="tooltip"><b>许宁</b><small>女 · 31 岁</small><span>安静、细腻，重视长期的关系</span><em>阅读 · 建筑 · 手作</em></span>
+        </button>
+      </section>
+    </main>
+
+    <main class="profile-view" id="profile-view" aria-label="我的分身" hidden>
+
+      <section class="profile-main">
+        <div class="profile-left">
+          <article class="profile-card profile-tags-card">
+            <h1>我的标签</h1>
+            <div class="profile-owner"><span>林</span><div><b>看山 · 林同学</b><small>已运行 12 天 · 最近活动 昨天</small></div></div>
+            <div class="tag-cloud" aria-label="标签分类">
+              <span class="tag tag-human">人文</span><span class="tag tag-env">环境</span><span class="tag tag-country">国家</span><span class="tag tag-social">社会</span><span class="tag tag-animal">动物</span><button class="tag-add" type="button">＋</button>
+            </div>
+          </article>
+          <article class="profile-card profile-auth-card">
+            <h2>授权设置</h2><p>允许进入场景浏览</p>
+            <label><span>允许阅读公开内容</span><i class="toggle on"></i></label>
+            <label><span>允许与其他看山交流</span><i class="toggle on"></i></label>
+            <label><span>允许关注主题</span><i class="toggle on"></i></label>
+            <label><span>允许发表评论</span><i class="toggle on"></i></label>
+            <label><span>允许发起真人认识申请</span><i class="toggle"></i></label>
+          </article>
+          <div class="profile-intro"><small>只属于你的数字分身</small><h2>我的分身</h2><p>看山会帮你观察和认识，但每一步都由你决定。</p><span class="profile-notice-text">看山不会自动代替你发送真人消息。真人连接需要双方明确同意。</span></div>
+          <img class="profile-person" src="./美术素材/看山人物.png" alt="看山人物" />
+        </div>
+
+        <article class="profile-card profile-traits-card">
+          <h1>我的画像</h1>
+          <div class="trait-list">
+            <div class="trait"><b>稳定属性&nbsp; 长期兴趣</b><button>♢</button><p>科幻、技术、产品</p></div>
+            <div class="trait"><b>稳定属性&nbsp; 交流偏好</b><button>♢</button><p>偏好先多交流，不喜欢泛泛寒暄</p></div>
+            <div class="trait"><b class="dynamic">动态属性&nbsp; 近期关注</b><button>♢</button><p>技术如何影响普通人的生活</p></div>
+            <div class="trait"><b class="dynamic">动态属性&nbsp; 当前社交目标</b><button>♢</button><p>先观察和了解，再决定是否认识本人</p></div>
+            <div class="trait trait-confirm"><b>待确认信息&nbsp; 表达风格</b><button>确认</button><p>擅长技术分析，也会关注故事里的细节</p></div>
+          </div>
+          <img class="profile-peek" src="./美术素材/看山探头.png" alt="看山探头" />
+        </article>
+      </section>
+    </main>
+    <script>
+      const encounterData = [
+        {
+          id: 'chen', avatar: '陈', name: '小陈', location: '场景 · 书店',
+          title: '交流过什么话题？如何建立不被打扰的阅读时间',
+          tag: '交流潜力 中等',
+          date: '昨天 18:32',
+          messages: [
+            ['为什么会聊起', '都关注过如何舒服地过人的生活，也都想过一个充足又慢慢展开。'],
+            ['可能聊些什么', '你们从从始终如一地聊到对方常从人物和感受出发。'],
+            ['会继续聊什么', '最近都在读书，会聊到更理解一个人的故事。']
+          ]
+        },
+        {
+          id: 'yu', avatar: '雨', name: '小雨', location: '场景 · 书店',
+          title: '交流过什么话题？第一次拿起相机时在看什么',
+          tag: '交流潜力 较高', date: '昨天 17:10',
+          messages: [
+            ['为什么会聊起', '你们都对日常的细节有兴趣，喜欢把偶然的瞬间记录下来。'],
+            ['可能聊些什么', '可以从第一次拍照的记忆开始，说说镜头里的城市。'],
+            ['会继续聊什么', '下一次见面，也许会交换一张最近最喜欢的照片。']
+          ]
+        },
+        {
+          id: 'chen-2', avatar: '陈', name: '小陈', location: '场景 · 书店',
+          title: '交流过什么话题？如何建立不被打扰的阅读时间',
+          tag: '交流潜力 中等', date: '昨天 16:48',
+          messages: [
+            ['为什么会聊起', '你们都在寻找专注阅读的片刻，也在意生活里安静的留白。'],
+            ['可能聊些什么', '可以从最近读过的书开始聊起，分享彼此喜欢的章节。'],
+            ['会继续聊什么', '聊聊阅读如何改变一个人看待世界的方式。']
+          ]
+        },
+        {
+          id: 'lin', avatar: '林', name: '林夏', location: '场景 · 咖啡店',
+          title: '最近在关注什么？如何让忙碌的生活慢下来',
+          tag: '交流潜力 较高', date: '昨天 15:26',
+          messages: [
+            ['为什么会聊起', '你们都在意生活里的节奏，也喜欢观察城市中安静的角落。'],
+            ['可能聊些什么', '可以分享各自最喜欢的咖啡店，以及让自己慢下来的小习惯。'],
+            ['会继续聊什么', '聊聊如何在忙碌日常里保留属于自己的时间。']
+          ]
+        },
+        {
+          id: 'zhou', avatar: '周', name: '周野', location: '场景 · 剧院',
+          title: '最近看过哪场演出？一个好故事为什么动人',
+          tag: '交流潜力 中等', date: '昨天 14:08',
+          messages: [
+            ['为什么会聊起', '你们都喜欢有情绪张力的故事，也会留意人物做选择的时刻。'],
+            ['可能聊些什么', '从最近看过的演出开始，说说哪些瞬间真正打动了自己。'],
+            ['会继续聊什么', '也许可以交换一份各自心中的必看作品清单。']
+          ]
+        },
+        {
+          id: 'xu', avatar: '许', name: '许宁', location: '场景 · 图书馆',
+          title: '什么样的空间让人愿意长久停留',
+          tag: '交流潜力 较高', date: '昨天 12:45',
+          messages: [
+            ['为什么会聊起', '你们都对空间和人的关系感兴趣，喜欢寻找让人安心的地方。'],
+            ['可能聊些什么', '可以从一间房子的光线、声音和气味聊到记忆里的场所。'],
+            ['会继续聊什么', '分享一处最近发现的、愿意再次回去的空间。']
+          ]
+        },
+        {
+          id: 'gao', avatar: '高', name: '高远', location: '场景 · 讲台',
+          title: '一个新想法是怎样从模糊变得清晰的',
+          tag: '交流潜力 中等', date: '前天 20:16',
+          messages: [
+            ['为什么会聊起', '你们都习惯从问题出发，慢慢梳理自己的判断和方向。'],
+            ['可能聊些什么', '可以谈谈最近反复思考的一件事，以及它最初的样子。'],
+            ['会继续聊什么', '继续交换把想法落实到行动中的方法。']
+          ]
+        }
+      ];
+
+      const home = document.getElementById('home-view');
+      const encounter = document.getElementById('encounter-view');
+      const town = document.getElementById('town-panorama');
+      const tavern = document.getElementById('tavern-view');
+      const sceneBackground = document.getElementById('scene-background');
+      const sceneTitle = document.getElementById('tavern-title');
+      const tavernHeading = document.getElementById('tavern-conversation-heading');
+      const tavernSelectionBack = document.getElementById('tavern-selection-back');
+      const tavernDetailCard = document.getElementById('tavern-detail-card');
+      const tavernDetailName = document.getElementById('tavern-detail-name');
+      const tavernDetailMeta = document.getElementById('tavern-detail-meta');
+      const tavernDetailPersonality = document.getElementById('tavern-detail-personality');
+      const tavernDetailInterests = document.getElementById('tavern-detail-interests');
+      const tavernDetailIntro = document.getElementById('tavern-detail-intro');
+      const profile = document.getElementById('profile-view');
+      const list = document.getElementById('encounter-list');
+      const layout = document.getElementById('encounter-layout');
+      const chatContent = document.getElementById('chat-content');
+      const closeButton = document.getElementById('chat-close');
+      const recordOverlay = document.getElementById('chat-record-overlay');
+      const recordClose = document.getElementById('chat-record-close');
+      const recordList = document.getElementById('chat-record-list');
+      const recordSubtitle = document.getElementById('chat-record-subtitle');
+      const siteNavLinks = [...document.querySelectorAll('.site-topbar .topbar__nav a[data-route]')];
+
+      const sceneConfig = {
+        tavern: { title: '酒馆', background: './美术素材/场景酒吧.png' },
+        theater: { title: '戏剧院', background: './美术素材/场景戏剧院.jpg' },
+        podium: { title: '讲台', background: './美术素材/场景讲台.jpg' },
+        cafe: { title: '咖啡店', background: './美术素材/场景咖啡店.png' },
+        library: { title: '图书馆', background: './美术素材/场景图书馆.png' }
+      };
+
+      const fullChatRounds = [
+        ['A', '最近读到哪一本书，让你停下来想了很久？', 'B', '我刚读完一本关于城市生活的书，里面关于独处的部分很有共鸣。'],
+        ['A', '你喜欢怎样安排一段不被打扰的阅读时间？', 'B', '通常会把手机调成静音，找一个有自然光的角落，慢慢读上一个下午。'],
+        ['A', '听起来很像给自己留一块安静的地方。', 'B', '是的，安静下来以后，很多原本模糊的想法才会慢慢变清楚。'],
+        ['A', '你会把读书时想到的事情记下来吗？', 'B', '会写几句短句，有时也会画下当时看到的窗外景色。'],
+        ['A', '这些记录后来会影响你对生活的判断吗？', 'B', '会让我更愿意关注细节，也更能理解别人为什么做出不同的选择。'],
+        ['A', '下次可以交换最近最喜欢的一段文字。', 'B', '好啊，也许从那段文字开始，我们还能继续聊出更多故事。']
+      ];
+
+      function renderList() {
+        list.innerHTML = encounterData.map((item, index) => `
+          <button class="encounter-card" data-id="${item.id}" type="button">
+            <span class="encounter-avatar">${item.avatar}</span>
+            <span class="encounter-card__body">
+              <span class="encounter-card__name">看山 · ${item.name} <small>${item.location}</small></span>
+              <strong>${item.title}</strong>
+              <span class="encounter-tag">${item.tag}</span>
+            </span>
+            <span class="encounter-card__actions"><em>不感兴趣</em><span>感兴趣</span></span>
+          </button>`).join('');
+        list.querySelectorAll('.encounter-card').forEach((card) => {
+          card.addEventListener('click', () => openChat(card.dataset.id));
+        });
+      }
+
+      function openChat(id) {
+        const item = encounterData.find((entry) => entry.id === id);
+        if (!item) return;
+        layout.classList.add('has-chat');
+        list.querySelectorAll('.encounter-card').forEach((card) => card.classList.toggle('is-selected', card.dataset.id === id));
+        chatContent.innerHTML = `
+          <div class="chat-person"><span class="chat-person__avatar">A</span><div><b>看山 · ${item.name}</b><small>${item.location}</small></div><span class="chat-person__tag">交流潜力 ${item.tag.split(' ')[1]}</span><i>对方已向你发起说话申请</i></div>
+          <time>${item.date}</time>
+          <div class="chat-messages">${item.messages.map(([label, text]) => `<div class="chat-bubble"><small>${label}</small><p>${text}</p></div>`).join('')}</div>
+          <a class="chat-history" href="#">查看完整记录 →</a>
+          <div class="chat-actions"><button>确认认识</button><button>拒绝认识</button><button>再聊一聊</button></div>`;
+        chatContent.querySelector('.chat-history').addEventListener('click', (event) => {
+          event.preventDefault();
+          openFullChat(item);
+        });
+      }
+
+      function openFullChat(item) {
+        recordSubtitle.textContent = `看山 · ${item.name}  ·  ${item.location}`;
+        recordList.innerHTML = fullChatRounds.map(([aWho, aText, bWho, bText], index) => `
+          <div class="record-round">
+            <span class="record-round__number">${String(index + 1).padStart(2, '0')}</span>
+            <div class="record-row record-row--mine">
+              <span class="record-avatar record-avatar--mine">看</span>
+              <div class="record-message record-message--a"><b>看山</b><p>${aText}</p></div>
+            </div>
+            <div class="record-row record-row--guest">
+              <div class="record-message record-message--b"><b>${item.name}</b><p>${bText}</p></div>
+              <span class="record-avatar record-avatar--guest">${item.avatar}</span>
+            </div>
+          </div>`).join('');
+        recordOverlay.classList.add('is-open');
+        recordOverlay.setAttribute('aria-hidden', 'false');
+      }
+
+      function closeFullChat() {
+        recordOverlay.classList.remove('is-open');
+        recordOverlay.setAttribute('aria-hidden', 'true');
+      }
+      recordClose.addEventListener('click', closeFullChat);
+      recordOverlay.addEventListener('click', (event) => { if (event.target === recordOverlay) closeFullChat(); });
+      document.addEventListener('keydown', (event) => { if (event.key === 'Escape') closeFullChat(); });
+
+      closeButton.addEventListener('click', () => {
+        layout.classList.remove('has-chat');
+        list.querySelectorAll('.encounter-card').forEach((card) => card.classList.remove('is-selected'));
+      });
+
+      function setView() {
+        const route = location.hash.slice(1).split('?')[0];
+        const isEncounter = route === 'encounter';
+        const sceneKey = route.endsWith('-scene') ? route.slice(0, -6) : '';
+        const isScene = Boolean(sceneConfig[sceneKey]);
+        const isProfile = route === 'profile';
+        const activeRoute = isEncounter ? 'encounter' : isProfile ? 'profile' : 'home';
+        siteNavLinks.forEach((link) => link.classList.toggle('is-active', link.dataset.route === activeRoute));
+        home.hidden = isEncounter || isScene || isProfile;
+        encounter.hidden = !isEncounter;
+        town.hidden = isEncounter || isScene || isProfile;
+        tavern.hidden = !isScene;
+        profile.hidden = !isProfile;
+        document.body.classList.toggle('is-scene-view', isScene);
+        document.body.classList.toggle('is-profile-view', isProfile);
+        if (isScene) {
+          const scene = sceneConfig[sceneKey];
+          sceneBackground.src = scene.background;
+          sceneBackground.alt = `${scene.title}场景`;
+          sceneTitle.textContent = scene.title;
+          resetTavernConversation();
+        }
+        if (isEncounter || isScene || isProfile) window.scrollTo(0, 0);
+      }
+      document.querySelectorAll('.town-building[data-scene]').forEach((building) => {
+        building.addEventListener('click', () => {
+          window.location.hash = `${building.dataset.scene}-scene`;
+        });
+      });
+      const tavernGuests = [...document.querySelectorAll('.tavern-guest')];
+      function resetTavernConversation() {
+        tavern.classList.remove('is-conversation');
+        tavernGuests.forEach((guest) => guest.classList.remove('is-selected'));
+        tavernHeading.textContent = '开始与看山交谈';
+        tavernDetailCard.hidden = true;
+      }
+      tavernGuests.forEach((guest) => {
+        guest.addEventListener('click', () => {
+          tavernGuests.forEach((item) => item.classList.toggle('is-selected', item === guest));
+          tavern.classList.add('is-conversation');
+          tavernHeading.textContent = `开始与${guest.dataset.name}看山交谈`;
+          tavernDetailName.textContent = guest.dataset.name;
+          tavernDetailMeta.textContent = guest.dataset.meta;
+          tavernDetailPersonality.textContent = guest.dataset.personality;
+          tavernDetailInterests.textContent = guest.dataset.interests;
+          tavernDetailIntro.textContent = guest.dataset.intro;
+          tavernDetailCard.hidden = false;
+        });
+      });
+      tavernSelectionBack.addEventListener('click', resetTavernConversation);
+      renderList();
+      window.addEventListener('hashchange', setView);
+      setView();
+    </script>
+  </body>
+</html>
