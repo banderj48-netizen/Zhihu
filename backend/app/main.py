@@ -119,6 +119,24 @@ def consent(body:Consent,x_user_id:str|None=Header(default=None)):
 def create_job(request:Request,body:ImportJob,bg:BackgroundTasks,x_user_id:str|None=Header(default=None)):
  user=uid(x_user_id); token=auth_session.get_zhihu_token(auth_session.read_session_id(request))
  t={'id':'job_'+uuid4().hex,'user_id':user,'source':body.source,'status':'queued','progress':0,'message':'任务已排队','created_at':now(),'updated_at':now()}; tasks[t['id']]=t; bg.add_task(run,t['id'],user,token); return t
+def _fetch_one(request:Request, name:str, fn):
+ token=auth_session.get_zhihu_token(auth_session.read_session_id(request))
+ if not token: raise HTTPException(401, '知乎授权已过期，请重新授权')
+ try:
+  result=fn(token)
+  print(f'[import-api] {name} raw response:', json.dumps(result, ensure_ascii=False, default=str), flush=True)
+  return {'type':name,'data':result}
+ except _zhihu_client.ZhihuDataError as exc:
+  print(f'[import-api] {name} error:', repr(exc), flush=True)
+  raise HTTPException(exc.status_code, detail=exc.message) from exc
+@app.get('/v1/import-jobs/contents')
+def import_contents(request:Request): return _fetch_one(request,'contents',_zhihu_client.fetch_contents)
+@app.get('/v1/import-jobs/followees')
+def import_followees(request:Request): return _fetch_one(request,'followees',_zhihu_client.fetch_followees)
+@app.get('/v1/import-jobs/favlists')
+def import_favlists(request:Request): return _fetch_one(request,'favlists',_zhihu_client.fetch_favlists)
+@app.get('/v1/import-jobs/collections')
+def import_collections(request:Request): return _fetch_one(request,'collections',_zhihu_client.fetch_collections)
 @app.get('/v1/import-jobs/{tid}')
 def get_job(tid:str,x_user_id:str|None=Header(default=None)):
  t=tasks.get(tid)
