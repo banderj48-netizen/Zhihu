@@ -27,7 +27,7 @@ BASE_URL = "https://developer.zhihu.com"
 # 开放平台 Access Secret，代表本应用作为调用方
 ACCESS_SECRET = os.environ.get("ZHIHU_ACCESS_SECRET", "")
 
-_TIMEOUT = 20
+_TIMEOUT = 60
 
 # 内容类型白名单，与开放平台一致
 CONTENT_TYPES = {"all", "answer", "article", "zvideo", "pin", "question"}
@@ -76,7 +76,7 @@ def _get(path: str, params: dict[str, Any], oauth_token: str) -> dict[str, Any]:
     })
 
     last_error: Exception | None = None
-    for attempt in range(1, 3):
+    for attempt in range(1, 4):
         try:
             with urllib.request.urlopen(req, timeout=_TIMEOUT) as resp:
                 raw = resp.read().decode("utf-8", "replace")
@@ -88,10 +88,10 @@ def _get(path: str, params: dict[str, Any], oauth_token: str) -> dict[str, Any]:
             break
         except (urllib.error.URLError, TimeoutError, socket.timeout, ConnectionError) as e:
             last_error = e
-            print(f"[zhihu-api] GET {path} network attempt {attempt}/2 failed: {e!r}", flush=True)
-            if attempt == 2:
+            print(f"[zhihu-api] GET {path} network attempt {attempt}/3 failed: {e!r}", flush=True)
+            if attempt == 3:
                 raise ZhihuDataError("NETWORK_ERROR", f"无法连接知乎开放平台: {e}", 502, repr(e)) from e
-            time.sleep(0.5)
+            time.sleep(float(attempt))
 
     try:
         data = json.loads(raw)
