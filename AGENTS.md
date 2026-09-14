@@ -20,7 +20,7 @@
 - `backend/agent/runtime/dialogue_manager.py` 负责最多 10 组后台对话、协作式取消和 SSE 事件；所有匹配模式均固定当前用户 avatar 为 A，仅选择其他空闲 avatar 为 B。
 - 场景、匹配、实时事件、取消和次日接口统一位于 `/v1/twin`；聊天记录仅展示 `processing_status=ready` 的组，`POST /v1/twin/chat-groups/{chat_no}/read` 维护未读红点。
 - 初始化出题接口位于 `/v1/twin/initializations/{id}/opinion-questions|social-questions` 与 `/v1/twin/social-questions/{qid}/present`；生成逻辑在 `backend/agent/domains/question_generator.py`，LLM 可用（`LLM_API_KEY`）时结合知乎素材动态出题，否则回退内置模板题库，社交题 `presented_at` 由服务端打点、限时 13 秒。
-- 性格测评与领域选择模块使用 TEXT 主键的 `avatars/personality_assessments/avatar_domain_selections` 兼容表，建表脚本为 `backend/db/postgresql_legacy_compat.sql`，需在 8 个正式脚本（`initialize_formal`）之后执行；用户归属由仓储层先 upsert `users`（UUID 直接作主键，其余登记 `external_id`）维护。
+- 性格测评与领域选择模块使用 TEXT 主键的 `avatars/personality_assessments/avatar_domain_selections` 兼容表，建表脚本为 `backend/db/postgresql_legacy_compat.sql`，需在 9 个正式脚本（`initialize_formal`）之后执行；用户归属由仓储层先 upsert `users`（UUID 直接作主键，其余登记 `external_id`）维护。
 - 初始化全流程端到端脚本位于 `backend/reports/e2e_initialization_flow.py`，后端启动后执行 `python backend/reports/e2e_initialization_flow.py [user_id]` 可一键回归六步流程。
 - `backend/db/postgresql_seed_six_avatars.sql` 用于数据库种子数据：为指定真实账号创建 1 个数字分身，并为 5 个带 `seed-similar-avatar-*` 标记的合成测试用户各创建 1 个相似但不相同的数字分身，供后续 Agent 对话模拟；执行前连接 `zhihu` 数据库并通过 psql 变量 `target_user_key` 指定真实用户 ID 或 `external_id`，脚本不会写入 Chroma。
 - `backend/db/postgresql_seed_six_login_users.sql` 用于后端接口联调：创建 `xie` 与 5 个 `seed-login-user-*` 模拟授权用户，并按用户、数字分身、画像版本、身份、性格、风格、记忆规则、策略和兴趣记忆的依赖顺序幂等写入；OAuth 登录不保存本地密码，执行前连接 `zhihu` 数据库。
@@ -34,3 +34,8 @@
 - 向量同步完成后可用 `vector_sync_outbox` 状态、Chroma 三个集合计数和 `build_context` 的 `retrieval_meta` 复现验证；原始资料片段命中时必须通过 `metadata.document_id` 回 PostgreSQL 取正文。
 - `backend/reports/test_real_embedding_context_agent.py` 是真实验收脚本：使用实际问题验证 Embedding、outbox 同步、PostgreSQL+Chroma 混合检索和真实 Agent 回复；默认不绑定画像写入工具，结果可通过 `--output` 保存为 UTF-8 JSON。
 - Agent 最终上下文默认限制为：分类记忆总计最多 10 条、完整原始资料最多 5 篇、聊天命中组最多 5 组、每组最多 5 条消息；当前回合的 `conversation_history` 仍由对话编排器按现有轮数保留。
+- 通知、交友确认和陌生回答事实表位于 `backend/db/postgresql_notifications.sql`，执行顺序为画像、聊天、对话、通知、聊天组、在场、已读；`user_notifications` 统一承载系统消息，`avatar_friendships` 保存双方独立决定，`agent_unknown_responses` 保存低相关度回答及反馈审计。
+- `/v1/twin/notifications` 提供消息盒子、未读数、heartbeat 和决定接口；交友邀请只有双方均同意后才推送对方知乎身份快照，陌生回答“不符合预期”反馈由服务层衔接行为记忆提案流程。
+- 陌生回答被用户判定为 `unexpected` 时，`NotificationService` 必须先通过注入的 LLM 生成行为记忆主题和内容，再调用 `create_behavior_memory_tool` 写入未确认行为记忆；LLM 不可用时只允许写入明确标记为回退来源的未确认安全提案。
+- 通知端到端验收脚本为 `backend/reports/test_notifications_e2e.py`；使用 `backend\\.venv\\Scripts\\python.exe backend/reports/test_notifications_e2e.py` 可执行确定性回归，增加 `--real-llm` 可验证真实模型生成，脚本自动创建并清理 `test-notification-*` 临时用户。
+- 交友通知顺序演示脚本为 `backend/reports/demo_friendship_notification_flow.py`；它按 A 推送、A 同意、B 推送、B 同意四步打印 `avatar_friendships` 与 `user_notifications` 快照，默认清理 `demo-friendship-*` 临时数据，使用 `--keep` 保留供人工查询。

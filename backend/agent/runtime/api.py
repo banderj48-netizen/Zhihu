@@ -16,6 +16,7 @@ from agent.runtime.presence import PresenceService
 from agent.runtime.matching import AvatarMatcher
 from agent.runtime.dialogue import run_agent_dialogue
 from agent.runtime.dialogue_manager import DialogueManager
+from agent.runtime.notifications import NotificationService
 from agent.domains.question_generator import (
     TIME_LIMIT_SECONDS,
     generate_opinion_questions,
@@ -29,6 +30,7 @@ _initializations = InitializationService()
 _mind_reading = MindReadingService()
 _chat_groups = ChatGroupService()
 _presence = PresenceService()
+_notifications = NotificationService()
 
 
 class _EmptyVector:
@@ -120,6 +122,13 @@ class QuestionRequest(BaseModel):
     """出题请求；领域缺省时从会话已保存的领域选择中读取。"""
     count: int = Field(default=5, ge=1, le=10)
     domain_ids: list[str] = Field(default_factory=list)
+
+
+class NotificationDecision(BaseModel):
+    """通知弹窗提交的交友决定或陌生回答反馈。"""
+    decision: Literal["accepted", "rejected"] | None = None
+    feedback: Literal["expected", "unexpected"] | None = None
+    feedback_text: str | None = None
 
 
 @router.post("/initializations")
@@ -383,3 +392,44 @@ def mark_chat_group_read(chat_no: str, request: Request, x_user_id: str | None =
     if not _chat_groups.mark_read(_resolved_user(request, x_user_id), chat_no):
         raise HTTPException(404, "聊天记录不存在")
     return {"chat_no": chat_no, "read": True}
+
+
+@router.get("/notifications")
+def list_notifications(request: Request, page: int = 1, page_size: int = 20, status: str | None = None, notification_type: str | None = None, x_user_id: str | None = Header(default=None)):
+    """分页读取当前用户消息盒子，服务层负责权限过滤。"""
+    return _notifications.list_notifications(_resolved_user(request, x_user_id), page=page, page_size=page_size, status=status, notification_type=notification_type)
+
+
+@router.get("/notifications/unread-count")
+def unread_notification_count(request: Request, x_user_id: str | None = Header(default=None)):
+    """返回消息盒子未读数量和红点标记。"""
+    return _notifications.unread_count(_resolved_user(request, x_user_id))
+
+
+@router.get("/notifications/heartbeat")
+def notification_heartbeat(request: Request, x_user_id: str | None = Header(default=None)):
+    """前端心跳接口；只返回计数，不消费通知。"""
+    return _notifications.unread_count(_resolved_user(request, x_user_id))
+
+
+@router.get("/notifications/{notification_id}")
+def get_notification(notification_id: str, request: Request, x_user_id: str | None = Header(default=None)):
+    """读取通知详情并把未读状态更新为已读。"""
+    value = _notifications.get_notification(_resolved_user(request, x_user_id), notification_id)
+    if not value:
+        raise HTTPException(404, "通知不存在")
+    return value
+
+
+@router.post("/notifications/{notification_id}/decision")
+async def decide_notification(notification_id: str, body: NotificationDecision, request: Request, x_user_id: str | None = Header(default=None)):
+    """提交交友同意/拒绝或陌生回答反馈，并保持操作幂等。"""
+    user_id = _resolved_user(request, x_user_id)
+    try:
+        if body.decision:
+            return _notifications.decide_friendship(user_id, notification_id, body.decision)
+        if body.feedback:
+            return await _notifications.decide_unknown_response_with_model(user_id, notification_id, body.feedback, body.feedback_text)
+        raise ValueError("decision 或 feedback 至少提供一个")
+    except ValueError as exc:
+        raise HTTPException(400, str(exc)) from exc
