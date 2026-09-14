@@ -88,12 +88,19 @@ def run(tid,user,oauth_token=None):
  try:
   with lock: tasks[tid].update(status='fetching',progress=15,message='正在读取已授权数据',updated_at=now())
   if not oauth_token: raise RuntimeError('知乎会话 token 不存在或已过期')
-  results = {
-   'contents': _zhihu_client.fetch_contents(oauth_token),
-   'followees': _zhihu_client.fetch_followees(oauth_token),
-   'favlists': _zhihu_client.fetch_favlists(oauth_token),
-   'collections': _zhihu_client.fetch_collections(oauth_token),
-  }
+  results = {}
+  for name, fn in (
+   ('contents', _zhihu_client.fetch_contents),
+   ('followees', _zhihu_client.fetch_followees),
+   ('favlists', _zhihu_client.fetch_favlists),
+   ('collections', _zhihu_client.fetch_collections),
+  ):
+   try:
+    results[name] = fn(oauth_token)
+    print(f'[import-job] {name} parsed response:', json.dumps(results[name], ensure_ascii=False, default=str), flush=True)
+   except Exception as exc:
+    results[name] = {'error': type(exc).__name__, 'message': str(exc)}
+    print(f'[import-job] {name} error:', repr(exc), flush=True)
   print('[import-job] zhihu raw response:', json.dumps(results, ensure_ascii=False, default=str), flush=True)
   with lock: tasks[tid].update(status='completed',progress=100,message='知乎数据读取完成',result=results,updated_at=now())
  except Exception as exc:
