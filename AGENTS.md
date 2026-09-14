@@ -29,3 +29,6 @@
 - `backend/db/postgresql_seed_agent_presence_test.sql` 用于手动接口测试前为 `xie` 与 `seed-login-user-2` 在 `cafe`、`library`、`bar`、`theater`、`lecture` 五个已实现���景登记 `idle` 在场记录，并清理残留占用；仅用于测试夹具准备。
 - 阿里云百炼 `qwen3.7-text-embedding-flash` 的 Embedding 配置使用 `EMBEDDING_API_KEY`、`EMBEDDING_BASE_URL`、`EMBEDDING_MODEL` 和 `EMBEDDING_BATCH_SIZE`；Chroma 使用 `CHROMA_MODE=persistent` 与 `CHROMA_PERSIST_DIRECTORY`，集合分别为 `avatar_memories`、`source_documents`、`chat_messages`。PostgreSQL 是事实源，Chroma 只保存向量、候选 ID 和检索元数据。
 - `backend/agent/profile/outbox.py` 在进程内异步消费 `vector_sync_outbox`，不引入 MQ；应用启动时会为历史画像、原始资料和聊天消息补建待同步任务，并在后台重试向量写入。
+- 所有 LLM、评判模型和 Embedding 配置统一从独立的 `backend/.env.models` 读取，模板为 `backend/.env.models.example`；`TWINLOOP_MODEL_ENV_FILE` 可覆盖路径，系统环境变量优先。真实 API Key 不得提交 Git。
+- `backend/agent/adapters/chroma_factory.py` 在本地启动使用 `.env.local` 时会回退合并 `backend/.env`；`.env.local` 中的同名变量优先。API Key 只能通过本机安全输入或本地文件写入，不得提交到仓库或打印日志。
+- 向量同步完成后可用 `vector_sync_outbox` 状态、Chroma 三个集合计数和 `build_context` 的 `retrieval_meta` 复现验证；原始资料片段命中时必须通过 `metadata.document_id` 回 PostgreSQL 取正文。

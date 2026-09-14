@@ -9,12 +9,21 @@ python -m venv .venv
 .\.venv\Scripts\pip install -e ".[test]"
 ```
 
-设置 `backend/.env`：
+设置 `backend/.env`（数据库和应用配置）：
 
 ```text
 DATABASE_URL=postgresql://postgres:密码@localhost:5432/zhihu
 TWINLOOP_MOCK_LLM=true
 ```
+
+模型配置单独保存到 `backend/.env.models`：
+
+```powershell
+Copy-Item backend/.env.models.example backend/.env.models
+# 编辑 backend/.env.models，填写 LLM_API_KEY、EVALUATOR_LLM_API_KEY 和 EMBEDDING_API_KEY
+```
+
+也可以设置 `TWINLOOP_MODEL_ENV_FILE` 指向其他模型环境文件。真实密钥不会提交 Git。
 
 首次建表：
 

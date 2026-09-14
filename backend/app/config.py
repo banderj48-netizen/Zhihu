@@ -2,7 +2,8 @@
 
 启动时自动加载配置，无需每次手动设置环境变量。
 
-优先级：真实环境变量 > backend/.env 文件 > 本文件内置默认值。
+应用配置优先级：真实环境变量 > TWINLOOP_ENV_FILE 指定文件 > 本文件内置默认值。
+LLM、评判模型和 Embedding 不在此处加载，统一由独立的 .env.models 按需读取。
 部署时用环境变量覆盖，本地开发直接用内置默认值即可跑起来。
 
 ⚠️ 安全提示：DEFAULTS 中的 ZHIHU_ACCESS_SECRET 为明文凭据。
@@ -15,10 +16,21 @@ from __future__ import annotations
 
 import os
 from pathlib import Path
+from typing import Any
+
+from dotenv import dotenv_values
 
 # backend/ 目录
 BASE_DIR = Path(__file__).resolve().parent.parent
 ENV_FILE = Path(os.environ.get("TWINLOOP_ENV_FILE", str(BASE_DIR / ".env")))
+
+# 模型凭据必须从独立的 .env.models 读取，不能被通用应用环境加载进进程。
+MODEL_ENV_KEYS = {
+    "LLM_API_KEY", "LLM_BASE_URL", "LLM_MODEL",
+    "OPENAI_API_KEY", "OPENAI_BASE_URL", "OPENAI_MODEL",
+    "EVALUATOR_LLM_API_KEY", "EVALUATOR_LLM_BASE_URL", "EVALUATOR_LLM_MODEL",
+    "EMBEDDING_API_KEY", "EMBEDDING_BASE_URL", "EMBEDDING_MODEL", "EMBEDDING_BATCH_SIZE",
+}
 
 # --------------------------------------------------------------------------
 # 内置默认配置：本地开发免配置直接启动
@@ -56,20 +68,13 @@ def load_env() -> bool:
     found = False
     if ENV_FILE.exists():
         found = True
-        try:
-            from dotenv import load_dotenv
-            load_dotenv(ENV_FILE, override=False)
-        except ImportError:
-            # 未安装 python-dotenv 时退回到极简解析，保证可用
-            for line in ENV_FILE.read_text(encoding="utf-8").splitlines():
-                line = line.strip()
-                if not line or line.startswith("#") or "=" not in line:
-                    continue
-                key, _, value = line.partition("=")
-                key = key.strip()
-                value = value.strip().strip('"').strip("'")
-                if key and key not in os.environ:
-                    os.environ[key] = value
+        # 只加载应用配置；模型配置由 agent.runtime.model_config 按需读取，
+        # 这样即使旧 .env 中残留模型键，也不会绕过独立环境隔离。
+        values: dict[str, Any] = dict(dotenv_values(ENV_FILE))
+        for key, value in values.items():
+            if not key or key in MODEL_ENV_KEYS or value is None or key in os.environ:
+                continue
+            os.environ[key] = str(value)
 
     # 最后补上内置默认值，确保零配置也能启动
     apply_defaults()

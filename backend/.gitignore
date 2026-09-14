@@ -2,6 +2,7 @@ __pycache__/
 .env
 .env.*
 !.env.example
+!.env.models.example
 .postgresql/
 postgresql-*.zip
 *.egg-info/

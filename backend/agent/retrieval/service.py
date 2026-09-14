@@ -207,6 +207,14 @@ async def search_source_documents(repository: PostgresRetrievalRepository, vecto
     db_rows = await repository.fetch_documents_by_ids(avatar_id, vector_ids)
     for row in db_rows: merged.setdefault(str(row["document_id"]), {**row, "keyword_score": 0.0})
     for item in vector_rows:
+        # Chroma 可能按文档片段 ID 返回结果，需通过 metadata.document_id
+        # 映射回 PostgreSQL 文档，避免片段命中时丢失语义分数。
+        document_id = str((item.get("metadata") or {}).get("document_id") or item["id"])
+        if document_id in merged:
+            merged[document_id]["semantic_score"] = max(
+                float(merged[document_id].get("semantic_score") or 0),
+                float(item.get("semantic_score") or 0),
+            )
         if str(item["id"]) in merged: merged[str(item["id"])]["semantic_score"] = float(item.get("semantic_score") or 0)
     for row in merged.values(): row["relevance_score"] = 0.45 * float(row.get("semantic_score") or 0) + 0.30 * float(row.get("keyword_score") or 0) + 0.25
     return sorted(merged.values(), key=lambda x: x["relevance_score"], reverse=True)[:top_k]

@@ -47,10 +47,10 @@ class DashScopeEmbeddingFunction:
             vectors.extend(self._request(texts[offset : offset + self.batch_size]))
         return vectors
 
-    def embed_query(self, input: str) -> list[float]:
-        """为单个查询文本生成向量，供 Chroma query 使用。"""
-        values = self._request([str(input)])
-        return values[0] if values else []
+    def embed_query(self, input: Sequence[str] | str) -> list[list[float]]:
+        """生成查询向量批次，遵循 Chroma 1.x 的 Embeddings 返回协议。"""
+        texts = [input] if isinstance(input, str) else [str(item) for item in input]
+        return self._request(texts)
 
     def _request(self, texts: list[str]) -> list[list[float]]:
         """调用 Embeddings API 并按返回的 index 恢复输入顺序。"""

@@ -60,9 +60,9 @@ class ChromaVectorSearchAdapter:
         for key, value in metadata.items():
             if isinstance(value, (datetime, date)):
                 normalized[key] = value.isoformat()
-            elif isinstance(value, (str, int, float, bool)) or value is None:
+            elif isinstance(value, (str, int, float, bool)):
                 normalized[key] = value
-            else:
+            elif value is not None:
                 normalized[key] = str(value)
         return normalized
 

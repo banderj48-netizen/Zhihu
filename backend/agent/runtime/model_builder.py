@@ -7,27 +7,13 @@
 from __future__ import annotations
 
 import asyncio
-import os
 from pathlib import Path
 from typing import Any
 
-from dotenv import dotenv_values
 from openai import OpenAI
 
 from agent.runtime.llm import LLM
-
-
-BACKEND_ROOT = Path(__file__).resolve().parents[2]
-
-
-def _setting(name: str, values: dict[str, Any], default: str | None = None) -> str | None:
-    """按环境变量优先、``backend/.env`` 次之的顺序读取配置。"""
-    value = os.getenv(name)
-    if value is None:
-        value = values.get(name)
-    if value is None or not str(value).strip():
-        return default
-    return str(value).strip()
+from agent.runtime.model_config import load_model_values, model_env_path, model_setting
 
 
 def _post_chat_completion(client: OpenAI, model: str, prompt: str, options: dict[str, Any]) -> dict[str, Any]:
@@ -54,15 +40,15 @@ def _post_chat_completion(client: OpenAI, model: str, prompt: str, options: dict
 def build_llm(*, env_file: str | Path | None = None, model: str | None = None) -> LLM:
     """从配置文件构造 OpenAI 兼容的 ``LLM`` 实例。
 
-    配置项：``LLM_API_KEY``、``LLM_BASE_URL``、``LLM_MODEL``。为兼容常见服务，
-    也支持 ``OPENAI_API_KEY``、``OPENAI_BASE_URL`` 和 ``OPENAI_MODEL`` 别名。
-    进程环境变量优先于 ``.env`` 文件；缺少 API Key 或模型时立即抛出明确异常。
+    配置项：``LLM_API_KEY``、``LLM_BASE_URL``、``LLM_MODEL``，统一从独立的
+    ``backend/.env.models`` 读取。为兼容常见服务，也支持 ``OPENAI_*`` 别名。
+    进程环境变量优先于模型环境文件；缺少 API Key 或模型时立即抛出明确异常。
     """
-    path = Path(env_file) if env_file else BACKEND_ROOT / ".env"
-    values = dotenv_values(path) if path.exists() else {}
-    api_key = _setting("LLM_API_KEY", values) or _setting("OPENAI_API_KEY", values)
-    base_url = _setting("LLM_BASE_URL", values) or _setting("OPENAI_BASE_URL", values, "https://api.openai.com/v1")
-    model_name = model or _setting("LLM_MODEL", values) or _setting("OPENAI_MODEL", values)
+    path = model_env_path(env_file)
+    values = load_model_values(path)
+    api_key = model_setting("LLM_API_KEY", values) or model_setting("OPENAI_API_KEY", values)
+    base_url = model_setting("LLM_BASE_URL", values) or model_setting("OPENAI_BASE_URL", values, "https://api.openai.com/v1")
+    model_name = model or model_setting("LLM_MODEL", values) or model_setting("OPENAI_MODEL", values)
     if not api_key:
         raise ValueError(f"未配置 LLM_API_KEY 或 OPENAI_API_KEY，请在 {path} 中设置")
     if not model_name:
@@ -78,12 +64,12 @@ def build_llm(*, env_file: str | Path | None = None, model: str | None = None) -
 
 
 def build_evaluator_llm(*, env_file: str | Path | None = None, model: str | None = None) -> LLM:
-    """读取独立评判模型配置并创建 LLM，不自动复用回答模型配置。"""
-    path = Path(env_file) if env_file else BACKEND_ROOT / ".env"
-    values = dotenv_values(path) if path.exists() else {}
-    api_key = _setting("EVALUATOR_LLM_API_KEY", values)
-    base_url = _setting("EVALUATOR_LLM_BASE_URL", values)
-    model_name = model or _setting("EVALUATOR_LLM_MODEL", values)
+    """从独立模型环境读取评判模型配置，不自动复用回答模型配置。"""
+    path = model_env_path(env_file)
+    values = load_model_values(path)
+    api_key = model_setting("EVALUATOR_LLM_API_KEY", values)
+    base_url = model_setting("EVALUATOR_LLM_BASE_URL", values)
+    model_name = model or model_setting("EVALUATOR_LLM_MODEL", values)
     if not api_key or not model_name:
         raise ValueError(f"未完整配置 EVALUATOR_LLM_API_KEY、EVALUATOR_LLM_BASE_URL、EVALUATOR_LLM_MODEL，请在 {path} 中设置")
     if not base_url:

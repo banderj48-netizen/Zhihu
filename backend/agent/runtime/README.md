@@ -11,7 +11,7 @@ Agent 不注册工具，也不会主动访问数据库或 Chroma。检索由调�
 
 ## 模型构建
 
-`model_builder.py` 提供 `build_llm()`，从 `backend/.env` 读取 `LLM_API_KEY`、`LLM_BASE_URL` 和 `LLM_MODEL`，并构造 OpenAI 兼容协议的 `LLM`。环境变量优先于 `.env`，也兼容 `OPENAI_API_KEY`、`OPENAI_BASE_URL` 和 `OPENAI_MODEL` 命名。
+`model_builder.py` 提供 `build_llm()`，从独立的 `backend/.env.models` 读取 `LLM_API_KEY`、`LLM_BASE_URL` 和 `LLM_MODEL`，并构造 OpenAI 兼容协议的 `LLM`。环境变量优先于模型环境文件，也兼容 `OPENAI_API_KEY`、`OPENAI_BASE_URL` 和 `OPENAI_MODEL` 命名。评判模型读取同一文件中的 `EVALUATOR_LLM_*` 配置，Embedding 读取 `EMBEDDING_*` 配置。
 
 ```python
 from agent.runtime.model_builder import build_llm
@@ -20,7 +20,7 @@ llm = build_llm()
 response = await llm.generate("请回答问题")
 ```
 
-不要将真实 API Key 提交到 Git；请复制 `backend/.env.example` 为 `backend/.env` 后填写配置。
+不要将真实 API Key 提交到 Git；请复制 `backend/.env.models.example` 为 `backend/.env.models` 后填写配置。`backend/.env.models` 已加入 Git 忽略列表。
 
 ## 双 Agent 对话
 

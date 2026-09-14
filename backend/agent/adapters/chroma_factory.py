@@ -11,6 +11,7 @@ from dotenv import dotenv_values
 
 from agent.adapters.embedding import DashScopeEmbeddingFunction
 from agent.adapters.vector_search import ChromaVectorSearchAdapter
+from agent.runtime.model_config import load_model_values, model_env_path, model_setting
 
 
 BACKEND_ROOT = Path(__file__).resolve().parents[2]
@@ -27,23 +28,39 @@ def _setting(name: str, values: dict[str, Any], default: str | None = None) -> s
 
 
 def _values(env_file: str | Path | None = None) -> dict[str, Any]:
-    """读取当前后端使用的环境文件。"""
-    path = Path(env_file or os.getenv("TWINLOOP_ENV_FILE") or (BACKEND_ROOT / ".env"))
-    return dict(dotenv_values(path)) if path.exists() else {}
+    """读取当前后端环境，并让选定环境文件覆盖基础 ``.env``。
+
+    本地启动脚本默认使用 ``.env.local``，而数据库和模型基础配置通常在
+    ``.env``。合并读取可以避免启动方式变化导致 Chroma 配置丢失。
+    """
+    selected = Path(env_file or os.getenv("TWINLOOP_ENV_FILE") or (BACKEND_ROOT / ".env"))
+    merged: dict[str, Any] = {}
+    base = BACKEND_ROOT / ".env"
+    if base.exists():
+        merged.update(dict(dotenv_values(base)))
+    if selected.exists() and selected.resolve() != base.resolve():
+        merged.update(dict(dotenv_values(selected)))
+    return merged
 
 
 def embedding_config(env_file: str | Path | None = None) -> dict[str, str]:
     """返回阿里云 Embedding 配置；API Key 缺失时抛出可读错误。"""
-    values = _values(env_file)
-    api_key = _setting("EMBEDDING_API_KEY", values)
-    base_url = _setting("EMBEDDING_BASE_URL", values, "https://dashscope.aliyuncs.com/compatible-mode/v1")
-    model = _setting("EMBEDDING_MODEL", values, "qwen3.7-text-embedding-flash")
+    path = model_env_path(env_file)
+    values = load_model_values(path)
+    api_key = model_setting("EMBEDDING_API_KEY", values)
+    base_url = model_setting("EMBEDDING_BASE_URL", values, "https://dashscope.aliyuncs.com/compatible-mode/v1")
+    model = model_setting("EMBEDDING_MODEL", values, "qwen3.7-text-embedding-flash")
     if not api_key:
-        path = Path(env_file or os.getenv("TWINLOOP_ENV_FILE") or (BACKEND_ROOT / ".env"))
         raise ValueError(f"未配置 EMBEDDING_API_KEY，请在 {path} 中设置")
     assert base_url and model
-    batch_size = _setting("EMBEDDING_BATCH_SIZE", values, "10") or "10"
+    batch_size = model_setting("EMBEDDING_BATCH_SIZE", values, "10") or "10"
     return {"api_key": api_key, "base_url": base_url, "model": model, "batch_size": batch_size}
+
+
+def embedding_model_name(env_file: str | Path | None = None) -> str:
+    """返回当前生效的 Embedding 模型名，不读取或返回 API Key。"""
+    values = load_model_values(model_env_path(env_file))
+    return model_setting("EMBEDDING_MODEL", values, "qwen3.7-text-embedding-flash") or "qwen3.7-text-embedding-flash"
 
 
 def create_chroma_vector_store(env_file: str | Path | None = None) -> ChromaVectorSearchAdapter:
@@ -58,7 +75,8 @@ def create_chroma_vector_store(env_file: str | Path | None = None) -> ChromaVect
         directory = Path(_setting("CHROMA_PERSIST_DIRECTORY", values, str(BACKEND_ROOT / "data" / "chroma")) or (BACKEND_ROOT / "data" / "chroma"))
         directory.mkdir(parents=True, exist_ok=True)
         client = chromadb.PersistentClient(path=str(directory))
-    config = embedding_config(env_file)
+    # Chroma 的目录/服务地址属于应用环境；Embedding 凭据始终从独立模型环境读取。
+    config = embedding_config()
     embedding = DashScopeEmbeddingFunction(api_key=config["api_key"], base_url=config["base_url"], model=config["model"], batch_size=int(config["batch_size"]))
     collections = {
         "avatar_memories": _setting("CHROMA_MEMORY_COLLECTION", values, "avatar_memories") or "avatar_memories",

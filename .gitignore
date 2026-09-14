@@ -2,5 +2,8 @@
 blender-portable/
 blender-4.5.10-windows-x64.zip
 
+# 本地模型密钥环境，不提交真实凭据
+backend/.env.models
+
 # Blender 自动备份文件
 *.blend1

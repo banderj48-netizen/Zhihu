@@ -1,6 +1,5 @@
 """PostgreSQL outbox 到 Chroma 的异步同步 worker。"""
 from __future__ import annotations
-import os
 import asyncio
 from typing import Any
 from db.database import connect
@@ -49,6 +48,10 @@ async def run_sync_loop(vector_store: Any, stop_event: asyncio.Event, *, interva
             continue
 
 async def sync_pending(vector_store: Any, *, limit: int = 50) -> dict[str, int]:
+    """消费一批 outbox 任务，并把失败任务安排为指数退避重试。"""
+    from agent.adapters.chroma_factory import embedding_model_name
+
+    model_name = embedding_model_name()
     processed = failed = 0
     # Claim rows in a short transaction, then perform network/vector work outside it.
     with connect() as db:
@@ -76,9 +79,9 @@ async def sync_pending(vector_store: Any, *, limit: int = 50) -> dict[str, int]:
                             clean_db.execute("UPDATE vector_sync_outbox SET status='succeeded',processed_at=now(),last_error='skipped: memory not indexable' WHERE id=%s", (row['id'],))
                         processed += 1
                         continue
-                    await index_memory(entity, vector_store, collection=row['collection'], embedding_model=os.getenv('EMBEDDING_MODEL'))
-                elif row['entity_type'] == 'source_document': entity = db.execute("SELECT * FROM source_documents WHERE id=%s", (row['entity_id'],)).fetchone(); await index_source_document_chunk(entity, vector_store, collection=row['collection'], embedding_model=os.getenv('EMBEDDING_MODEL'))
-                elif row['entity_type'] == 'chat_message': entity = db.execute("SELECT * FROM chat_messages WHERE id=%s", (row['entity_id'],)).fetchone(); await index_chat_message(entity, vector_store, collection=row['collection'], embedding_model=os.getenv('EMBEDDING_MODEL'))
+                    await index_memory(entity, vector_store, collection=row['collection'], embedding_model=model_name)
+                elif row['entity_type'] == 'source_document': entity = db.execute("SELECT * FROM source_documents WHERE id=%s", (row['entity_id'],)).fetchone(); await index_source_document_chunk(entity, vector_store, collection=row['collection'], embedding_model=model_name)
+                elif row['entity_type'] == 'chat_message': entity = db.execute("SELECT * FROM chat_messages WHERE id=%s", (row['entity_id'],)).fetchone(); await index_chat_message(entity, vector_store, collection=row['collection'], embedding_model=model_name)
                 else: raise ValueError('unsupported entity type')
                 if not entity: raise ValueError('entity no longer exists')
             with connect() as db: db.execute("UPDATE vector_sync_outbox SET status='succeeded',processed_at=now(),last_error=NULL WHERE id=%s", (row['id'],)); processed += 1
