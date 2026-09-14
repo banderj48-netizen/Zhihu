@@ -26,6 +26,11 @@ def _post_chat_completion(client: OpenAI, model: str, prompt: str, options: dict
     except Exception as exc:
         # 统一包装 SDK 网络、鉴权和服务端错误，避免上层依赖供应商异常类型。
         raise RuntimeError(f"LLM 请求失败：{exc}") from exc
+    # 调试初始化阶段的供应商响应格式；不打印 API Key。
+    try:
+        print(f"[llm] response raw: {response.model_dump_json()}", flush=True)
+    except Exception as exc:
+        print(f"[llm] response raw dump failed: {type(exc).__name__}: {exc!r}", flush=True)
     if not response.choices:
         raise RuntimeError("LLM 返回结果缺少 choices")
     message = response.choices[0].message

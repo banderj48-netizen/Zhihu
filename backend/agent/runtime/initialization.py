@@ -38,15 +38,45 @@ class InitializationService:
         try:
             from agent.domains.catalog import search
             domains = search(None, None, None)
-        except Exception: pass
+            print(f"[initialization] domain catalog loaded count={len(domains)}", flush=True)
+        except Exception as exc:
+            print(f"[initialization] domain catalog load failed: {type(exc).__name__}: {exc!r}", flush=True)
         recommended = []
         try:
             from agent.runtime.model_builder import build_llm
-            prompt = "根据以下知乎资料和领域目录，返回JSON数组，推荐用户感兴趣或擅长的领域，每项包含domain_id、kind(interests/expertise)、level和reason。只输出JSON。知乎资料：" + json.dumps(imported, ensure_ascii=False)[:12000] + " 领域目录：" + json.dumps(domains, ensure_ascii=False)[:12000]
+            imported_json = json.dumps(imported, ensure_ascii=False)
+            domains_json = json.dumps(domains, ensure_ascii=False)
+            print(f"[initialization] LLM input prepared zhihu_chars={len(imported_json)} domain_count={len(domains)}", flush=True)
+            prompt = "根据以下知乎资料和领域目录，推荐用户感兴趣或擅长的领域。只输出一个JSON数组，不要输出思考过程、Markdown或其他文字；每项包含domain_id、kind(interests/expertise)、level和reason，最多推荐10项。知乎资料：" + imported_json[:12000] + " 领域目录：" + domains_json[:12000]
+            print(f"[initialization] LLM prompt assembled chars={len(prompt)}", flush=True)
+            print(f"[initialization] LLM prompt full: {prompt}", flush=True)
             print("[initialization] LLM domain recommendation request started", flush=True)
-            raw = asyncio.run(build_llm().generate(prompt, temperature=0.2, max_tokens=1200))
+            # 领域预选只需要结构化 JSON，不需要推理过程；仅在这一步关闭思考模式，
+            # 不改变全局模型配置，也不依赖具体模型名称。extra_body 会由 OpenAI
+            # 兼容客户端原样传给供应商接口。
+            raw = asyncio.run(build_llm().generate(
+                prompt,
+                temperature=0.2,
+                max_tokens=4096,
+                extra_body={"thinking": {"type": "disabled"}},
+            ))
             print(f"[initialization] LLM domain recommendation raw: {raw.text}", flush=True)
             recommended = json.loads(raw.text[raw.text.find("["):raw.text.rfind("]") + 1])
+            valid_domain_ids = {str(item.get("id")) for item in domains if item.get("id")}
+            invalid_recommendations = [
+                item for item in recommended
+                if not isinstance(item, dict) or str(item.get("domain_id")) not in valid_domain_ids
+            ]
+            if invalid_recommendations:
+                print(
+                    "[initialization] invalid LLM domain recommendations filtered: "
+                    + json.dumps(invalid_recommendations, ensure_ascii=False),
+                    flush=True,
+                )
+            recommended = [
+                item for item in recommended
+                if isinstance(item, dict) and str(item.get("domain_id")) in valid_domain_ids
+            ]
             print(f"[initialization] LLM domain recommendations: {json.dumps(recommended, ensure_ascii=False)}", flush=True)
         except Exception as exc:
             print(f"[initialization] LLM domain recommendation error: {type(exc).__name__}: {exc!r}", flush=True)
