@@ -23,12 +23,17 @@ class InitializationService:
 
     def create(self, user_id: str, import_job_id: str | None = None, zhihu_token: str | None = None) -> dict[str, Any]:
         """创建会话，并在同一流程抓取知乎资料、生成领域预选。"""
+        print(f"[initialization] create user={user_id}", flush=True)
         imported: dict[str, Any] = {}
         if zhihu_token:
             from app.imports import zhihu_client
             for key, fn in (("contents", zhihu_client.fetch_contents), ("followees", zhihu_client.fetch_followees), ("favlists", zhihu_client.fetch_favlists), ("collections", zhihu_client.fetch_collections)):
-                try: imported[key] = fn(zhihu_token)
-                except Exception as exc: imported[key] = {"error": str(exc)}
+                try:
+                    imported[key] = fn(zhihu_token)
+                    print(f"[initialization] zhihu {key} fetched", flush=True)
+                except Exception as exc:
+                    imported[key] = {"error": str(exc)}
+                    print(f"[initialization] zhihu {key} failed: {exc}", flush=True)
         domains = []
         try:
             from agent.domains.catalog import search
@@ -40,6 +45,7 @@ class InitializationService:
             prompt = "根据以下知乎资料和领域目录，返回JSON数组，推荐用户感兴趣或擅长的领域，每项包含domain_id、kind(interests/expertise)、level和reason。只输出JSON。知乎资料：" + json.dumps(imported, ensure_ascii=False)[:12000] + " 领域目录：" + json.dumps(domains, ensure_ascii=False)[:12000]
             raw = asyncio.run(build_llm().generate(prompt, temperature=0.2, max_tokens=1200))
             recommended = json.loads(raw.text[raw.text.find("["):raw.text.rfind("]") + 1])
+            print(f"[initialization] LLM domain recommendations: {json.dumps(recommended, ensure_ascii=False)}", flush=True)
         except Exception: recommended = []
         with connect() as db:
             user_id = self._ensure_uuid_user(db, user_id)
@@ -79,6 +85,7 @@ class InitializationService:
 
     def save_step(self, session_id: str, step: str, payload: dict[str, Any], user_id: str | None = None) -> dict[str, Any]:
         """保存一个初始化步骤并推进状态。"""
+        print(f"[initialization] save step={step} session={session_id}", flush=True)
         mapping = {"personality": "personality_pending", "domains": "domain_pending", "opinion-answers": "opinion_questions_pending", "social-answers": "generating_profile"}
         status = mapping.get(step, "review")
         with connect() as db:
@@ -108,6 +115,7 @@ class InitializationService:
 
     async def complete(self, session_id: str, identity: dict[str, Any], user_id: str | None = None) -> dict[str, Any]:
         """根据已保存结果创建初始画像版本并完成初始化。"""
+        print(f"[initialization] complete session={session_id}", flush=True)
         session = self.get(session_id, user_id=user_id)
         if not session:
             raise ValueError("初始化会话不存在")
@@ -129,7 +137,9 @@ class InitializationService:
             generated = json.loads(text)
             if isinstance(generated, dict):
                 identity = {**identity, "summary": generated.get("summary") or identity.get("summary"), "extra": {**(identity.get("extra") or {}), "llm_profile": generated}}
+                print("[initialization] LLM final profile generated", flush=True)
         except Exception:
+            print("[initialization] LLM final profile unavailable; using submitted data", flush=True)
             pass
         # 画像生成第一版采用已有测评与用户选择，后续可替换为结构化 LLM 提炼器。
         repo = ProfileRepository()
@@ -164,4 +174,5 @@ class InitializationService:
         result["version_id"] = version_id
         with connect() as db:
             db.execute("UPDATE avatar_initialization_sessions SET status='completed',current_step='completed',generated_profile=%s,completed_at=now(),updated_at=now() WHERE id=%s", (Jsonb(result), session_id))
+        print(f"[initialization] completed avatar_id={avatar_id} version_id={version_id}", flush=True)
         return result
