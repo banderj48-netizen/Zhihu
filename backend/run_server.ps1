@@ -10,7 +10,10 @@ if (-not (Test-Path -LiteralPath $python)) { throw "未找到虚拟环境解释�
 
 Set-Location -LiteralPath $projectRoot
 $env:PYTHONPATH = "backend"
-$env:TWINLOOP_ENV_FILE = Join-Path $PSScriptRoot $(if ($Environment -eq "server") { ".env" } else { ".env.local" })
-if (-not (Test-Path -LiteralPath $env:TWINLOOP_ENV_FILE)) { throw "未找到环境文件: $env:TWINLOOP_ENV_FILE" }
-$host = if ($Environment -eq "server") { "0.0.0.0" } else { "127.0.0.1" }
-& $python -m uvicorn app.main:app --app-dir backend --host $host --port 8000
+$envName = ".env.local"
+if ($Environment -eq "server") { $envName = ".env" }
+$env:TWINLOOP_ENV_FILE = Join-Path $PSScriptRoot $envName
+if (-not (Test-Path -LiteralPath $env:TWINLOOP_ENV_FILE)) { throw ("未找到环境文件: " + $env:TWINLOOP_ENV_FILE) }
+$bindAddress = "127.0.0.1"
+if ($Environment -eq "server") { $bindAddress = "0.0.0.0" }
+& $python -m uvicorn app.main:app --app-dir backend --host $bindAddress --port 8000
