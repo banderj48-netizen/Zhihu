@@ -15,26 +15,28 @@
         <a data-route="encounter" href="#encounter">相遇</a>
         <a data-route="profile" href="#profile">分身</a>
       </nav>
-      <div class="message-box message-box--empty" aria-label="消息盒子" role="img">
+      <div class="message-box message-box--empty" aria-label="消息盒子，打开消息列表" role="button" tabindex="0">
         <img class="message-box__asset message-box__asset--empty" src="./美术素材/消息盒子（没有消息）.svg" alt="" aria-hidden="true" />
         <img class="message-box__asset message-box__asset--unread" src="./美术素材/消息盒子（有消息）.svg" alt="" aria-hidden="true" />
       </div>
     </header>
+
+    <section class="message-overlay" id="message-overlay" aria-hidden="true">
+      <div class="message-modal" role="dialog" aria-modal="true" aria-labelledby="message-modal-title">
+        <button class="message-modal__close" id="message-modal-close" type="button" aria-label="关闭消息列表">×</button>
+        <h2 id="message-modal-title">消息列表</h2>
+        <div class="message-list" id="message-list" aria-live="polite"></div>
+      </div>
+    </section>
+
     <div class="page-shell" id="home-view">
 
       <main class="main-content">
         <section class="hero-card" id="intro">
           <div class="hero-copy">
             <p class="eyebrow">小镇</p>
-            <h1>在小镇里，<br />遇见日常的新鲜想法</h1>
-            <div class="copy-body">
-              <p>
-                数字分身的设计理念来自于酒馆，一种专门用于角色扮演的提示词工程。分身人格存放在一张结构化的角色卡中，每次发言前按固定顺序组装成 prompt，交给模型生成回应。
-              </p>
-              <p class="copy-body__en">
-                The design concept of a digital avatar comes from taverns, a kind of prompt engineering specifically for role-playing. The avatar’s personality is stored in a structured character card, and before each line is spoken, it’s assembled into a prompt in a fixed order.
-              </p>
-            </div>
+            <h1>在小镇里，<br />先“相知”再“相遇”</h1>
+            <p class="hero-subcopy">两个人往往先相遇，再相识，最后相知。可在看山小镇里，你的分身会替你和别人的分身先相识，你只需要与 TA 相遇。</p>
             <a class="primary-button" href="#town-panorama">去交流</a>
           </div>
 
@@ -251,6 +253,17 @@
       const home = document.getElementById('home-view');
       const encounter = document.getElementById('encounter-view');
       const town = document.getElementById('town-panorama');
+      const townMap = town.querySelector('.town-map');
+      const townMapImage = town.querySelector('.town-map__image');
+      const townEntryLink = document.querySelector('.primary-button[href="#town-panorama"]');
+      const messageBox = document.querySelector('.message-box');
+      const messageOverlay = document.getElementById('message-overlay');
+      const messageModalClose = document.getElementById('message-modal-close');
+      const messageList = document.getElementById('message-list');
+      const messageTestData = [
+        { id: 'demo-001', name: '看山 · 小许', scene: '场景 · 演讲厅', time: '今天 18:32', text: '我们好像都在关注技术如何影响普通人的生活，想和你继续聊聊。' },
+        { id: 'demo-002', name: '看山 · 小陈', scene: '场景 · 书店', time: '昨天 16:08', text: '最近在尝试把阅读时间切成小块，也想听听你是怎么安排的。' }
+      ];
       const tavern = document.getElementById('tavern-view');
       const sceneBackground = document.getElementById('scene-background');
       const sceneTitle = document.getElementById('tavern-title');
@@ -272,6 +285,103 @@
       const recordList = document.getElementById('chat-record-list');
       const recordSubtitle = document.getElementById('chat-record-subtitle');
       const siteNavLinks = [...document.querySelectorAll('.site-topbar .topbar__nav a[data-route]')];
+
+      function getTownMapTargetWidth() {
+        const townStyles = window.getComputedStyle(town);
+        const horizontalPadding = parseFloat(townStyles.paddingLeft) + parseFloat(townStyles.paddingRight);
+        const containerWidth = town.clientWidth || document.documentElement.clientWidth || window.innerWidth;
+        const availableWidth = Math.max(0, containerWidth - horizontalPadding);
+        const naturalWidth = townMapImage.naturalWidth || availableWidth;
+        return Math.min(availableWidth, naturalWidth);
+      }
+
+      function syncSiteTopbarWidth() {
+        const route = location.hash.slice(1).split('?')[0];
+        const isTownView = route === '' || route === 'intro' || route === 'town-panorama';
+        const isMobile = window.matchMedia('(max-width: 700px)').matches;
+        const initialWidth = isMobile
+          ? Math.max(0, window.innerWidth - 24)
+          : Math.min(Math.max(0, window.innerWidth - 48), 1400);
+        const mapWidth = Math.max(initialWidth, getTownMapTargetWidth());
+        const progress = isTownView
+          ? Math.min(1, Math.max(0, window.scrollY / Math.max(1, window.innerHeight * 0.75)))
+          : 0;
+        const renderWidth = initialWidth + (mapWidth - initialWidth) * progress;
+        const topOffset = isMobile ? 12 : 16;
+        const backgroundAlpha = 1 - progress * 0.6;
+        document.documentElement.style.setProperty('--site-topbar-render-top', `${(topOffset * (1 - progress)).toFixed(2)}px`);
+        document.documentElement.style.setProperty('--site-topbar-bg-alpha', backgroundAlpha.toFixed(3));
+        document.documentElement.style.setProperty('--site-topbar-render-width', `${renderWidth.toFixed(2)}px`);
+        document.documentElement.style.setProperty('--site-topbar-progress', progress.toFixed(3));
+      }
+
+      window.addEventListener('scroll', syncSiteTopbarWidth, { passive: true });
+      window.addEventListener('resize', syncSiteTopbarWidth, { passive: true });
+      syncSiteTopbarWidth();
+
+      function syncTownMapSize() {
+        const renderWidth = getTownMapTargetWidth();
+        if (renderWidth > 0) townMap.style.setProperty('--town-map-render-width', `${Math.round(renderWidth)}px`);
+        syncSiteTopbarWidth();
+      }
+
+      function scrollTownMapToCenter(behavior = 'smooth') {
+        syncTownMapSize();
+        const mapRect = townMap.getBoundingClientRect();
+        const targetTop = window.scrollY + mapRect.top + mapRect.height / 2 - window.innerHeight / 2;
+        const maxScrollTop = Math.max(0, document.documentElement.scrollHeight - window.innerHeight);
+        window.scrollTo({
+          top: Math.min(Math.max(targetTop, 0), maxScrollTop),
+          behavior
+        });
+      }
+
+      const townScrollEffect = { releaseTimer: 0, pull: 0 };
+
+      function releaseTownMapPull() {
+        townScrollEffect.pull = 0;
+        townMap.classList.remove('is-town-map-pulling');
+        townMap.style.setProperty('--town-map-overpull', '0px');
+      }
+
+      function handleTownBoundaryWheel(event) {
+        if (event.ctrlKey || event.deltaY >= 0 || location.hash !== '#town-panorama' || town.hidden) return;
+
+        const mapTop = townMap.getBoundingClientRect().top;
+        const distanceToBoundary = Math.abs(mapTop);
+        const boundaryRange = Math.min(104, Math.max(44, window.innerHeight * 0.13));
+        if (distanceToBoundary > boundaryRange) return;
+
+        event.preventDefault();
+        const inverseDistance = 1 / (1 + distanceToBoundary / 30);
+        const dampingStrength = Math.min(.88, Math.max(.12, .88 * inverseDistance));
+        const damping = 1 - dampingStrength;
+        window.scrollTo({ top: window.scrollY + event.deltaY * damping, behavior: 'auto' });
+
+        townScrollEffect.pull = Math.min(
+          14,
+          townScrollEffect.pull + Math.min(4.5, Math.abs(event.deltaY) * (.035 + dampingStrength * .06))
+        );
+        townMap.classList.add('is-town-map-pulling');
+        townMap.style.setProperty('--town-map-overpull', `${townScrollEffect.pull.toFixed(2)}px`);
+        window.clearTimeout(townScrollEffect.releaseTimer);
+        townScrollEffect.releaseTimer = window.setTimeout(releaseTownMapPull, 150);
+      }
+
+      townMapImage.addEventListener('load', syncTownMapSize, { once: true });
+      window.addEventListener('resize', syncTownMapSize, { passive: true });
+      if ('ResizeObserver' in window) {
+        const townMapObserver = new ResizeObserver(syncTownMapSize);
+        townMapObserver.observe(townMap);
+      }
+      window.addEventListener('wheel', handleTownBoundaryWheel, { passive: false });
+      syncTownMapSize();
+
+      townEntryLink?.addEventListener('click', (event) => {
+        event.preventDefault();
+        history.pushState(null, '', '#town-panorama');
+        requestAnimationFrame(() => scrollTownMapToCenter());
+      });
 
       const sceneConfig = {
         tavern: { title: '酒馆', background: './美术素材/场景酒吧.png' },
@@ -367,6 +477,7 @@
         town.hidden = isEncounter || isScene || isProfile;
         tavern.hidden = !isScene;
         profile.hidden = !isProfile;
+        if (!town.hidden) requestAnimationFrame(syncTownMapSize);
         document.body.classList.toggle('is-scene-view', isScene);
         document.body.classList.toggle('is-profile-view', isProfile);
         if (isScene) {
@@ -376,8 +487,68 @@
           sceneTitle.textContent = scene.title;
           resetTavernConversation();
         }
+        syncSiteTopbarWidth();
         if (isEncounter || isScene || isProfile) window.scrollTo(0, 0);
       }
+
+      function openMessageList() {
+        renderMessageList();
+        messageOverlay?.classList.add('is-open');
+        messageOverlay?.setAttribute('aria-hidden', 'false');
+      }
+
+      function renderMessageList() {
+        if (!messageList) return;
+        messageList.innerHTML = messageTestData.map((item) => `
+          <article class="message-card" data-message-id="${item.id}">
+            <div class="message-card__avatar">${item.name.slice(-2, -1)}</div>
+            <div class="message-card__body">
+              <div class="message-card__head"><strong>${item.name}</strong><time>${item.time}</time></div>
+              <span class="message-card__scene">${item.scene}</span>
+              <p>${item.text}</p>
+              <div class="message-card__footer">
+                <span class="message-card__status">等待你的决定</span>
+                <div class="message-card__actions">
+                  <button type="button" data-message-action="reject">拒绝</button>
+                  <button type="button" data-message-action="accept">接受</button>
+                </div>
+              </div>
+            </div>
+          </article>`).join('');
+      }
+
+      messageList?.addEventListener('click', (event) => {
+        const actionButton = event.target.closest('[data-message-action]');
+        const card = actionButton?.closest('.message-card');
+        if (!actionButton || !card) return;
+        const accepted = actionButton.dataset.messageAction === 'accept';
+        const status = card.querySelector('.message-card__status');
+        const actions = card.querySelector('.message-card__actions');
+        if (status) status.textContent = accepted ? '已接受' : '已拒绝';
+        if (actions) actions.innerHTML = '<span class="message-card__decision-note">测试状态已更新</span>';
+        card.classList.toggle('is-accepted', accepted);
+        card.classList.toggle('is-rejected', !accepted);
+      });
+
+      function closeMessageList() {
+        messageOverlay?.classList.remove('is-open');
+        messageOverlay?.setAttribute('aria-hidden', 'true');
+      }
+
+      messageBox?.addEventListener('click', openMessageList);
+      messageModalClose?.addEventListener('click', closeMessageList);
+      messageOverlay?.addEventListener('click', (event) => {
+        if (event.target === messageOverlay) closeMessageList();
+      });
+      messageBox?.addEventListener('keydown', (event) => {
+        if (event.key === 'Enter' || event.key === ' ') {
+          event.preventDefault();
+          openMessageList();
+        }
+      });
+      document.addEventListener('keydown', (event) => {
+        if (event.key === 'Escape') closeMessageList();
+      });
       document.querySelectorAll('.town-building[data-scene]').forEach((building) => {
         building.addEventListener('click', () => {
           window.location.hash = `${building.dataset.scene}-scene`;
