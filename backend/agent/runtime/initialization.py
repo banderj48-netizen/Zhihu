@@ -43,10 +43,14 @@ class InitializationService:
         try:
             from agent.runtime.model_builder import build_llm
             prompt = "根据以下知乎资料和领域目录，返回JSON数组，推荐用户感兴趣或擅长的领域，每项包含domain_id、kind(interests/expertise)、level和reason。只输出JSON。知乎资料：" + json.dumps(imported, ensure_ascii=False)[:12000] + " 领域目录：" + json.dumps(domains, ensure_ascii=False)[:12000]
+            print("[initialization] LLM domain recommendation request started", flush=True)
             raw = asyncio.run(build_llm().generate(prompt, temperature=0.2, max_tokens=1200))
+            print(f"[initialization] LLM domain recommendation raw: {raw.text}", flush=True)
             recommended = json.loads(raw.text[raw.text.find("["):raw.text.rfind("]") + 1])
             print(f"[initialization] LLM domain recommendations: {json.dumps(recommended, ensure_ascii=False)}", flush=True)
-        except Exception: recommended = []
+        except Exception as exc:
+            print(f"[initialization] LLM domain recommendation error: {type(exc).__name__}: {exc!r}", flush=True)
+            recommended = []
         with connect() as db:
             user_id = self._ensure_uuid_user(db, user_id)
             row = db.execute("""INSERT INTO avatar_initialization_sessions(user_id,import_job_id,status,current_step)
@@ -138,8 +142,8 @@ class InitializationService:
             if isinstance(generated, dict):
                 identity = {**identity, "summary": generated.get("summary") or identity.get("summary"), "extra": {**(identity.get("extra") or {}), "llm_profile": generated}}
                 print("[initialization] LLM final profile generated", flush=True)
-        except Exception:
-            print("[initialization] LLM final profile unavailable; using submitted data", flush=True)
+        except Exception as exc:
+            print(f"[initialization] LLM final profile error: {type(exc).__name__}: {exc!r}; using submitted data", flush=True)
             pass
         # 画像生成第一版采用已有测评与用户选择，后续可替换为结构化 LLM 提炼器。
         repo = ProfileRepository()
