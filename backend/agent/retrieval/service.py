@@ -83,8 +83,12 @@ class PostgresRetrievalRepository:
             LEFT JOIN avatar_personality p ON p.avatar_version_id = v.id
             LEFT JOIN avatar_styles s ON s.avatar_version_id = v.id
             LEFT JOIN avatar_policies pol ON pol.avatar_id = a.id
-            WHERE a.user_id = %s AND a.status <> 'archived' LIMIT 1
-        """, (user_id,))
+            WHERE a.user_id = (
+                SELECT u.id FROM users u
+                WHERE u.id::text = %s OR u.external_id = %s
+                LIMIT 1
+            ) AND a.status <> 'archived' LIMIT 1
+        """, (user_id, user_id))
         return rows[0] if rows else {}
 
     async def search_memory_keywords(self, avatar_id: str, query: QueryPlan, *, limit: int) -> list[dict[str, Any]]:

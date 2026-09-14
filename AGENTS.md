@@ -19,3 +19,6 @@
 - 看山场景在场和次日状态使用 `backend/db/postgresql_agent_presence.sql`，聊天组 ready/可见与已读状态使用 `backend/db/postgresql_agent_chat_group_reads.sql`；执行顺序为画像、聊天、对话、聊天组、在场、已读脚本。
 - `backend/agent/runtime/dialogue_manager.py` 负责最多 10 组后台对话、协作式取消和 SSE 事件；所有匹配模式均固定当前用户 avatar 为 A，仅选择其他空闲 avatar 为 B。
 - 场景、匹配、实时事件、取消和次日接口统一位于 `/v1/twin`；聊天记录仅展示 `processing_status=ready` 的组，`POST /v1/twin/chat-groups/{chat_no}/read` 维护未读红点。
+- 初始化出题接口位于 `/v1/twin/initializations/{id}/opinion-questions|social-questions` 与 `/v1/twin/social-questions/{qid}/present`；生成逻辑在 `backend/agent/domains/question_generator.py`，LLM 可用（`LLM_API_KEY`）时结合知乎素材动态出题，否则回退内置模板题库，社交题 `presented_at` 由服务端打点、限时 13 秒。
+- 性格测评与领域选择模块使用 TEXT 主键的 `avatars/personality_assessments/avatar_domain_selections` 兼容表，建表脚本为 `backend/db/postgresql_legacy_compat.sql`，需在 8 个正式脚本（`initialize_formal`）之后执行；用户归属由仓储层先 upsert `users`（UUID 直接作主键，其余登记 `external_id`）维护。
+- 初始化全流程端到端脚本位于 `backend/reports/e2e_initialization_flow.py`，后端启动后执行 `python backend/reports/e2e_initialization_flow.py [user_id]` 可一键回归六步流程。

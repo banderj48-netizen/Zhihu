@@ -16,6 +16,12 @@ from agent.runtime.presence import PresenceService
 from agent.runtime.matching import AvatarMatcher
 from agent.runtime.dialogue import run_agent_dialogue
 from agent.runtime.dialogue_manager import DialogueManager
+from agent.domains.question_generator import (
+    TIME_LIMIT_SECONDS,
+    generate_opinion_questions,
+    generate_social_questions,
+    stamp_presented,
+)
 from app.auth import session as auth_session
 
 router = APIRouter(prefix="/v1/twin", tags=["digital-twin"])
@@ -102,6 +108,12 @@ class InitComplete(BaseModel):
     identity: dict[str, Any] = Field(default_factory=dict)
 
 
+class QuestionRequest(BaseModel):
+    """出题请求；领域缺省时从会话已保存的领域选择中读取。"""
+    count: int = Field(default=5, ge=1, le=10)
+    domain_ids: list[str] = Field(default_factory=list)
+
+
 @router.post("/initializations")
 def create_initialization(body: InitCreate, x_user_id: str | None = Header(default=None)):
     """创建或恢复当前用户的唯一初始化会话。"""
@@ -127,6 +139,37 @@ async def complete_initialization(session_id: str, body: InitComplete, x_user_id
         return await _initializations.complete(session_id, body.identity, user_id=x_user_id)
     except ValueError as exc:
         raise HTTPException(400, str(exc)) from exc
+
+
+@router.post("/initializations/{session_id}/opinion-questions")
+async def create_opinion_questions(session_id: str, body: QuestionRequest, x_user_id: str | None = Header(default=None)):
+    """按已选领域生成观点题；LLM 可用时结合知乎素材动态出题，否则回退模板题库。"""
+    session = _initializations.get(session_id, user_id=x_user_id)
+    if not session:
+        raise HTTPException(404, "初始化会话不存在")
+    domain_ids = body.domain_ids
+    if not domain_ids:
+        domains = (session.get("input_data") or {}).get("domains")
+        if isinstance(domains, dict):
+            domain_ids = [item.get("domain_id") for item in (domains.get("interests") or []) + (domains.get("expertise") or []) if isinstance(item, dict) and item.get("domain_id")]
+    questions = await generate_opinion_questions(domain_ids, body.count)
+    return {"session_id": session_id, "questions": questions}
+
+
+@router.post("/initializations/{session_id}/social-questions")
+async def create_social_questions(session_id: str, body: QuestionRequest, x_user_id: str | None = Header(default=None)):
+    """生成限时现实社交情景题；13 秒规则见 situational.TIME_LIMIT_SECONDS。"""
+    session = _initializations.get(session_id, user_id=x_user_id)
+    if not session:
+        raise HTTPException(404, "初始化会话不存在")
+    questions = await generate_social_questions(body.count)
+    return {"session_id": session_id, "questions": questions, "time_limit_seconds": TIME_LIMIT_SECONDS}
+
+
+@router.post("/social-questions/{question_id}/present")
+def present_social_question(question_id: str):
+    """登记一道社交题的展示时间；限时耗时从该时间起算。"""
+    return {"question_id": question_id, "presented_at": stamp_presented(question_id)}
 
 
 @router.post("/initializations/{session_id}/{step}")

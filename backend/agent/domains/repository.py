@@ -1,16 +1,25 @@
 """PostgreSQL persistence for independent interest/expertise selections."""
 from __future__ import annotations
 from datetime import datetime, timezone
-from uuid import uuid4
+from uuid import UUID, uuid4
 from psycopg.types.json import Jsonb
 from db.database import connect
 from .catalog import BY_ID, CATALOG_VERSION
 
 def _now(): return datetime.now(timezone.utc)
 
+def _upsert_user(db, user_id: str, now) -> None:
+    """把登录系统字符串 ID 写入正式 users 表：UUID 作主键，其余登记为 external_id。"""
+    try:
+        value = str(UUID(str(user_id)))
+    except (ValueError, TypeError, AttributeError):
+        db.execute("INSERT INTO users(external_id,created_at,updated_at) VALUES (%s,%s,%s) ON CONFLICT(external_id) DO UPDATE SET updated_at=EXCLUDED.updated_at", (str(user_id),now,now))
+        return
+    db.execute("INSERT INTO users(id,created_at,updated_at) VALUES (%s,%s,%s) ON CONFLICT(id) DO UPDATE SET updated_at=EXCLUDED.updated_at", (value,now,now))
+
 def _avatar(db, user_id: str) -> str:
     now = _now()
-    db.execute("INSERT INTO users(id,created_at,updated_at) VALUES (%s,%s,%s) ON CONFLICT(id) DO UPDATE SET updated_at=EXCLUDED.updated_at", (user_id,now,now))
+    _upsert_user(db, user_id, now)
     row = db.execute("SELECT id FROM avatars WHERE user_id=%s AND deleted_at IS NULL ORDER BY created_at,id LIMIT 1", (user_id,)).fetchone()
     if row: return row["id"]
     aid = "avatar_" + uuid4().hex

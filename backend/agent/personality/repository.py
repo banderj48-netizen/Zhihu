@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from datetime import datetime, timezone
-from uuid import uuid4
+from uuid import UUID, uuid4
 
 from psycopg.types.json import Jsonb
 
@@ -14,13 +14,27 @@ def _now() -> str:
     return datetime.now(timezone.utc).isoformat()
 
 
-def _ensure_avatar(db, user_id: str) -> str:
-    now = _now()
+def _upsert_user(db, user_id: str, now: str) -> None:
+    """把登录系统字符串 ID 写入正式 users 表：UUID 作主键，其余登记为 external_id。"""
+    try:
+        value = str(UUID(str(user_id)))
+    except (ValueError, TypeError, AttributeError):
+        db.execute(
+            "INSERT INTO users(external_id, created_at, updated_at) VALUES (%s, %s, %s) "
+            "ON CONFLICT(external_id) DO UPDATE SET updated_at=EXCLUDED.updated_at",
+            (str(user_id), now, now),
+        )
+        return
     db.execute(
         "INSERT INTO users(id, created_at, updated_at) VALUES (%s, %s, %s) "
         "ON CONFLICT(id) DO UPDATE SET updated_at=EXCLUDED.updated_at",
-        (user_id, now, now),
+        (value, now, now),
     )
+
+
+def _ensure_avatar(db, user_id: str) -> str:
+    now = _now()
+    _upsert_user(db, user_id, now)
     row = db.execute(
         "SELECT id FROM avatars WHERE user_id = %s AND deleted_at IS NULL ORDER BY created_at, id LIMIT 1", (user_id,)
     ).fetchone()
@@ -92,7 +106,10 @@ def save_skipped(user_id: str, assessment_id: str, request_key: str | None = Non
 def latest_assessment(user_id: str) -> dict | None:
     with connect() as db:
         row = db.execute(
-            "SELECT p.result_json FROM personality_assessments p JOIN avatars a ON a.id = p.avatar_id JOIN users u ON u.id = a.user_id WHERE a.user_id = %s AND a.deleted_at IS NULL AND u.deleted_at IS NULL ORDER BY p.created_at DESC, p.id DESC LIMIT 1",
+            "SELECT p.result_json FROM personality_assessments p JOIN avatars a ON a.id = p.avatar_id "
+            "JOIN users u ON (u.id::text = a.user_id OR u.external_id = a.user_id) "
+            "WHERE a.user_id = %s AND a.deleted_at IS NULL AND u.deleted_at IS NULL "
+            "ORDER BY p.created_at DESC, p.id DESC LIMIT 1",
             (user_id,),
         ).fetchone()
     return row["result_json"] if row and row["result_json"] else None
