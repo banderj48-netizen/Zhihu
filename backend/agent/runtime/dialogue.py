@@ -90,14 +90,14 @@ async def run_agent_dialogue(avatar_a_id: str, avatar_b_id: str, *, user_id_a: s
             return DialogueResult(run_id, conversation_id, chat_no, "completed", 0, None)
         # 由 A 先围绕选定主题发起自然开场，再交给 B 回答。
         await check_cancel()
-        opening = await _run_turn(graph_a, user_id_a, avatar_a_id, conversation_id, f"请在{scene_id or '当前场景'}自然开启关于‘{topic}’的闲聊，只输出一句话。", 0)
+        opening = await _run_turn(graph_a, user_id_a, avatar_a_id, conversation_id, f"请在{scene_id or '当前场景'}自然开启关于‘{topic}’的闲聊，只输出一句话。", 0, scene_id=scene_id, history=transcript)
         await _persist(chat_repository, vector_store, conversation_id, participant_a, opening, run_id, "A", 0, metadata={"event": "topic_opening", "topic_source": gate.get("topic_source", "manual"), "topic": topic, "topic_score": (gate.get("shared_topics") or [{}])[0].get("score")})
         await emit("message", round=0, speaker="A", content=opening)
         transcript.append({"role": "A", "content": opening})
         question = opening
         for round_no in range(1, max_rounds + 1):
             await check_cancel()
-            answer_b = await _run_turn(graph_b, user_id_b, avatar_b_id, conversation_id, question, round_no)
+            answer_b = await _run_turn(graph_b, user_id_b, avatar_b_id, conversation_id, question, round_no, scene_id=scene_id, history=transcript)
             await _persist(chat_repository, vector_store, conversation_id, participant_b, answer_b, run_id, "B", round_no)
             await emit("message", round=round_no, speaker="B", content=answer_b)
             await emit("round_progress", round=round_no, completed_messages=len(transcript) + 1)
@@ -109,7 +109,7 @@ async def run_agent_dialogue(avatar_a_id: str, avatar_b_id: str, *, user_id_a: s
             # 开场消息已经计入 A 的首条消息；最后一轮只保留 B 的回答，确保总消息数不超过20条。
             if round_no < max_rounds:
                 await check_cancel()
-                answer_a = await _run_turn(graph_a, user_id_a, avatar_a_id, conversation_id, question, round_no)
+                answer_a = await _run_turn(graph_a, user_id_a, avatar_a_id, conversation_id, question, round_no, scene_id=scene_id, history=transcript)
                 await _persist(chat_repository, vector_store, conversation_id, participant_a, answer_a, run_id, "A", round_no)
                 await emit("message", round=round_no, speaker="A", content=answer_a)
                 transcript.append({"role": "A", "content": answer_a})
@@ -209,9 +209,22 @@ def _is_end_intent(text: str) -> bool:
     return any(mark in normalized for mark in ("再见", "先聊到这里", "下次再聊", "结束对话"))
 
 
-async def _run_turn(graph: Any, user_id: str, avatar_id: str, conversation_id: str, question: str, turn_no: int) -> str:
+async def _run_turn(graph: Any, user_id: str, avatar_id: str, conversation_id: str, question: str, turn_no: int, *, scene_id: str = "", history: list[dict[str, Any]] | None = None) -> str:
     """执行一个 Agent 图回合并返回文本回答。"""
-    result = await graph.ainvoke(AgentTurnState(avatar_id=avatar_id, user_id=user_id, conversation_id=conversation_id, question=question, messages=[], turn_no=turn_no))
+    result = await graph.ainvoke(AgentTurnState(
+        avatar_id=avatar_id,
+        user_id=user_id,
+        conversation_id=conversation_id,
+        question=question,
+        # Keep an explicit transcript in graph state.  The context builder may
+        # also retrieve persisted history, but passing it here guarantees each
+        # turn sees the complete in-memory exchange before the latest message
+        # is committed.
+        messages=list(history or []),
+        previous_message=question,
+        scene_id=scene_id,
+        turn_no=turn_no,
+    ))
     return str(result.get("last_answer") or "")
 
 

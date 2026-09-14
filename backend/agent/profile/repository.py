@@ -62,6 +62,20 @@ class ProfileRepository:
             p=proposal.payload
             memory=db.execute("""INSERT INTO avatar_memories(avatar_id,version_id,memory_type,topic,content,structured_data,level,confidence,status,privacy,evidence_count)
                 VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,0) RETURNING id""",(proposal.avatar_id,version["id"],p["memory_type"],p.get("topic"),p["content"],Jsonb(p.get("structured_data",p)),p["level"],proposal.confidence,proposal.status,proposal.privacy)).fetchone()
+            # Link only existing source documents owned by this avatar; the
+            # original answer is retained and can be audited independently.
+            for source_ref in proposal.source_refs:
+                source = db.execute("SELECT id FROM source_documents WHERE id=%s AND avatar_id=%s", (source_ref, proposal.avatar_id)).fetchone()
+                if source:
+                    db.execute("INSERT INTO memory_evidence(memory_id,source_document_id,quote,evidence_type,relevance_score) VALUES(%s,%s,%s,'inference',%s) ON CONFLICT(memory_id,source_document_id,quote) DO NOTHING", (memory["id"], source["id"], p["content"], proposal.confidence))
+            db.execute("UPDATE avatar_memories SET evidence_count=(SELECT count(*) FROM memory_evidence WHERE memory_id=%s) WHERE id=%s", (memory["id"], memory["id"]))
+            db.execute("""UPDATE avatar_versions SET snapshot = snapshot || jsonb_build_object(
+                    'memories', COALESCE(snapshot->'memories','[]'::jsonb) || jsonb_build_array(
+                    jsonb_build_object('id', %s::text, 'memory_type', %s::text, 'topic', %s::text,
+                                       'content', %s::text, 'level', %s::text, 'confidence', %s::numeric,
+                                       'status', %s::text, 'privacy', %s::text))) WHERE id=%s""",
+                (str(memory["id"]), p["memory_type"], p.get("topic"), p["content"],
+                 p["level"], proposal.confidence, proposal.status, proposal.privacy, version["id"]))
             db.execute("INSERT INTO avatar_change_logs(avatar_id,version_id,operator_type,operation,target_type,target_id,after_data,reason) VALUES(%s,%s,'system','agent_proposal','avatar_memory',%s,%s,%s)",(proposal.avatar_id,version["id"],memory["id"],Jsonb(p),proposal.idempotency_key))
             db.execute("""INSERT INTO vector_sync_outbox(avatar_id,entity_type,entity_id,operation,collection,payload)
                 VALUES(%s,'avatar_memory',%s,'upsert','avatar_memories',%s)
@@ -77,4 +91,8 @@ class ProfileRepository:
             row=db.execute("""INSERT INTO source_documents(user_id,avatar_id,platform,external_id,document_type,content,source_url,content_hash,metadata)
                 VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s)
                 ON CONFLICT(platform,external_id) DO UPDATE SET content=EXCLUDED.content,content_hash=EXCLUDED.content_hash,metadata=EXCLUDED.metadata RETURNING id""",(user_id,avatar_id,platform,external_id,document_type,content,source_url,content_hash,Jsonb(metadata or {}))).fetchone()
+            # Vector indexing is asynchronous and never blocks the source-of-truth write.
+            db.execute("""INSERT INTO vector_sync_outbox(avatar_id,entity_type,entity_id,operation,collection,payload)
+                VALUES(%s,'source_document',%s,'upsert','source_documents',%s)
+                ON CONFLICT DO NOTHING""", (avatar_id, row["id"], Jsonb({"document_id": str(row["id"]), "avatar_id": avatar_id})))
             return str(row["id"])

@@ -1,0 +1,77 @@
+{
+  "init_login_style_user_id": {
+    "exception": "InvalidTextRepresentation",
+    "constraint": null
+  },
+  "init_uuid_without_users_record": {
+    "exception": "ForeignKeyViolation",
+    "constraint": "avatar_initialization_sessions_user_id_fkey"
+  },
+  "init_with_all_raw_steps": {
+    "status": "completed",
+    "scores": {},
+    "avatar_memories": 0,
+    "source_documents": 0,
+    "avatar_style_examples": 0,
+    "vector_sync_outbox": 0
+  },
+  "init_with_completed_score_result": {
+    "exception": "CheckViolation",
+    "constraint": "ck_avatar_personality_status"
+  },
+  "memory_proposal": {
+    "snapshot_memories": [],
+    "linked_evidence": 0
+  },
+  "standard_json_card": {
+    "exception": "TypeError",
+    "constraint": null
+  },
+  "invalid_mind_option": {
+    "id": "70cb48e9-050d-4347-82a3-60b3c78c4353",
+    "is_match": false,
+    "status": "answered"
+  },
+  "repeat_mind_answer": {
+    "id": "70cb48e9-050d-4347-82a3-60b3c78c4353",
+    "is_match": true,
+    "status": "answered"
+  },
+  "growth_after_feedback": {
+    "avatar_personality_adjustments": 0,
+    "avatar_growth_evaluations": 0
+  },
+  "retry_changed_chat_content": "replaced synthetic message",
+  "outbox_failure": {
+    "processed": 0,
+    "failed": 1
+  },
+  "outbox_next_run": {
+    "processed": 0,
+    "failed": 0
+  },
+  "outbox_rejected": {
+    "processed": 1,
+    "failed": 0
+  },
+  "rejected_indexed": true,
+  "complete_route_dispatch": {
+    "response": {
+      "route": "save_step"
+    },
+    "complete_called": 0,
+    "save_step_args": [
+      "audit",
+      "complete",
+      {}
+    ]
+  },
+  "matching_sync_presence_provider": {
+    "exception": "TypeError",
+    "constraint": null
+  },
+  "tool_only_llm_response": {
+    "exception": "RuntimeError",
+    "constraint": null
+  }
+}

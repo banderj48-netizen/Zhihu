@@ -47,9 +47,14 @@ def _post_chat_completion(model: str, prompt: str, options: dict[str, Any], *, a
     except (HTTPError, URLError, TimeoutError) as exc:
         raise RuntimeError(f"LLM 请求失败：{exc}") from exc
     choices = body.get("choices") or []
-    if not choices or not choices[0].get("message", {}).get("content"):
-        raise RuntimeError("LLM 返回结果缺少 choices[0].message.content")
-    return {"text": choices[0]["message"]["content"], "model": body.get("model") or model, "usage": body.get("usage") or {}, "raw": body}
+    if not choices:
+        raise RuntimeError("LLM 返回结果缺少 choices")
+    message = choices[0].get("message") or {}
+    content = message.get("content") or ""
+    tool_calls = message.get("tool_calls") or []
+    if not content and not tool_calls:
+        raise RuntimeError("LLM 返回结果缺少 choices[0].message.content/tool_calls")
+    return {"text": content, "tool_calls": tool_calls, "model": body.get("model") or model, "usage": body.get("usage") or {}, "raw": body}
 
 
 def build_llm(*, env_file: str | Path | None = None, model: str | None = None) -> LLM:

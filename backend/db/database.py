@@ -46,6 +46,17 @@ def migration_files() -> list[tuple[int, Path]]:
     """返回现有主 schema 与版本化迁移文件。"""
     return [(1, SCHEMA_PATH), (2, MIGRATIONS_PATH / "002_personality_assessment.sql"), (3, MIGRATIONS_PATH / "003_domain_selections.sql")]
 
+def initialize_formal(url: str | None = None) -> None:
+    """Load the collaborator's UUID schema set in one transaction."""
+    paths = [Path(__file__).with_name(name) for name in (
+        "postgresql_zhihu_schema.sql", "postgresql_chat_schema.sql",
+        "postgresql_profile_outbox.sql", "postgresql_twin_initialization.sql",
+        "postgresql_agent_dialogue.sql", "postgresql_agent_chat_groups.sql",
+        "postgresql_agent_presence.sql", "postgresql_agent_chat_group_reads.sql")]
+    with connect(url) as db:
+        for path in paths:
+            db.execute(path.read_text(encoding="utf-8"))
+
 
 def initialize(url: str | None = None) -> int:
     """Apply each migration once with a PostgreSQL advisory transaction lock."""

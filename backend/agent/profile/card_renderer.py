@@ -1,10 +1,12 @@
 from __future__ import annotations
 from datetime import date, datetime
+from decimal import Decimal
 import json
 from db.database import connect
 
 def _json(value):
     if isinstance(value, (datetime, date)): return value.isoformat()
+    if isinstance(value, Decimal): return float(value)
     if isinstance(value, dict): return {k:_json(v) for k,v in value.items()}
     if isinstance(value, list): return [_json(v) for v in value]
     return value

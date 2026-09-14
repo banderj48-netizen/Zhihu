@@ -2,7 +2,7 @@ BEGIN;
 
 CREATE TABLE IF NOT EXISTS avatar_initialization_sessions (
     id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
-    user_id uuid NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    user_id uuid NOT NULL REFERENCES public.users(id) ON DELETE CASCADE,
     import_job_id text,
     status varchar(32) NOT NULL DEFAULT 'created',
     current_step varchar(64) NOT NULL DEFAULT 'created',
@@ -21,9 +21,9 @@ COMMENT ON COLUMN avatar_initialization_sessions.generated_profile IS 'LLM 生�
 
 CREATE TABLE IF NOT EXISTS avatar_mind_reading_feedback (
     id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
-    user_id uuid NOT NULL REFERENCES users(id) ON DELETE CASCADE,
-    avatar_id uuid NOT NULL REFERENCES user_avatars(id) ON DELETE CASCADE,
-    dialogue_run_id uuid REFERENCES agent_dialogue_runs(id) ON DELETE SET NULL,
+    user_id uuid NOT NULL REFERENCES public.users(id) ON DELETE CASCADE,
+    avatar_id uuid NOT NULL REFERENCES public.user_avatars(id) ON DELETE CASCADE,
+    dialogue_run_id uuid REFERENCES public.agent_dialogue_runs(id) ON DELETE SET NULL,
     question jsonb NOT NULL,
     selected_option_id text,
     agent_option_id text,
@@ -39,7 +39,7 @@ COMMENT ON COLUMN avatar_mind_reading_feedback.question IS '题干和候选选�
 
 CREATE TABLE IF NOT EXISTS avatar_personality_adjustments (
     id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
-    avatar_id uuid NOT NULL REFERENCES user_avatars(id) ON DELETE CASCADE,
+    avatar_id uuid NOT NULL REFERENCES public.user_avatars(id) ON DELETE CASCADE,
     dimension text NOT NULL,
     direction varchar(16) NOT NULL,
     evidence_count integer NOT NULL DEFAULT 0,

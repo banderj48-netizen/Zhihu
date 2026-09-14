@@ -19,6 +19,23 @@ from pathlib import Path
 from typing import Any
 from uuid import uuid4
 
+def _pg_enabled() -> bool:
+    return bool(os.getenv("DATABASE_URL"))
+
+def _pg_upsert(profile: dict[str, Any]) -> dict[str, Any]:
+    from db.database import connect
+    zhihu_uid = str(profile.get("uid") or "").strip()
+    with connect() as db:
+        row = db.execute("""INSERT INTO public.users(external_id) VALUES(%s)
+            ON CONFLICT(external_id) DO UPDATE SET updated_at=now()
+            RETURNING id, external_id""", (zhihu_uid,)).fetchone()
+        return {"user_id": str(row["id"]), "zhihu_uid": zhihu_uid,
+                "zhihu_hash_id": profile.get("hash_id"),
+                "fullname": profile.get("fullname") or "",
+                "avatar_url": profile.get("avatar_path") or "",
+                "headline": profile.get("headline", ""),
+                "zhihu_connected": True}
+
 _DATA_FILE = Path(
     os.environ.get(
         "TWINLOOP_USER_STORE",
@@ -71,6 +88,11 @@ def _flush() -> None:
 
 
 def get_by_id(user_id: str) -> dict[str, Any] | None:
+    if _pg_enabled():
+        from db.database import connect
+        with connect() as db:
+            row = db.execute("SELECT id, external_id FROM public.users WHERE id::text=%s AND deleted_at IS NULL", (user_id,)).fetchone()
+        return {"user_id": str(row["id"]), "zhihu_uid": row["external_id"], "zhihu_connected": True} if row else None
     _load()
     with _lock:
         rec = _users.get(user_id)
@@ -78,6 +100,11 @@ def get_by_id(user_id: str) -> dict[str, Any] | None:
 
 
 def get_by_zhihu_uid(zhihu_uid: str) -> dict[str, Any] | None:
+    if _pg_enabled():
+        from db.database import connect
+        with connect() as db:
+            row = db.execute("SELECT id, external_id FROM public.users WHERE external_id=%s AND deleted_at IS NULL", (str(zhihu_uid),)).fetchone()
+        return {"user_id": str(row["id"]), "zhihu_uid": row["external_id"], "zhihu_connected": True} if row else None
     _load()
     with _lock:
         user_id = _zhihu_index.get(str(zhihu_uid))
@@ -93,6 +120,8 @@ def upsert_zhihu_user(profile: dict[str, Any]) -> dict[str, Any]:
     注意：uid 是 int64，可能超出 JavaScript 安全整数范围，
     这里统一以字符串保存和索引，避免精度丢失。
     """
+    if _pg_enabled():
+        return _pg_upsert(profile)
     _load()
     zhihu_uid = str(profile.get("uid") or "").strip()
     if not zhihu_uid:

@@ -112,30 +112,30 @@ def create_initialization(body: InitCreate, x_user_id: str | None = Header(defau
 
 
 @router.get("/initializations/{session_id}")
-def get_initialization(session_id: str):
+def get_initialization(session_id: str, x_user_id: str | None = Header(default=None)):
     """读取初始化会话状态。"""
-    value = _initializations.get(session_id)
+    value = _initializations.get(session_id, user_id=x_user_id)
     if not value:
         raise HTTPException(404, "初始化会话不存在")
     return value
 
 
-@router.post("/initializations/{session_id}/{step}")
-def save_initialization_step(session_id: str, step: str, body: InitStep):
-    """保存性格、领域或问卷步骤。"""
-    try:
-        return _initializations.save_step(session_id, step, body.data)
-    except ValueError as exc:
-        raise HTTPException(404, str(exc)) from exc
-
-
 @router.post("/initializations/{session_id}/complete")
-async def complete_initialization(session_id: str, body: InitComplete):
+async def complete_initialization(session_id: str, body: InitComplete, x_user_id: str | None = Header(default=None)):
     """生成并激活初始画像。"""
     try:
-        return await _initializations.complete(session_id, body.identity)
+        return await _initializations.complete(session_id, body.identity, user_id=x_user_id)
     except ValueError as exc:
         raise HTTPException(400, str(exc)) from exc
+
+
+@router.post("/initializations/{session_id}/{step}")
+def save_initialization_step(session_id: str, step: str, body: InitStep, x_user_id: str | None = Header(default=None)):
+    """保存性格、领域或问卷步骤。"""
+    try:
+        return _initializations.save_step(session_id, step, body.data, user_id=x_user_id)
+    except ValueError as exc:
+        raise HTTPException(404, str(exc)) from exc
 
 
 @router.post("/mind-reading/{dialogue_run_id}")

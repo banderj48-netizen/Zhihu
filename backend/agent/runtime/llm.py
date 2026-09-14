@@ -89,7 +89,10 @@ class LLM:
             return LLMResponse(text=result, model=self.model, request_id=request_id)
         if isinstance(result, Mapping):
             text = str(result.get("text") or result.get("content") or "")
-            if not text.strip():
+            # Tool-only model responses legitimately omit assistant text.  Keep
+            # the response so the LangGraph layer can route ``tool_calls`` to
+            # ToolNode instead of rejecting it as malformed output.
+            if not text.strip() and not result.get("tool_calls"):
                 raise ValueError("模型返回结果缺少 text/content")
             return LLMResponse(
                 text=text,
