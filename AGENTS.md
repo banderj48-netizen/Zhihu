@@ -32,3 +32,4 @@
 - 所有 LLM、评判模型和 Embedding 配置统一从独立的 `backend/.env.models` 读取，模板为 `backend/.env.models.example`；`TWINLOOP_MODEL_ENV_FILE` 可覆盖路径，系统环境变量优先。真实 API Key 不得提交 Git。
 - `backend/agent/adapters/chroma_factory.py` 在本地启动使用 `.env.local` 时会回退合并 `backend/.env`；`.env.local` 中的同名变量优先。API Key 只能通过本机安全输入或本地文件写入，不得提交到仓库或打印日志。
 - 向量同步完成后可用 `vector_sync_outbox` 状态、Chroma 三个集合计数和 `build_context` 的 `retrieval_meta` 复现验证；原始资料片段命中时必须通过 `metadata.document_id` 回 PostgreSQL 取正文。
+- `backend/reports/test_real_embedding_context_agent.py` 是真实验收脚本：使用实际问题验证 Embedding、outbox 同步、PostgreSQL+Chroma 混合检索和真实 Agent 回复；默认不绑定画像写入工具，结果可通过 `--output` 保存为 UTF-8 JSON。
