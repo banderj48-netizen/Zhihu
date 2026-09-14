@@ -5,6 +5,7 @@ from typing import Any, Literal
 import asyncio
 import json
 import os
+from uuid import UUID
 from fastapi import APIRouter, Header, HTTPException, Query, Request
 from fastapi.responses import StreamingResponse
 from pydantic import BaseModel, Field
@@ -87,7 +88,27 @@ def _resolved_user(request: Request, header_user_id: str | None) -> str:
     current = auth_session.get_session(auth_session.read_session_id(request))
     if current:
         return str(current["user_id"])
-    return header_user_id or "local-demo-user"
+    candidate = header_user_id or "local-demo-user"
+    # 本地联调允许使用 users.external_id（例如 testacc）作为 X-User-Id；
+    # 持久化查询统一转换为内部 UUID，避免直接向 uuid 列传入普通字符串。
+    try:
+        UUID(str(candidate))
+        return str(candidate)
+    except (ValueError, TypeError, AttributeError):
+        pass
+    try:
+        from db.database import connect
+        with connect() as db:
+            row = db.execute(
+                "SELECT id FROM users WHERE deleted_at IS NULL AND (id::text=%s OR external_id=%s)",
+                (str(candidate), str(candidate)),
+            ).fetchone()
+        if row:
+            return str(row["id"])
+    except Exception:
+        # 保留原有本地 demo fallback；真正需要数据库的接口会返回业务错误。
+        pass
+    return str(candidate)
 
 
 class MatchRequest(BaseModel):

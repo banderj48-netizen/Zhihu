@@ -2181,7 +2181,7 @@ h1 { color: #3b2112; font-size: clamp(46px, 5vw, 76px); letter-spacing: -0.08em;
   --site-topbar-progress: 0;
   --site-topbar-render-width: min(calc(100vw - 48px), 1400px);
   --site-topbar-render-top: 16px;
-  --site-topbar-bg-alpha: 1;
+  --site-topbar-bg-alpha: .82;
 }
 
 .site-topbar {
@@ -2193,8 +2193,12 @@ h1 { color: #3b2112; font-size: clamp(46px, 5vw, 76px); letter-spacing: -0.08em;
   margin: 0;
   transform: translateX(-50%);
   border-radius: calc(28px - 28px * var(--site-topbar-progress)) calc(28px - 28px * var(--site-topbar-progress)) 0 0;
-  transition: top 120ms linear, width 120ms linear, border-radius 120ms linear, background-color 120ms linear;
-  background-color: rgb(255 255 255 / var(--site-topbar-bg-alpha));
+  transition: top 120ms linear, width 120ms linear, border-radius 120ms linear, background 120ms linear;
+  background: linear-gradient(135deg, rgb(255 255 255 / var(--site-topbar-bg-alpha)), rgb(248 250 255 / calc(var(--site-topbar-bg-alpha) * .82)));
+  border: 1px solid rgb(255 255 255 / .56);
+  box-shadow: 0 10px 30px rgb(25 31 44 / .12), inset 0 1px 0 rgb(255 255 255 / .72);
+  -webkit-backdrop-filter: blur(18px) saturate(1.18);
+  backdrop-filter: blur(18px) saturate(1.18);
 }
 
 .is-scene-view .site-topbar {
@@ -2221,30 +2225,54 @@ h1 { color: #3b2112; font-size: clamp(46px, 5vw, 76px); letter-spacing: -0.08em;
   }
 }
 
-/* 相遇列表按内容自然延伸，不再限制在固定高度的滚动框内 */
+/* 相遇页两个面板恢复固定高度，内容在面板内部滚动 */
 .encounter-list-panel {
-  height: auto;
-  min-height: 0;
-  max-height: none;
-  overflow: visible;
+  height: min(650px, calc(100vh - 300px));
+  min-height: 500px;
+  max-height: min(650px, calc(100vh - 300px));
+  overflow: hidden;
 }
 
 .encounter-list {
-  height: auto;
+  height: 100%;
   max-height: none;
-  overflow: visible;
+  overflow-y: auto;
+  align-content: start;
+  padding-right: 14px;
 }
 
-/* 打开聊天后，右侧面板高度跟随左侧人物列表同步伸展，宽度保持原值 */
+/* 打开聊天后，右侧面板与左侧固定高度同步，聊天内容独立滚动 */
 .encounter-layout.has-chat {
   align-items: stretch;
 }
 
 .encounter-layout.has-chat .chat-panel {
-  height: auto;
-  min-height: 0;
-  max-height: none;
+  height: min(650px, calc(100vh - 300px));
+  min-height: 500px;
+  max-height: min(650px, calc(100vh - 300px));
+  overflow: hidden;
   align-self: stretch;
+}
+
+.encounter-layout.has-chat .chat-panel__content {
+  height: 100%;
+  overflow-y: auto;
+}
+
+@media (max-width: 700px) {
+  .encounter-list-panel,
+  .encounter-layout.has-chat .chat-panel {
+    height: min(560px, calc(100vh - 240px));
+    min-height: 430px;
+    max-height: min(560px, calc(100vh - 240px));
+    overflow: hidden;
+  }
+
+  .encounter-list {
+    height: 100%;
+    overflow-y: auto;
+    padding-right: 0;
+  }
 }
 
 /* 导航项响应式放大，保持中间导航的视觉重点 */
@@ -2274,6 +2302,32 @@ h1 { color: #3b2112; font-size: clamp(46px, 5vw, 76px); letter-spacing: -0.08em;
   .topbar__tools { gap: 6px; }
   .music-tools { gap: 3px; }
   .music-tools button { width: 30px; height: 30px; font-size: 15px; }
+}
+
+/* 地图与上方主界面使用同一内容宽度，避免两段画面左右边缘错位 */
+.town-panorama {
+  width: calc(100% + 48px);
+  margin-left: -24px;
+  margin-right: -24px;
+  padding-right: 24px;
+  padding-left: 24px;
+}
+
+@media (max-width: 700px) {
+  .town-panorama {
+    padding-right: 12px;
+    padding-left: 12px;
+  }
+}
+
+@media (max-width: 560px) {
+  .town-panorama {
+    width: calc(100% + 24px);
+    margin-left: -12px;
+    margin-right: -12px;
+    padding-right: 12px;
+    padding-left: 12px;
+  }
 }
 
 /* 分身页顶部内容与全局 header 保持间距；标题区与标签卡片顶部对齐 */

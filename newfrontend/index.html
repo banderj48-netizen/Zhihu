@@ -21,13 +21,13 @@
           <img class="message-box__asset message-box__asset--unread" src="./美术素材/消息盒子（有消息）.svg" alt="" aria-hidden="true" />
         </div>
         <div class="music-tools" aria-label="背景音乐控制">
-          <button class="music-toggle is-on" id="music-toggle" type="button" aria-pressed="true" aria-label="关闭背景音乐">♫</button>
+          <button class="music-toggle" id="music-toggle" type="button" aria-pressed="false" aria-label="开启背景音乐">♪</button>
           <button class="music-switch" id="music-switch" type="button" aria-label="切换背景音乐">⏭</button>
         </div>
       </div>
     </header>
 
-    <audio id="background-music" loop autoplay preload="metadata"></audio>
+    <audio id="background-music" loop preload="metadata"></audio>
 
     <section class="message-overlay" id="message-overlay" aria-hidden="true">
       <div class="message-modal" role="dialog" aria-modal="true" aria-labelledby="message-modal-title">
@@ -273,10 +273,12 @@
       const musicSwitch = document.getElementById('music-switch');
       const musicSources = ['./音乐/温暖的日常.mp3', './音乐/温暖的日常2.mp3'];
       let musicIndex = 0;
-      let musicEnabled = true;
-      let musicAutoplayPending = false;
+      let musicEnabled = false;
       const profileIntro = document.querySelector('.profile-intro');
       const profilePerson = document.querySelector('.profile-person');
+      const notificationApiBase = 'http://127.0.0.1:8000/v1/twin';
+      const notificationUserId = 'testacc';
+      let notificationItems = [];
       const messageTestData = [
         { id: 'demo-001', name: '看山 · 小许', scene: '场景 · 演讲厅', time: '今天 18:32', text: '我们好像都在关注技术如何影响普通人的生活，想和你继续聊聊。' },
         { id: 'demo-002', name: '看山 · 小陈', scene: '场景 · 书店', time: '昨天 16:08', text: '最近在尝试把阅读时间切成小块，也想听听你是怎么安排的。' }
@@ -308,8 +310,9 @@
         const horizontalPadding = parseFloat(townStyles.paddingLeft) + parseFloat(townStyles.paddingRight);
         const containerWidth = town.clientWidth || document.documentElement.clientWidth || window.innerWidth;
         const availableWidth = Math.max(0, containerWidth - horizontalPadding);
-        const naturalWidth = townMapImage.naturalWidth || availableWidth;
-        return Math.min(availableWidth, naturalWidth);
+        // 地图跟随上方主界面的可用宽度缩放；不使用图片原始像素宽度限制，
+        // 避免不同窗口尺寸下地图与上方界面出现视觉断层。
+        return availableWidth;
       }
 
       function syncSiteTopbarWidth() {
@@ -325,7 +328,8 @@
           : 0;
         const renderWidth = initialWidth + (mapWidth - initialWidth) * progress;
         const topOffset = isMobile ? 12 : 16;
-        const backgroundAlpha = 1 - progress * 0.6;
+        // header 保持磨砂玻璃的半透明底色，滚动到底时最多透明 60%。
+        const backgroundAlpha = 0.82 - progress * 0.42;
         document.documentElement.style.setProperty('--site-topbar-render-top', `${(topOffset * (1 - progress)).toFixed(2)}px`);
         document.documentElement.style.setProperty('--site-topbar-bg-alpha', backgroundAlpha.toFixed(3));
         document.documentElement.style.setProperty('--site-topbar-render-width', `${renderWidth.toFixed(2)}px`);
@@ -521,10 +525,46 @@
         if (isEncounter || isScene || isProfile) window.scrollTo(0, 0);
       }
 
-      function openMessageList() {
-        renderMessageList();
+      function notificationTime(value) {
+        if (!value) return '刚刚';
+        const date = new Date(value);
+        if (Number.isNaN(date.getTime())) return '刚刚';
+        return date.toLocaleString('zh-CN', { month: 'numeric', day: 'numeric', hour: '2-digit', minute: '2-digit' });
+      }
+
+      function normalizeNotification(item) {
+        const payload = item?.payload && typeof item.payload === 'object' ? item.payload : {};
+        return {
+          id: item?.id || '',
+          name: payload.display_name || (item?.notification_type === 'friendship_invitation' ? '看山 · 新朋友' : '看山消息'),
+          scene: item?.notification_type === 'friendship_invitation' ? '分身相遇' : '系统消息',
+          time: notificationTime(item?.created_at),
+          text: item?.body || item?.title || '你有一条新消息。',
+          notificationType: item?.notification_type || 'system',
+          status: item?.status || 'unread',
+        };
+      }
+
+      async function loadNotifications() {
+        const response = await fetch(`${notificationApiBase}/notifications?page=1&page_size=50`, {
+          headers: { 'X-User-Id': notificationUserId },
+        });
+        if (!response.ok) throw new Error(`notifications_${response.status}`);
+        const result = await response.json();
+        return Array.isArray(result?.items) ? result.items : [];
+      }
+
+      async function openMessageList() {
+        if (messageList) messageList.innerHTML = '<p class="message-list__loading">正在读取消息…</p>';
         messageOverlay?.classList.add('is-open');
         messageOverlay?.setAttribute('aria-hidden', 'false');
+        try {
+          notificationItems = await loadNotifications();
+          renderMessageList(notificationItems);
+        } catch {
+          notificationItems = [];
+          renderMessageList(messageTestData);
+        }
       }
 
       function updateMusicControls() {
@@ -540,15 +580,11 @@
         if (musicEnabled) {
           try {
             await backgroundMusic.play();
-            musicAutoplayPending = false;
           } catch {
-            // 浏览器拦截未交互页面的自动播放时，保留“已开启”状态，
-            // 并在用户首次交互后重试。
-            musicAutoplayPending = true;
+            musicEnabled = false;
           }
         } else {
           backgroundMusic.pause();
-          musicAutoplayPending = false;
         }
         updateMusicControls();
       }
@@ -577,16 +613,17 @@
       musicToggle?.addEventListener('click', () => setMusicEnabled(!musicEnabled));
       musicSwitch?.addEventListener('click', switchMusicSource);
       updateMusicControls();
-      void setMusicEnabled(true);
-      const retryMusicAfterInteraction = () => {
-        if (musicEnabled && musicAutoplayPending) void setMusicEnabled(true);
-      };
-      window.addEventListener('pointerdown', retryMusicAfterInteraction, { passive: true });
-      window.addEventListener('keydown', retryMusicAfterInteraction);
 
-      function renderMessageList() {
+      function renderMessageList(items = messageTestData) {
         if (!messageList) return;
-        messageList.innerHTML = messageTestData.map((item) => `
+        messageList.innerHTML = items.map((source) => {
+          const item = source.notificationType ? source : normalizeNotification(source);
+          const canDecide = item.notificationType === 'friendship_invitation' && ['unread', 'read'].includes(item.status);
+          const statusText = item.status === 'accepted' ? '已接受' : item.status === 'rejected' ? '已拒绝' : '等待你的决定';
+          const actionMarkup = canDecide
+            ? '<div class="message-card__actions"><button type="button" data-message-action="reject">拒绝</button><button type="button" data-message-action="accept">接受</button></div>'
+            : `<span class="message-card__decision-note">${statusText}</span>`;
+          return `
           <article class="message-card" data-message-id="${item.id}">
             <div class="message-card__avatar">${item.name.slice(-2, -1)}</div>
             <div class="message-card__body">
@@ -594,27 +631,47 @@
               <span class="message-card__scene">${item.scene}</span>
               <p>${item.text}</p>
               <div class="message-card__footer">
-                <span class="message-card__status">等待你的决定</span>
-                <div class="message-card__actions">
-                  <button type="button" data-message-action="reject">拒绝</button>
-                  <button type="button" data-message-action="accept">接受</button>
-                </div>
+                <span class="message-card__status">${statusText}</span>
+                ${actionMarkup}
               </div>
             </div>
-          </article>`).join('');
+          </article>`;
+        }).join('');
       }
 
-      messageList?.addEventListener('click', (event) => {
+      messageList?.addEventListener('click', async (event) => {
         const actionButton = event.target.closest('[data-message-action]');
         const card = actionButton?.closest('.message-card');
         if (!actionButton || !card) return;
         const accepted = actionButton.dataset.messageAction === 'accept';
         const status = card.querySelector('.message-card__status');
         const actions = card.querySelector('.message-card__actions');
-        if (status) status.textContent = accepted ? '已接受' : '已拒绝';
-        if (actions) actions.innerHTML = '<span class="message-card__decision-note">测试状态已更新</span>';
-        card.classList.toggle('is-accepted', accepted);
-        card.classList.toggle('is-rejected', !accepted);
+        const notificationId = card.dataset.messageId;
+        const notification = notificationItems.find((item) => String(item.id) === String(notificationId));
+        if (!notification) {
+          if (status) status.textContent = accepted ? '已接受' : '已拒绝';
+          if (actions) actions.innerHTML = '<span class="message-card__decision-note">测试状态已更新</span>';
+          card.classList.toggle('is-accepted', accepted);
+          card.classList.toggle('is-rejected', !accepted);
+          return;
+        }
+        actionButton.disabled = true;
+        try {
+          const response = await fetch(`${notificationApiBase}/notifications/${encodeURIComponent(notificationId)}/decision`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'X-User-Id': notificationUserId },
+            body: JSON.stringify({ decision: accepted ? 'accepted' : 'rejected' }),
+          });
+          if (!response.ok) throw new Error(`notification_decision_${response.status}`);
+          notification.status = accepted ? 'accepted' : 'rejected';
+          if (status) status.textContent = accepted ? '已接受' : '已拒绝';
+          if (actions) actions.innerHTML = '<span class="message-card__decision-note">状态已同步</span>';
+          card.classList.toggle('is-accepted', accepted);
+          card.classList.toggle('is-rejected', !accepted);
+        } catch {
+          actionButton.disabled = false;
+          if (status) status.textContent = '提交失败，请重试';
+        }
       });
 
       function closeMessageList() {
