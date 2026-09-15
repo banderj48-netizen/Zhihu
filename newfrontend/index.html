@@ -88,6 +88,16 @@
       </div>
     </section>
 
+    <section class="exchange-overlay" id="exchange-overlay" aria-hidden="true">
+      <div class="exchange-modal" role="dialog" aria-modal="true" aria-labelledby="exchange-modal-title">
+        <button class="exchange-modal__close" id="exchange-modal-close" type="button" aria-label="关闭交流状态">×</button>
+        <div class="exchange-modal__icon" aria-hidden="true">✦</div>
+        <h2 id="exchange-modal-title">正在交流中</h2>
+        <p id="exchange-modal-text">你的看山正在和对方交换想法，请稍候。</p>
+        <span class="exchange-modal__status"><i></i> 对话准备中</span>
+      </div>
+    </section>
+
     <div class="page-shell" id="home-view">
 
       <main class="main-content">
@@ -174,6 +184,7 @@
           <div><dt>感兴趣的方向</dt><dd id="tavern-detail-interests"></dd></div>
           <div><dt>想聊聊</dt><dd id="tavern-detail-intro"></dd></div>
         </dl>
+        <button class="tavern-detail-card__action" id="tavern-start-chat" type="button">和看山交流</button>
       </aside>
       <section class="tavern-characters" aria-label="酒馆里的看山">
         <div class="tavern-character tavern-character--mine">
@@ -208,14 +219,6 @@
             <div class="tag-cloud" aria-label="标签分类">
               <span class="tag tag-human">人文</span><span class="tag tag-env">环境</span><span class="tag tag-country">国家</span><span class="tag tag-social">社会</span><span class="tag tag-animal">动物</span><button class="tag-add" type="button">＋</button>
             </div>
-          </article>
-          <article class="profile-card profile-auth-card">
-            <h2>授权设置</h2><p>允许进入场景浏览</p>
-            <label><span>允许阅读公开内容</span><i class="toggle on"></i></label>
-            <label><span>允许与其他看山交流</span><i class="toggle on"></i></label>
-            <label><span>允许关注主题</span><i class="toggle on"></i></label>
-            <label><span>允许发表评论</span><i class="toggle on"></i></label>
-            <label><span>允许发起真人认识申请</span><i class="toggle"></i></label>
           </article>
           <div class="profile-intro"><small>只属于你的数字分身</small><h2>我的分身</h2><p>看山会帮你观察和认识，但每一步都由你决定。</p><span class="profile-notice-text">看山不会自动代替你发送真人消息。真人连接需要双方明确同意。</span></div>
           <img class="profile-person" src="./美术素材/看山人物.png" alt="看山人物" />
@@ -353,6 +356,10 @@
       const tavernDetailPersonality = document.getElementById('tavern-detail-personality');
       const tavernDetailInterests = document.getElementById('tavern-detail-interests');
       const tavernDetailIntro = document.getElementById('tavern-detail-intro');
+      const tavernStartChat = document.getElementById('tavern-start-chat');
+      const exchangeOverlay = document.getElementById('exchange-overlay');
+      const exchangeModalClose = document.getElementById('exchange-modal-close');
+      const exchangeModalText = document.getElementById('exchange-modal-text');
       const profile = document.getElementById('profile-view');
       const list = document.getElementById('encounter-list');
       const layout = document.getElementById('encounter-layout');
@@ -790,7 +797,20 @@
         chatContent.innerHTML = `
           <div class="chat-person"><span class="chat-person__avatar">A</span><div><b>看山 · ${item.name}</b><small>${item.location}</small></div><span class="chat-person__tag">交流潜力 ${item.tag.split(' ')[1]}</span><i>对方已向你发起说话申请</i></div>
           <time>${item.date}</time>
-          <div class="chat-messages">${item.messages.map(([label, text]) => `<div class="chat-bubble"><small>${label}</small><p>${text}</p></div>`).join('')}</div>
+          <div class="chat-preview" aria-label="对话缩略记录">
+            ${fullChatRounds.slice(0, 2).map(([, aText, , bText], index) => `
+              <div class="chat-preview-round">
+                <span class="chat-preview-number">${String(index + 1).padStart(2, '0')}</span>
+                <div class="chat-preview-row chat-preview-row--mine">
+                  <span class="chat-preview-avatar chat-preview-avatar--mine">看</span>
+                  <div class="chat-preview-bubble chat-preview-bubble--mine"><b>看山</b><p>${aText}</p></div>
+                </div>
+                <div class="chat-preview-row chat-preview-row--guest">
+                  <div class="chat-preview-bubble chat-preview-bubble--guest"><b>${item.name}</b><p>${bText}</p></div>
+                  <span class="chat-preview-avatar chat-preview-avatar--guest">${item.avatar}</span>
+                </div>
+              </div>`).join('')}
+          </div>
           <a class="chat-history" href="#">查看完整记录 →</a>
           <div class="chat-actions"><button>确认认识</button><button>拒绝认识</button><button>再聊一聊</button></div>`;
         chatContent.querySelector('.chat-history').addEventListener('click', (event) => {
@@ -1028,6 +1048,7 @@
       });
       document.addEventListener('keydown', (event) => {
         if (event.key === 'Escape') closeMessageList();
+        if (event.key === 'Escape') closeExchangeStatus();
       });
       document.querySelectorAll('.town-building[data-scene]').forEach((building) => {
         building.addEventListener('click', () => {
@@ -1069,6 +1090,7 @@
         tavernGuests.forEach((guest) => guest.classList.remove('is-selected'));
         tavernHeading.textContent = '开始与看山交谈';
         tavernDetailCard.hidden = true;
+        if (tavernStartChat) tavernStartChat.dataset.name = '';
       }
       tavernGuests.forEach((guest) => {
         guest.addEventListener('click', () => {
@@ -1080,8 +1102,24 @@
           tavernDetailPersonality.textContent = guest.dataset.personality;
           tavernDetailInterests.textContent = guest.dataset.interests;
           tavernDetailIntro.textContent = guest.dataset.intro;
+          tavernStartChat.dataset.name = guest.dataset.name;
           tavernDetailCard.hidden = false;
         });
+      });
+      function openExchangeStatus() {
+        const name = tavernStartChat?.dataset.name || tavernDetailName?.textContent || '对方';
+        if (exchangeModalText) exchangeModalText.textContent = `你的看山正在和${name}交换想法，请稍候。`;
+        exchangeOverlay?.classList.add('is-open');
+        exchangeOverlay?.setAttribute('aria-hidden', 'false');
+      }
+      function closeExchangeStatus() {
+        exchangeOverlay?.classList.remove('is-open');
+        exchangeOverlay?.setAttribute('aria-hidden', 'true');
+      }
+      tavernStartChat?.addEventListener('click', openExchangeStatus);
+      exchangeModalClose?.addEventListener('click', closeExchangeStatus);
+      exchangeOverlay?.addEventListener('click', (event) => {
+        if (event.target === exchangeOverlay) closeExchangeStatus();
       });
       tavernSelectionBack.addEventListener('click', resetTavernConversation);
       renderList();
