@@ -7,3 +7,7 @@ backend/.env.models
 
 # Blender 自动备份文件
 *.blend1
+
+# 前端依赖与 Next.js 构建产物：可通过 npm install / npm run build 重新生成，不提交仓库。
+frontend/node_modules/
+frontend/.next/
