@@ -33,6 +33,7 @@ from app.consent.router import router as consent_router
 from app.consent import zhihu_oauth as _zhihu_oauth
 from app.imports.router import router as imports_router
 from agent.runtime.api import router as twin_runtime_router
+from agent.runtime.api import get_current_profile_summary
 from app.imports import zhihu_client as _zhihu_client
 app=FastAPI(title='TwinLoop API',version='0.1.0')
 app.include_router(domains_router)
@@ -61,6 +62,10 @@ app.include_router(auth_router)
 app.include_router(consent_router)
 app.include_router(imports_router)
 app.include_router(twin_runtime_router)
+# 运行时模块在部分开发热加载路径中会先暴露旧路由，再补充新路由；显式挂载
+# 画像接口，确保现有进程和新进程都能访问真实 PostgreSQL 画像。
+if not any(getattr(route, 'path', None) == '/v1/twin/profile/summary' for route in app.routes):
+ app.add_api_route('/v1/twin/profile/summary', get_current_profile_summary, methods=['GET'], tags=['digital-twin'])
 
 # 本地浏览器入口统一导向 Next.js 前端。
 from fastapi.responses import RedirectResponse
@@ -68,7 +73,7 @@ from fastapi.responses import RedirectResponse
 def _login_test_page():
  # 本地前后端分端口运行时，访问 API 根路径也回到前端，避免 OAuth
  # 成功后因旧回调/书签停留在 8000 的后端测试页。
- return RedirectResponse('http://127.0.0.1:3000/', status_code=307)
+ return RedirectResponse('http://127.0.0.1:3000/intro', status_code=307)
 
 @app.on_event('startup')
 def _report_oauth_config():
@@ -251,7 +256,6 @@ def build_card(profile,user,vid):
  for i,m in enumerate(d.get('memories',[]),1):
   if m.get('share'): entries.append({'id':i,'keys':m.get('keys',[]),'content':m.get('content',''),'enabled':True,'insertion_order':i,'constant':m.get('depth')=='deep','selective':False,'position':'after_char','extensions':{'twin':{'memory_id':m.get('id',f'memory_{i}'),'depth':m.get('depth','shallow'),'source_refs':m.get('source_refs',[]),'confirmation_status':'confirmed','version':m.get('version',1)}}})
  return {'spec':'chara_card_v2','spec_version':'2.0','data':{'name':d.get('name',f'Twin_{user[:8]}'),'description':'；'.join(map(str,d.get('facts',[])[:8])) or '主人尚未提供公开身份事实。','personality':render_personality(personality),'scenario':'数字分身在虚拟社交场景中交流。虚拟经历不等于主人的现实经历。','first_mes':'你好。','mes_example':d.get('mes_example',''),'creator_notes':f'TwinLoop version {vid}; 由用户确认的资料生成。','system_prompt':'{{original}}\n不编造主人的经历、能力或现实承诺；未知时自然说明。','post_history_instructions':'{{original}}\n按适用条件和例外回应。','alternate_greetings':[],'tags':['TwinLoop'],'creator':'TwinLoop','character_version':vid,'character_book':{'name':'三层世界书','description':'深层原则、中层条件反应、浅层事件。','recursive_scanning':False,'entries':entries},'extensions':{'twin':{'schema_version':'2.1-proposal','owner_id':user,'version_id':vid,'assessment':{'status':personality.get('status') if isinstance(personality,dict) else 'not_completed'},'personality':export_personality(personality if isinstance(personality,dict) else None),'domain_profile':domain_profile,'private_answers_included':False}}}}
-
 
 def run_server() -> None:
  """使用 Uvicorn 在本机启动 FastAPI 服务。

@@ -18,9 +18,28 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 from uuid import uuid4
+from dotenv import dotenv_values
 
 def _pg_enabled() -> bool:
-    return bool(os.getenv("DATABASE_URL"))
+    """判断认证仓储是否应与正式 PostgreSQL 事实源保持一致。
+
+    run_server.ps1 通过 TWINLOOP_ENV_FILE 指定 .env.local/.env，配置文件
+    只读入 Settings，并不会把 DATABASE_URL 注入进程环境；若这里只检查
+    os.environ，初始化写入 PostgreSQL 后认证仍会回读本地 JSON，页面就会
+    错误地再次进入 #auth。
+    """
+    if os.getenv("DATABASE_URL"):
+        return True
+    env_file = os.getenv("TWINLOOP_ENV_FILE")
+    candidates = [Path(env_file)] if env_file else []
+    candidates.extend(Path(path) for path in (
+        Path(__file__).resolve().parents[2] / ".env.local",
+        Path(__file__).resolve().parents[2] / ".env",
+    ))
+    for path in candidates:
+        if path and path.exists() and dotenv_values(path).get("DATABASE_URL"):
+            return True
+    return False
 
 def _pg_upsert(profile: dict[str, Any]) -> dict[str, Any]:
     from db.database import connect
@@ -55,7 +74,7 @@ def _pg_user_payload(*, user_id: str | None = None, zhihu_uid: str | None = None
     with connect() as db:
         row = db.execute(
             f"""
-            SELECT u.id, u.external_id, a.id AS avatar_id,
+            SELECT u.id, u.external_id, a.id AS avatar_id, s.id AS initialization_id, s.status AS initialization_status,
                    CASE
                        WHEN a.status = 'building' THEN 'processing'
                        WHEN a.status = 'archived' THEN 'not_created'
@@ -63,6 +82,7 @@ def _pg_user_payload(*, user_id: str | None = None, zhihu_uid: str | None = None
                    END AS avatar_status
             FROM public.users u
             LEFT JOIN public.user_avatars a ON a.user_id = u.id
+            LEFT JOIN public.avatar_initialization_sessions s ON s.user_id = u.id
             WHERE {where_sql} AND u.deleted_at IS NULL
             ORDER BY a.updated_at DESC NULLS LAST
             LIMIT 1
@@ -76,6 +96,8 @@ def _pg_user_payload(*, user_id: str | None = None, zhihu_uid: str | None = None
         "zhihu_uid": row["external_id"],
         "avatar_id": str(row["avatar_id"]) if row["avatar_id"] else None,
         "avatar_status": row["avatar_status"] or "not_created",
+        "initialization_id": str(row["initialization_id"]) if row["initialization_id"] else None,
+        "initialization_status": row["initialization_status"],
         "zhihu_connected": True,
     }
 

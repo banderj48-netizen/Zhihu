@@ -23,7 +23,14 @@ def database_url(url: str | None = None) -> str:
     if url is None:
         url = os.getenv("DATABASE_URL")
         if url is None:
-            url = dotenv_values(BACKEND_ROOT / ".env").get("DATABASE_URL")
+            env_file = os.getenv("TWINLOOP_ENV_FILE")
+            candidates = [Path(env_file)] if env_file else []
+            candidates.extend((BACKEND_ROOT / ".env.local", BACKEND_ROOT / ".env"))
+            for path in candidates:
+                if path.exists():
+                    url = dotenv_values(path).get("DATABASE_URL")
+                    if url:
+                        break
     if not isinstance(url, str) or not url.strip():
         raise ValueError("Set DATABASE_URL to a PostgreSQL URL in the environment or backend/.env")
     value = url.strip()

@@ -12,8 +12,18 @@
       #initialization-form {
         border: 1px solid rgba(255,255,255,.55);
         border-radius: 18px;
-        background: rgba(247, 241, 230, .97) url('./美术素材/小镇地图.jpg') center/cover;
+        background: #fff;
         box-shadow: 0 24px 70px rgba(47, 31, 20, .28);
+      }
+      /* 初始化流程统一使用纯白承载面，避免地图纹理或场景贴图干扰答题与确认。 */
+      #auth-view .hero-card,
+      #auth-view .hero-visual,
+      #profile-review-dialog {
+        background: #fff;
+      }
+      #auth-view .hero-visual img {
+        background: #fff;
+        object-fit: contain;
       }
       #system-progress-dialog { min-width: min(420px, calc(100vw - 48px)); padding: 30px 34px; color: #3a271c; text-align: center; }
       #system-progress-dialog::backdrop { background: rgba(34, 25, 19, .66); backdrop-filter: blur(5px); }
@@ -26,7 +36,7 @@
       #initialization-form pre { max-height: 180px; overflow: auto; white-space: pre-wrap; }
       #initialization-form .profile-field { margin: 14px 0; }
       #initialization-form .profile-field label { font-weight: 700; }
-      #profile-review-dialog { width: min(760px, calc(100vw - 36px)); max-height: 86vh; overflow: auto; border: 1px solid rgba(255,255,255,.65); border-radius: 22px; padding: 0; background: rgba(247, 241, 230, .98) url('./美术素材/小镇地图.jpg') center/cover; color: #3a271c; box-shadow: 0 26px 90px rgba(47, 31, 20, .34); }
+      #profile-review-dialog { width: min(760px, calc(100vw - 36px)); max-height: 86vh; overflow: auto; border: 1px solid rgba(255,255,255,.65); border-radius: 22px; padding: 0; background: #fff; color: #3a271c; box-shadow: 0 26px 90px rgba(47, 31, 20, .34); }
       #profile-review-dialog::backdrop { background: rgba(34, 25, 19, .72); backdrop-filter: blur(7px); }
       #profile-review-content { padding: 28px 32px 32px; }
       #profile-review-content h2 { margin-top: 0; }
@@ -34,15 +44,20 @@
       #profile-review-content .profile-field label { display: block; margin-bottom: 7px; font-weight: 700; }
       #profile-review-content textarea { width: 100%; box-sizing: border-box; border: 1px solid rgba(110, 78, 50, .3); border-radius: 10px; padding: 10px; background: rgba(255,255,255,.78); color: #3a271c; font: inherit; }
       #profile-review-error { color: #a33c28; }
+      #interest-dialog { width:min(720px,calc(100vw - 32px)); max-height:82vh; border:0; border-radius:20px; padding:0; background:#fff; color:#222; box-shadow:0 24px 80px rgba(0,0,0,.28); }
+      #interest-dialog::backdrop { background:rgba(20,20,20,.58); }
+      #interest-dialog-content { padding:26px; }
+      #interest-dialog-messages { max-height:48vh; overflow:auto; margin:18px 0; }
+      .interest-dialog__actions { display:flex; justify-content:flex-end; gap:10px; }
     </style>
   </head>
   <body>
     <header class="topbar site-topbar" id="site-topbar" aria-label="页面导航">
       <div class="topbar__brand"><img src="./美术素材/logo.jpg" alt="看山小镇 Logo" /><span>看山小镇</span></div>
       <nav class="topbar__nav">
-        <a data-route="home" class="is-active" href="#intro">小镇</a>
-        <a data-route="encounter" href="#encounter">相遇</a>
-        <a data-route="profile" href="#profile">分身</a>
+        <a data-route="home" class="is-active" href="/intro">小镇</a>
+        <a data-route="encounter" href="/encounter">相遇</a>
+        <a data-route="profile" href="/profile">分身</a>
       </nav>
       <div class="topbar__tools">
         <div class="message-box message-box--empty" aria-label="消息盒子，打开消息列表" role="button" tabindex="0">
@@ -75,9 +90,10 @@
     <dialog id="system-progress-dialog" aria-live="polite">
       <p id="system-progress-text">系统正在处理，请稍候…</p>
     </dialog>
-    <dialog id="profile-review-dialog" aria-labelledby="profile-review-title">
+      <dialog id="profile-review-dialog" aria-labelledby="profile-review-title">
       <div id="profile-review-content"></div>
-    </dialog>
+      </dialog>
+    <dialog id="interest-dialog" aria-labelledby="interest-dialog-title"><div id="interest-dialog-content"><button id="interest-dialog-close" type="button" aria-label="关闭">×</button><h2 id="interest-dialog-title">了解这位看山</h2><p id="interest-dialog-meta"></p><div id="interest-dialog-messages"><p class="chat-loading">正在读取聊天记录…</p></div><div class="interest-dialog__actions"><button id="interest-dialog-send" class="primary-button" type="button">感兴趣，发出交友申请</button></div></div></dialog>
     <audio id="background-music" loop preload="metadata"></audio>
 
     <section class="message-overlay" id="message-overlay" aria-hidden="true">
@@ -96,7 +112,7 @@
             <p class="eyebrow">小镇</p>
             <h1>在小镇里，<br />先“相知”再“相遇”</h1>
             <p class="hero-subcopy">两个人往往先相遇，再相识，最后相知。可在看山小镇里，你的分身会替你和别人的分身先相识，你只需要与 TA 相遇。</p>
-            <a class="primary-button" href="#town-panorama">去交流</a>
+            <a class="primary-button" href="/town">去交流</a>
           </div>
 
           <div class="hero-visual" aria-label="咖啡馆插画">
@@ -162,13 +178,13 @@
 
     <main class="tavern-view" id="tavern-view" aria-labelledby="tavern-title" hidden>
       <img class="tavern-view__background" id="scene-background" src="./美术素材/场景酒吧.png" alt="酒馆场景" />
-      <a class="tavern-back" href="#town-panorama">← 返回小镇</a>
+      <a class="tavern-back" href="/town">← 返回小镇</a>
       <h1 class="tavern-title" id="tavern-title">酒馆</h1>
       <div class="tavern-conversation-heading" id="tavern-conversation-heading" aria-live="polite">开始与看山交谈</div>
       <button class="tavern-selection-back" id="tavern-selection-back" type="button">返回选择看山</button>
       <aside class="tavern-detail-card" id="tavern-detail-card" aria-live="polite" hidden>
-        <div class="tavern-detail-card__head"><span>看山资料</span><b id="tavern-detail-name">林夏</b></div>
-        <p class="tavern-detail-card__meta" id="tavern-detail-meta">女 · 26 岁</p>
+        <div class="tavern-detail-card__head"><span>看山资料</span><b id="tavern-detail-name">等待候选</b></div>
+        <p class="tavern-detail-card__meta" id="tavern-detail-meta"></p>
         <dl>
           <div><dt>性格</dt><dd id="tavern-detail-personality"></dd></div>
           <div><dt>感兴趣的方向</dt><dd id="tavern-detail-interests"></dd></div>
@@ -180,20 +196,20 @@
           <img src="./美术素材/男看山-正面.png" alt="我的看山" />
           <span class="tavern-character__label">我的看山</span>
         </div>
-        <button class="tavern-character tavern-character--guest-one tavern-guest" type="button" aria-label="看山：林夏" data-name="林夏" data-meta="女 · 26 岁" data-personality="温柔、好奇，喜欢观察生活" data-interests="摄影 · 城市漫步 · 电影" data-intro="喜欢从日常细节出发，交换那些让人停下来的一瞬间。">
-          <img src="./美术素材/女看山-正面.png" alt="林夏" />
-          <span class="tavern-character__label">林夏</span>
-          <span class="tavern-profile" role="tooltip"><b>林夏</b><small>女 · 26 岁</small><span>温柔、好奇，喜欢观察生活</span><em>摄影 · 城市漫步 · 电影</em></span>
+        <button class="tavern-character tavern-character--guest-one tavern-guest" type="button" aria-label="场景候选 1" hidden>
+          <img src="./美术素材/女看山-正面.png" alt="场景候选 1" />
+          <span class="tavern-character__label">场景候选 1</span>
+          <span class="tavern-profile" role="tooltip"><b>场景候选 1</b><small></small><span></span><em></em></span>
         </button>
-        <button class="tavern-character tavern-character--guest-two tavern-guest" type="button" aria-label="看山：周野" data-name="周野" data-meta="男 · 29 岁" data-personality="直接、热情，喜欢把想法变成行动" data-interests="音乐 · 徒步 · 创业" data-intro="总有新的计划正在路上，也愿意听听别人如何把想法落到生活里。">
-          <img src="./美术素材/男看山-正面.png" alt="周野" />
-          <span class="tavern-character__label">周野</span>
-          <span class="tavern-profile" role="tooltip"><b>周野</b><small>男 · 29 岁</small><span>直接、热情，喜欢把想法变成行动</span><em>音乐 · 徒步 · 创业</em></span>
+        <button class="tavern-character tavern-character--guest-two tavern-guest" type="button" aria-label="场景候选 2" hidden>
+          <img src="./美术素材/男看山-正面.png" alt="场景候选 2" />
+          <span class="tavern-character__label">场景候选 2</span>
+          <span class="tavern-profile" role="tooltip"><b>场景候选 2</b><small></small><span></span><em></em></span>
         </button>
-        <button class="tavern-character tavern-character--guest-three tavern-guest" type="button" aria-label="看山：许宁" data-name="许宁" data-meta="女 · 31 岁" data-personality="安静、细腻，重视长期的关系" data-interests="阅读 · 建筑 · 手作" data-intro="喜欢慢慢了解一件事，也在意人与人之间自然形成的默契。">
-          <img src="./美术素材/女看山-正面.png" alt="许宁" />
-          <span class="tavern-character__label">许宁</span>
-          <span class="tavern-profile" role="tooltip"><b>许宁</b><small>女 · 31 岁</small><span>安静、细腻，重视长期的关系</span><em>阅读 · 建筑 · 手作</em></span>
+        <button class="tavern-character tavern-character--guest-three tavern-guest" type="button" aria-label="场景候选 3" hidden>
+          <img src="./美术素材/女看山-正面.png" alt="场景候选 3" />
+          <span class="tavern-character__label">场景候选 3</span>
+          <span class="tavern-profile" role="tooltip"><b>场景候选 3</b><small></small><span></span><em></em></span>
         </button>
       </section>
     </main>
@@ -202,40 +218,25 @@
 
       <section class="profile-main">
         <div class="profile-left">
-          <article class="profile-card profile-tags-card">
-            <h1>我的标签</h1>
-            <div class="profile-owner"><span>林</span><div><b>看山 · 林同学</b><small>已运行 12 天 · 最近活动 昨天</small></div></div>
-            <div class="tag-cloud" aria-label="标签分类">
-              <span class="tag tag-human">人文</span><span class="tag tag-env">环境</span><span class="tag tag-country">国家</span><span class="tag tag-social">社会</span><span class="tag tag-animal">动物</span><button class="tag-add" type="button">＋</button>
-            </div>
-          </article>
-          <article class="profile-card profile-auth-card">
-            <h2>授权设置</h2><p>允许进入场景浏览</p>
-            <label><span>允许阅读公开内容</span><i class="toggle on"></i></label>
-            <label><span>允许与其他看山交流</span><i class="toggle on"></i></label>
-            <label><span>允许关注主题</span><i class="toggle on"></i></label>
-            <label><span>允许发表评论</span><i class="toggle on"></i></label>
-            <label><span>允许发起真人认识申请</span><i class="toggle"></i></label>
-          </article>
           <div class="profile-intro"><small>只属于你的数字分身</small><h2>我的分身</h2><p>看山会帮你观察和认识，但每一步都由你决定。</p><span class="profile-notice-text">看山不会自动代替你发送真人消息。真人连接需要双方明确同意。</span></div>
           <img class="profile-person" src="./美术素材/看山人物.png" alt="看山人物" />
         </div>
 
         <article class="profile-card profile-traits-card">
           <h1>我的画像</h1>
-          <div class="trait-list">
-            <div class="trait"><b>稳定属性&nbsp; 长期兴趣</b><button>♢</button><p>科幻、技术、产品</p></div>
-            <div class="trait"><b>稳定属性&nbsp; 交流偏好</b><button>♢</button><p>偏好先多交流，不喜欢泛泛寒暄</p></div>
-            <div class="trait"><b class="dynamic">动态属性&nbsp; 近期关注</b><button>♢</button><p>技术如何影响普通人的生活</p></div>
-            <div class="trait"><b class="dynamic">动态属性&nbsp; 当前社交目标</b><button>♢</button><p>先观察和了解，再决定是否认识本人</p></div>
-            <div class="trait trait-confirm"><b>待确认信息&nbsp; 表达风格</b><button>确认</button><p>擅长技术分析，也会关注故事里的细节</p></div>
-          </div>
+          <div class="trait-list" id="profile-trait-list" aria-live="polite"><p class="profile-tags-loading">正在读取真实画像…</p></div>
           <img class="profile-peek" src="./美术素材/看山探头.png" alt="看山探头" />
         </article>
       </section>
     </main>
     <script>
-      const encounterData = [
+      let encounterData = [];
+      let encounterLoadState = 'idle';
+      let authState = 'checking';
+      const sceneApiIds = { tavern: 'bar', podium: 'lecture' };
+      const sceneDisplayNames = { cafe: '咖啡店', library: '图书馆', bar: '酒馆', theater: '戏剧院', lecture: '讲台' };
+      const routeAliases = { '': 'intro', home: 'intro', intro: 'intro', town: 'town-panorama', 'town-panorama': 'town-panorama', encounter: 'encounter', profile: 'profile', auth: 'auth' };
+      /* legacy static encounter fixtures retained only as inert documentation
         {
           id: 'chen', avatar: '陈', name: '小陈', location: '场景 · 书店',
           title: '交流过什么话题？如何建立不被打扰的阅读时间',
@@ -309,6 +310,7 @@
         }
       ];
 
+      */
       const home = document.getElementById('home-view');
       const authView = document.getElementById('auth-view');
       const authDescription = document.getElementById('auth-description');
@@ -318,11 +320,16 @@
       const progressText = document.getElementById('system-progress-text');
       const profileReviewDialog = document.getElementById('profile-review-dialog');
       const profileReviewContent = document.getElementById('profile-review-content');
+      const interestDialog = document.getElementById('interest-dialog');
+      const interestDialogMessages = document.getElementById('interest-dialog-messages');
+      const interestDialogMeta = document.getElementById('interest-dialog-meta');
+      const interestDialogSend = document.getElementById('interest-dialog-send');
+      const interestDialogClose = document.getElementById('interest-dialog-close');
       const encounter = document.getElementById('encounter-view');
       const town = document.getElementById('town-panorama');
       const townMap = town.querySelector('.town-map');
       const townMapImage = town.querySelector('.town-map__image');
-      const townEntryLink = document.querySelector('.primary-button[href="#town-panorama"]');
+      const townEntryLink = document.querySelector('.primary-button[href="/town"]');
       const messageBox = document.querySelector('.message-box');
       const messageOverlay = document.getElementById('message-overlay');
       const messageModalClose = document.getElementById('message-modal-close');
@@ -336,12 +343,7 @@
       const profileIntro = document.querySelector('.profile-intro');
       const profilePerson = document.querySelector('.profile-person');
       const notificationApiBase = 'http://127.0.0.1:8000/v1/twin';
-      const notificationUserId = 'testacc';
       let notificationItems = [];
-      const messageTestData = [
-        { id: 'demo-001', name: '看山 · 小许', scene: '场景 · 演讲厅', time: '今天 18:32', text: '我们好像都在关注技术如何影响普通人的生活，想和你继续聊聊。' },
-        { id: 'demo-002', name: '看山 · 小陈', scene: '场景 · 书店', time: '昨天 16:08', text: '最近在尝试把阅读时间切成小块，也想听听你是怎么安排的。' }
-      ];
       const tavern = document.getElementById('tavern-view');
       const sceneBackground = document.getElementById('scene-background');
       const sceneTitle = document.getElementById('tavern-title');
@@ -354,6 +356,7 @@
       const tavernDetailInterests = document.getElementById('tavern-detail-interests');
       const tavernDetailIntro = document.getElementById('tavern-detail-intro');
       const profile = document.getElementById('profile-view');
+      const profileTraitList = document.getElementById('profile-trait-list');
       const list = document.getElementById('encounter-list');
       const layout = document.getElementById('encounter-layout');
       const chatContent = document.getElementById('chat-content');
@@ -428,7 +431,7 @@
        */
       async function resolveAuthenticationState() {
         try {
-          const callbackError = new URLSearchParams(location.hash.split('?')[1] || '').get('error');
+          const callbackError = new URLSearchParams(location.search).get('error');
           if (callbackError) {
             authError.hidden = false;
             authError.textContent = `登录认证失败：${callbackError}`;
@@ -436,11 +439,12 @@
           // 初始化刚完成时必须读取最新分身状态，禁止浏览器复用此前的 not_created 响应。
           const response = await requestBackend('/api/v1/me', { cache: 'no-store' });
           if (response.status === 401 || response.status === 403) {
+            authState = 'unauthenticated';
             authDescription.textContent = '请先使用知乎账号登录，登录完成后会自动返回这里。';
             authStartButton.textContent = '使用知乎账号登录';
             authView.hidden = false;
             home.hidden = true;
-            window.location.hash = 'auth';
+            navigateTo('auth', { replace: true });
             await ensureZhihuAuthorized();
             return;
           }
@@ -454,16 +458,22 @@
           }
           const initialized = Boolean(user.avatar_id) && user.avatar_status !== 'not_created';
           if (initialized) {
-            // 已完成初始化的用户直接回到介绍页，不打断现有访问路径。
+            authState = 'authenticated';
             authView.hidden = true;
-            if (!location.hash || location.hash === '#auth') window.location.hash = 'intro';
+            // 刷新时没有路由或停留在认证页才回到介绍页；其它合法路由必须保留。
+            if (readRoute() === 'auth' || readRoute() === 'intro') navigateToIntro();
+            else setView();
             return;
           }
-          authDescription.textContent = '知乎账号已登录。完成初始化后，看山才能在小镇里替你交流。';
-          authStartButton.textContent = '开始初始化';
+          authState = 'needs_initialization';
+          const hasPendingInitialization = Boolean(user.initialization_id) && user.initialization_status && user.initialization_status !== 'completed';
+          authDescription.textContent = hasPendingInitialization
+            ? '检测到尚未完成的初始化会话，继续完成后即可进入小镇。'
+            : '知乎账号已登录。完成初始化后，看山才能在小镇里替你交流。';
+          authStartButton.textContent = hasPendingInitialization ? '继续初始化' : '开始初始化';
           authView.hidden = false;
           home.hidden = true;
-          if (location.hash !== '#auth') window.location.hash = 'auth';
+          if (readRoute() !== 'auth') navigateTo('auth', { replace: true });
         } catch (error) {
           // 认证失败时保留可恢复的错误提示，不循环刷新或伪造成功状态。
           authView.hidden = false;
@@ -471,7 +481,7 @@
           authStartButton.disabled = false;
           authError.hidden = false;
           authError.textContent = `登录认证失败：${error.message || '请稍后重试'}`;
-          window.location.hash = 'auth';
+          navigateTo('auth', { replace: true });
         }
       }
 
@@ -560,8 +570,7 @@
         form.hidden = true;
         authStartButton.hidden = false;
         authStartButton.disabled = false;
-        window.location.hash = 'intro';
-        setView();
+        navigateToIntro();
       }
 
       /** 将画像草稿解析为可编辑字段，等待用户明确确认后再继续落库。 */
@@ -649,7 +658,7 @@
       }
 
       function syncSiteTopbarWidth() {
-        const route = location.hash.slice(1).split('?')[0];
+        const route = readRoute();
         const isTownView = route === '' || route === 'intro' || route === 'town-panorama';
         const isMobile = window.matchMedia('(max-width: 700px)').matches;
         const initialWidth = isMobile
@@ -711,7 +720,7 @@
       }
 
       function handleTownBoundaryWheel(event) {
-        if (event.ctrlKey || event.deltaY >= 0 || location.hash !== '#town-panorama' || town.hidden) return;
+        if (event.ctrlKey || event.deltaY >= 0 || readRoute() !== 'town-panorama' || town.hidden) return;
 
         const mapTop = townMap.getBoundingClientRect().top;
         const distanceToBoundary = Math.abs(mapTop);
@@ -745,7 +754,7 @@
 
       townEntryLink?.addEventListener('click', (event) => {
         event.preventDefault();
-        history.pushState(null, '', '#town-panorama');
+        navigateTo('town-panorama');
         requestAnimationFrame(() => scrollTownMapToCenter());
       });
 
@@ -757,6 +766,7 @@
         library: { title: '图书馆', background: './美术素材/场景图书馆.png' }
       };
 
+      /* legacy demo transcript retained only as inert documentation
       const fullChatRounds = [
         ['A', '最近读到哪一本书，让你停下来想了很久？', 'B', '我刚读完一本关于城市生活的书，里面关于独处的部分很有共鸣。'],
         ['A', '你喜欢怎样安排一段不被打扰的阅读时间？', 'B', '通常会把手机调成静音，找一个有自然光的角落，慢慢读上一个下午。'],
@@ -765,8 +775,13 @@
         ['A', '这些记录后来会影响你对生活的判断吗？', 'B', '会让我更愿意关注细节，也更能理解别人为什么做出不同的选择。'],
         ['A', '下次可以交换最近最喜欢的一段文字。', 'B', '好啊，也许从那段文字开始，我们还能继续聊出更多故事。']
       ];
+      */
 
       function renderList() {
+        if (!encounterData.length) {
+          list.innerHTML = '<p class="encounter-empty">当前没有可展示的相遇用户。</p>';
+          return;
+        }
         list.innerHTML = encounterData.map((item, index) => `
           <button class="encounter-card" data-id="${item.id}" type="button">
             <span class="encounter-avatar">${item.avatar}</span>
@@ -778,8 +793,191 @@
             <span class="encounter-card__actions"><em>不感兴趣</em><span>感兴趣</span></span>
           </button>`).join('');
         list.querySelectorAll('.encounter-card').forEach((card) => {
-          card.addEventListener('click', () => openChat(card.dataset.id));
+          card.addEventListener('click', () => openInterestDialog(card.dataset.id));
         });
+      }
+
+      let activeInterestItem = null;
+      async function openInterestDialog(id) {
+        const item = encounterData.find((entry) => entry.id === id);
+        if (!item) return;
+        activeInterestItem = item;
+        interestDialogMeta.textContent = `${item.name} · ${item.location}`;
+        interestDialogMessages.innerHTML = '<p class="chat-loading">正在读取聊天记录…</p>';
+        interestDialogSend.disabled = false;
+        interestDialog.showModal();
+        try {
+          if (!item.chatNo) {
+            interestDialogMessages.innerHTML = '<p class="chat-loading">正在为你加载相遇聊天记录…</p>';
+            const start = await requestBackend('/v1/twin/interest', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ scene_id: item.sceneId || 'bar', target_avatar_id: item.id, match_mode:'manual' }) });
+            if (!start.ok) throw new Error(`dialogue_start_${start.status}`);
+            const started = await start.json();
+            if (started.chat_no) item.chatNo = started.chat_no;
+            else if (started.run_id) {
+              for (let attempt = 0; attempt < 20 && !item.chatNo; attempt += 1) {
+                await new Promise((resolve) => setTimeout(resolve, 1200));
+                const statusResponse = await requestBackend(`/v1/twin/dialogues/${encodeURIComponent(started.run_id)}`, { cache: 'no-store' });
+                if (!statusResponse.ok) continue;
+                const status = await statusResponse.json();
+                item.chatNo = status?.result?.chat_no || status?.chat_no || '';
+              }
+            }
+            if (!item.chatNo) {
+              interestDialogMessages.innerHTML = '<p class="chat-loading">聊天正在后台生成，请稍后重新打开。</p>';
+              return;
+            }
+            const messageResponse = await requestBackend(`/v1/twin/chat-groups/${encodeURIComponent(item.chatNo)}/messages`, { cache: 'no-store' });
+            if (!messageResponse.ok) throw new Error(`chat_messages_${messageResponse.status}`);
+            const generated = await messageResponse.json();
+            item.messages = generated.messages || [];
+            interestDialogMessages.innerHTML = item.messages.length ? item.messages.map((m) => `<div class="chat-bubble"><small>${escapeHtml(m.sender_name || 'Agent')}</small><p>${escapeHtml(m.content || '')}</p></div>`).join('') : '<p class="chat-loading">暂无可展示消息。</p>';
+            return;
+          }
+          const response = await requestBackend(`/v1/twin/chat-groups/${encodeURIComponent(item.chatNo)}/messages`, { cache: 'no-store' });
+          if (!response.ok) throw new Error(`chat_messages_${response.status}`);
+          const payload = await response.json();
+          item.messages = payload.messages || [];
+          interestDialogMessages.innerHTML = item.messages.length ? item.messages.map((m) => `<div class="chat-bubble"><small>${escapeHtml(m.sender_name || 'Agent')}</small><p>${escapeHtml(m.content || '')}</p></div>`).join('') : '<p class="chat-loading">暂无可展示消息。</p>';
+        } catch (error) {
+          interestDialogMessages.innerHTML = '';
+          console.warn('聊天记录加载失败：', error);
+        }
+      }
+      interestDialogClose.addEventListener('click', () => interestDialog.close());
+      interestDialogSend.addEventListener('click', async () => {
+        if (!activeInterestItem) return;
+        interestDialogSend.disabled = true;
+        interestDialogMessages.innerHTML = '<p class="chat-loading">正在发出交友申请…</p>';
+        try {
+          if (!activeInterestItem.chatNo) throw new Error('chat_not_ready');
+          const response = await requestBackend('/v1/twin/interest', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ scene_id: activeInterestItem.sceneId || 'bar', target_avatar_id: activeInterestItem.id, match_mode:'manual' }) });
+          if (!response.ok) throw new Error(`interest_${response.status}`);
+          const result = await response.json();
+          if (result.chat_no) activeInterestItem.chatNo = result.chat_no;
+          interestDialogMessages.innerHTML = '<p class="chat-loading">申请已发送。后台正在生成聊天记录，稍后可在相遇页查看。</p>';
+        } catch (error) {
+          interestDialogMessages.innerHTML = '<p class="chat-loading">申请发送失败，请稍后重试。</p>';
+          interestDialogSend.disabled = false;
+        }
+      });
+
+      function normalizeEncounterCandidate(candidate, sceneId) {
+        if (!candidate || typeof candidate !== 'object') return null;
+        const avatarId = typeof candidate.avatar_id === 'string' && candidate.avatar_id.trim();
+        const returnedScene = typeof candidate.scene_id === 'string' && candidate.scene_id.trim();
+        const displayName = typeof candidate.display_name === 'string' && candidate.display_name.trim();
+        if (!avatarId || !returnedScene || returnedScene !== sceneId || !displayName) return null;
+        const summary = candidate.display_summary;
+        if (!summary || typeof summary !== 'object' || Array.isArray(summary)) return null;
+        const profile = candidate.profile && typeof candidate.profile === 'object' && !Array.isArray(candidate.profile)
+          ? candidate.profile : {};
+        const profileItems = (value) => Array.isArray(value)
+          ? value.map((item) => typeof item === 'string' ? item : item?.content || item?.topic || '').filter(Boolean).join(' · ')
+          : '';
+        const profileSummary = typeof profile.summary === 'string' ? profile.summary.trim() : '';
+        const profileOccupation = typeof profile.occupation === 'string' ? profile.occupation.trim() : '';
+        const profileLocation = typeof profile.location === 'string' ? profile.location.trim() : '';
+        const profileInterests = profileItems(profile.interests);
+        const profileExpertise = profileItems(profile.expertise);
+        const personality = profileItems(profile.personality);
+        return {
+          id: avatarId,
+          sceneId: sceneId,
+          avatar: displayName.slice(0, 1),
+          name: displayName,
+          location: profileLocation ? `${profileLocation} · 场景 · ${sceneDisplayNames[sceneId] || sceneId}` : `场景 · ${sceneDisplayNames[sceneId] || sceneId}`,
+          title: profileSummary || (typeof summary.intro === 'string' && summary.intro.trim() ? summary.intro.trim() : '来自当前场景的相遇用户'),
+          tag: profileOccupation || (typeof summary.meta === 'string' && summary.meta.trim() ? summary.meta.trim() : '交流潜力 待了解'),
+          display_name: displayName,
+          display_summary: {
+            ...summary,
+            intro: profileSummary || summary.intro || '',
+            meta: profileOccupation || summary.meta || '',
+            personality: personality || summary.personality || '正在了解中',
+            interests: profileInterests || summary.interests || '等待交流',
+            expertise: profileExpertise || summary.expertise || '等待交流'
+          },
+          profile: { ...profile, interests: profile.interests || [], expertise: profile.expertise || [] },
+          date: '',
+          messages: []
+        };
+      }
+
+      async function loadEncounterCandidates() {
+        if (encounterLoadState === 'loading') return;
+        encounterLoadState = 'loading';
+        list.innerHTML = '<p class="encounter-empty">正在读取真实相遇用户…</p>';
+        const scenes = Object.keys(sceneConfig);
+        try {
+          const responses = await Promise.all(scenes.map(async (sceneId) => {
+            const apiSceneId = sceneApiIds[sceneId] || sceneId;
+            const response = await requestBackend(`/v1/twin/scenes/${encodeURIComponent(apiSceneId)}/avatars`, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ limit: 3 })
+            });
+            if (!response.ok) throw new Error(`scene_${apiSceneId}_${response.status}`);
+            const payload = await response.json();
+            if (!payload || payload.scene_id !== apiSceneId || !Array.isArray(payload.items)) throw new Error(`scene_${apiSceneId}_invalid_payload`);
+            return payload.items.map((item) => normalizeEncounterCandidate(item, apiSceneId)).filter(Boolean);
+          }));
+          encounterData = responses.flat().filter((item, index, items) => items.findIndex((other) => other.id === item.id) === index);
+          encounterLoadState = 'ready';
+          renderList();
+        } catch (error) {
+          authState = 'error';
+          encounterData = [];
+          encounterLoadState = 'error';
+          list.innerHTML = '<p class="encounter-empty">相遇用户读取失败，请稍后重试。</p>';
+          console.warn('相遇用户加载失败：', error);
+        }
+      }
+
+      function normalizeChatGroup(group) {
+        if (!group || typeof group !== 'object' || typeof group.chat_no !== 'string' || !group.chat_no.trim()) return null;
+        const initiator = group.initiator;
+        const invited = group.invited;
+        if (!initiator || !invited || typeof initiator.display_name !== 'string' || typeof invited.display_name !== 'string') return null;
+        const peer = invited.display_name;
+        const startedAt = typeof group.started_at === 'string' ? group.started_at : '';
+        return {
+          id: group.chat_no,
+          chatNo: group.chat_no,
+          avatar: peer.slice(0, 1),
+          name: peer,
+          location: '真实 Agent 对话',
+          title: '已完成的 Agent 相遇对话',
+          tag: Number.isInteger(group.message_count) ? `消息 ${group.message_count} 条` : '已完成对话',
+          date: startedAt ? new Date(startedAt).toLocaleString('zh-CN', { month: 'numeric', day: 'numeric', hour: '2-digit', minute: '2-digit' }) : '',
+          messages: []
+        };
+      }
+
+      async function loadEncounterChatGroups() {
+        if (encounterLoadState === 'loading') return;
+        encounterLoadState = 'loading';
+        list.innerHTML = '<p class="encounter-empty">正在读取真实 Agent 对话…</p>';
+        try {
+          const response = await requestBackend('/v1/twin/chat-groups?page=1&page_size=20', { cache: 'no-store' });
+          if (!response.ok) throw new Error(`chat_groups_${response.status}`);
+          const payload = await response.json();
+          if (!payload || !Array.isArray(payload.items)) throw new Error('chat_groups_invalid_payload');
+          const chatGroups = payload.items.map(normalizeChatGroup).filter(Boolean);
+          if (chatGroups.length) {
+            encounterData = chatGroups;
+            encounterLoadState = 'ready';
+            renderList();
+            return;
+          }
+          // 当前用户还没有历史 Agent 对话时，展示数据库场景在场候选，避免遇见页为空。
+          encounterLoadState = 'idle';
+          await loadEncounterCandidates();
+        } catch (error) {
+          encounterData = [];
+          encounterLoadState = 'error';
+          list.innerHTML = '<p class="encounter-empty">真实 Agent 对话读取失败，请稍后重试。</p>';
+          console.warn('Agent 对话列表加载失败：', error);
+        }
       }
 
       function openChat(id) {
@@ -787,31 +985,50 @@
         if (!item) return;
         layout.classList.add('has-chat');
         list.querySelectorAll('.encounter-card').forEach((card) => card.classList.toggle('is-selected', card.dataset.id === id));
-        chatContent.innerHTML = `
+        if (!item.chatNo) {
+          // 场景候选尚未产生聊天记录时，直接展示接口返回的公开画像信息。
+          const summary = item.display_summary || {};
+          const profile = item.profile || {};
+          const interests = Array.isArray(profile.interests) ? profile.interests.map((entry) => entry?.content || entry?.topic || entry).filter(Boolean).join(' · ') : (summary.interests || '暂无');
+          const expertise = Array.isArray(profile.expertise) ? profile.expertise.map((entry) => entry?.content || entry?.topic || entry).filter(Boolean).join(' · ') : (summary.expertise || '暂无');
+          const personality = Array.isArray(profile.personality) ? profile.personality.join(' · ') : (summary.personality || '暂无');
+          chatContent.innerHTML = `
+            <div class="chat-person"><span class="chat-person__avatar">${escapeHtml(item.avatar)}</span><div><b>看山 · ${escapeHtml(item.name)}</b><small>${escapeHtml(item.location)}</small></div><span class="chat-person__tag">${escapeHtml(item.tag)}</span><i>场景中的真实候选</i></div>
+            <div class="chat-messages">
+              <div class="chat-bubble"><small>画像摘要</small><p>${escapeHtml(summary.intro || item.title || '暂无')}</p></div>
+              <div class="chat-bubble"><small>性格风格</small><p>${escapeHtml(personality)}</p></div>
+              <div class="chat-bubble"><small>感兴趣的方向</small><p>${escapeHtml(interests)}</p></div>
+              <div class="chat-bubble"><small>擅长的方向</small><p>${escapeHtml(expertise)}</p></div>
+            </div>`;
+          return;
+        }
+        chatContent.innerHTML = `<p class="chat-loading">正在读取完整对话…</p>`;
+        requestBackend(`/v1/twin/chat-groups/${encodeURIComponent(item.chatNo)}/messages`, { cache: 'no-store' })
+          .then(async (response) => {
+            if (!response.ok) throw new Error(`chat_messages_${response.status}`);
+            const payload = await response.json();
+            if (!payload || !Array.isArray(payload.messages)) throw new Error('chat_messages_invalid_payload');
+            item.messages = payload.messages.filter((message) => message && typeof message.content === 'string' && message.content.trim());
+            chatContent.innerHTML = `
           <div class="chat-person"><span class="chat-person__avatar">A</span><div><b>看山 · ${item.name}</b><small>${item.location}</small></div><span class="chat-person__tag">交流潜力 ${item.tag.split(' ')[1]}</span><i>对方已向你发起说话申请</i></div>
           <time>${item.date}</time>
-          <div class="chat-messages">${item.messages.map(([label, text]) => `<div class="chat-bubble"><small>${label}</small><p>${text}</p></div>`).join('')}</div>
+          <div class="chat-messages">${item.messages.map((message) => `<div class="chat-bubble"><small>${message.sender_name || 'Agent'}</small><p>${message.content}</p></div>`).join('') || '<p class="chat-loading">暂无可展示消息。</p>'}</div>
           <a class="chat-history" href="#">查看完整记录 →</a>
           <div class="chat-actions"><button>确认认识</button><button>拒绝认识</button><button>再聊一聊</button></div>`;
-        chatContent.querySelector('.chat-history').addEventListener('click', (event) => {
+            chatContent.querySelector('.chat-history').addEventListener('click', (event) => {
           event.preventDefault();
           openFullChat(item);
-        });
+            });
+          })
+          .catch((error) => { chatContent.innerHTML = ''; console.warn('Agent 对话详情加载失败：', error); });
       }
 
       function openFullChat(item) {
         recordSubtitle.textContent = `看山 · ${item.name}  ·  ${item.location}`;
-        recordList.innerHTML = fullChatRounds.map(([aWho, aText, bWho, bText], index) => `
+        recordList.innerHTML = item.messages.map((message, index) => `
           <div class="record-round">
             <span class="record-round__number">${String(index + 1).padStart(2, '0')}</span>
-            <div class="record-row record-row--mine">
-              <span class="record-avatar record-avatar--mine">看</span>
-              <div class="record-message record-message--a"><b>看山</b><p>${aText}</p></div>
-            </div>
-            <div class="record-row record-row--guest">
-              <div class="record-message record-message--b"><b>${item.name}</b><p>${bText}</p></div>
-              <span class="record-avatar record-avatar--guest">${item.avatar}</span>
-            </div>
+            <div class="record-row record-row--guest"><div class="record-message record-message--b"><b>${message.sender_name || 'Agent'}</b><p>${message.content}</p></div><span class="record-avatar record-avatar--guest">${(message.sender_name || 'A').slice(0, 1)}</span></div>
           </div>`).join('');
         recordOverlay.classList.add('is-open');
         recordOverlay.setAttribute('aria-hidden', 'false');
@@ -831,7 +1048,7 @@
       });
 
       function setView() {
-        const route = location.hash.slice(1).split('?')[0];
+        const route = readRoute();
         const isAuth = route === 'auth';
         const isEncounter = route === 'encounter';
         const sceneKey = route.endsWith('-scene') ? route.slice(0, -6) : '';
@@ -843,11 +1060,13 @@
         authView.hidden = !isAuth;
         if (isAuth) home.hidden = true;
         encounter.hidden = !isEncounter;
+        if (isEncounter && encounterLoadState !== 'ready') loadEncounterChatGroups();
         town.hidden = isEncounter || isScene || isProfile || isAuth;
         tavern.hidden = !isScene;
         profile.hidden = !isProfile;
         if (!town.hidden) requestAnimationFrame(syncTownMapSize);
         if (isProfile) requestAnimationFrame(syncProfileIntroPosition);
+        if (isProfile) loadCurrentProfileSummary();
         document.body.classList.toggle('is-scene-view', isScene);
         document.body.classList.toggle('is-profile-view', isProfile);
         if (isScene) {
@@ -859,6 +1078,77 @@
         }
         syncSiteTopbarWidth();
         if (isEncounter || isScene || isProfile) window.scrollTo(0, 0);
+      }
+
+      function readRoute() {
+        const raw = location.pathname.replace(/^\//, '').replace(/\/$/, '').split('/')[0];
+        return routeAliases[raw] || raw;
+      }
+
+      function navigateTo(route, { replace = false } = {}) {
+        const targetRoute = routeAliases[route] || route;
+        const path = targetRoute === 'town-panorama' ? '/town' : `/${targetRoute}`;
+        const target = `${path}${location.search}`;
+        if (`${location.pathname}${location.search}` !== target) {
+          (replace ? history.replaceState : history.pushState).call(history, null, '', target);
+        }
+        setView();
+      }
+
+      /**
+       * 立即应用顶部导航路由。
+       *
+       * 不能只依赖 hashchange：当用户重复点击当前路由，或浏览器尚未完成
+       * hash 更新时，页面可能只改变地址而没有重新执行视图切换。这里统一用
+       * History API 更新地址，再同步调用 setView，保证地址和实际页面一致。
+       */
+      function navigateFromTopbar(event) {
+        const link = event.currentTarget;
+        event.preventDefault();
+        navigateTo(link.dataset.route);
+      }
+
+      // 顶部导航点击时立即重绘，前进/后退时继续复用同一套路由逻辑。
+      siteNavLinks.forEach((link) => link.addEventListener('click', navigateFromTopbar));
+
+      const profileMemoryLabels = {
+        fact: '稳定事实', experience: '经历', expertise: '专长', interest: '长期兴趣',
+        opinion: '观点', behavior: '行为倾向'
+      };
+      async function loadCurrentProfileSummary() {
+        if (!profileTraitList || profileTraitList.dataset.loading === 'true') return;
+        profileTraitList.dataset.loading = 'true';
+        try {
+          const response = await requestBackend('/v1/twin/profile/summary', { cache: 'no-store' });
+          if (response.status === 401 || response.status === 403) {
+            // 后端重启或会话过期后，画像接口不能使用旧身份继续读取，重新进入认证流程。
+            profileTraitList.innerHTML = '<p class="profile-tags-loading">登录会话已过期，正在重新认证…</p>';
+            await resolveAuthenticationState();
+            return;
+          }
+          if (!response.ok) throw new Error(`画像接口返回 ${response.status}`);
+          const payload = await response.json();
+          const identity = payload.identity || {};
+          const memories = payload.memories || {};
+          const items = [];
+          if (identity.summary) items.push({ label: '画像摘要', content: identity.summary, stable: true });
+          if (identity.occupation || identity.location) items.push({ label: '身份信息', content: [identity.occupation, identity.location].filter(Boolean).join(' · '), stable: true });
+          Object.entries(memories).forEach(([type, values]) => (values || []).slice(0, 8).forEach((item) => items.push({
+            label: profileMemoryLabels[type] || type, content: item.content || item.topic, stable: ['fact', 'experience', 'expertise', 'interest'].includes(type), unconfirmed: item.status === 'unconfirmed'
+          })));
+          profileTraitList.innerHTML = items.length ? items.map((item) => `<div class="trait"><b class="${item.stable ? '' : 'dynamic'}">${escapeHtml(item.label)}${item.unconfirmed ? ' · 待确认' : ''}</b><p>${escapeHtml(item.content || '暂无内容')}</p></div>`).join('') : '<p class="profile-tags-loading">数据库中暂无可展示的画像内容</p>';
+        } catch (error) {
+          profileTraitList.innerHTML = '<p class="profile-tags-loading">真实画像读取失败，请稍后重试</p>';
+          console.warn('真实画像加载失败：', error);
+        } finally {
+          profileTraitList.dataset.loading = 'false';
+        }
+      }
+
+      // 完成初始化后的路由切换必须一次性完成，避免先触发 hashchange、
+      // 再被尚未结束的认证分流逻辑覆盖回 #auth。
+      function navigateToIntro() {
+        navigateTo('intro', { replace: true });
       }
 
       function notificationTime(value) {
@@ -882,12 +1172,11 @@
       }
 
       async function loadNotifications() {
-        const response = await fetch(`${notificationApiBase}/notifications?page=1&page_size=50`, {
-          headers: { 'X-User-Id': notificationUserId },
-        });
+        const response = await requestBackend('/v1/twin/notifications?page=1&page_size=50', { cache: 'no-store' });
         if (!response.ok) throw new Error(`notifications_${response.status}`);
         const result = await response.json();
-        return Array.isArray(result?.items) ? result.items : [];
+        if (!result || !Array.isArray(result.items)) throw new Error('notifications_invalid_payload');
+        return result.items;
       }
 
       async function openMessageList() {
@@ -897,9 +1186,10 @@
         try {
           notificationItems = await loadNotifications();
           renderMessageList(notificationItems);
-        } catch {
+        } catch (error) {
           notificationItems = [];
-          renderMessageList(messageTestData);
+          if (messageList) messageList.innerHTML = '<p class="message-list__loading">真实消息读取失败，请稍后重试。</p>';
+          console.warn('真实消息加载失败：', error);
         }
       }
 
@@ -950,9 +1240,13 @@
       musicSwitch?.addEventListener('click', switchMusicSource);
       updateMusicControls();
 
-      function renderMessageList(items = messageTestData) {
+      function renderMessageList(items = []) {
         if (!messageList) return;
-        messageList.innerHTML = items.map((source) => {
+        if (!Array.isArray(items) || items.length === 0) {
+          messageList.innerHTML = '<p class="message-list__loading">暂无真实消息。</p>';
+          return;
+        }
+        messageList.innerHTML = items.filter((source) => source && source.id).map((source) => {
           const item = source.notificationType ? source : normalizeNotification(source);
           const canDecide = item.notificationType === 'friendship_invitation' && ['unread', 'read'].includes(item.status);
           const statusText = item.status === 'accepted' ? '已接受' : item.status === 'rejected' ? '已拒绝' : '等待你的决定';
@@ -993,9 +1287,9 @@
         }
         actionButton.disabled = true;
         try {
-          const response = await fetch(`${notificationApiBase}/notifications/${encodeURIComponent(notificationId)}/decision`, {
+          const response = await requestBackend(`/v1/twin/notifications/${encodeURIComponent(notificationId)}/decision`, {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json', 'X-User-Id': notificationUserId },
+            headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ decision: accepted ? 'accepted' : 'rejected' }),
           });
           if (!response.ok) throw new Error(`notification_decision_${response.status}`);
@@ -1032,7 +1326,7 @@
       document.querySelectorAll('.town-building[data-scene]').forEach((building) => {
         building.addEventListener('click', () => {
           loadSceneCandidates(building.dataset.scene);
-          window.location.hash = `${building.dataset.scene}-scene`;
+          navigateTo(`${building.dataset.scene}-scene`);
         });
       });
 
@@ -1041,10 +1335,16 @@
        */
       async function loadSceneCandidates(sceneId) {
         try {
-          const response = await requestBackend(`/v1/twin/scenes/${sceneId}/avatars`);
-          if (!response.ok) return;
+          const apiSceneId = sceneApiIds[sceneId] || sceneId;
+          const response = await requestBackend(`/v1/twin/scenes/${encodeURIComponent(apiSceneId)}/avatars`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ limit: 3 })
+          });
+          if (!response.ok) throw new Error(`scene_${apiSceneId}_${response.status}`);
           const payload = await response.json();
-          const candidates = payload.items || [];
+          if (!payload || payload.scene_id !== apiSceneId || !Array.isArray(payload.items)) throw new Error(`scene_${apiSceneId}_invalid_payload`);
+          const candidates = payload.items.map((item) => normalizeEncounterCandidate(item, apiSceneId)).filter(Boolean);
           tavernGuests.forEach((guest, index) => {
             const candidate = candidates[index];
             guest.hidden = !candidate;
@@ -1057,9 +1357,20 @@
             guest.dataset.intro = summary.intro || '来自当前场景的随机候选看山。';
             const label = guest.querySelector('.tavern-character__label');
             if (label) label.textContent = guest.dataset.name;
+            const tooltip = guest.querySelector('.tavern-profile');
+            if (tooltip) {
+              const [nameNode, metaNode, personalityNode, interestsNode] = tooltip.children;
+              if (nameNode) nameNode.textContent = guest.dataset.name;
+              if (metaNode) metaNode.textContent = guest.dataset.meta;
+              if (personalityNode) personalityNode.textContent = guest.dataset.personality;
+              if (interestsNode) interestsNode.textContent = guest.dataset.interests;
+            }
+            const image = guest.querySelector('img');
+            if (image) image.alt = guest.dataset.name;
             guest.setAttribute('aria-label', `看山：${guest.dataset.name}`);
           });
         } catch (error) {
+          tavernGuests.forEach((guest) => { guest.hidden = true; });
           console.warn('场景候选加载失败：', error);
         }
       }
@@ -1086,6 +1397,7 @@
       tavernSelectionBack.addEventListener('click', resetTavernConversation);
       renderList();
       window.addEventListener('hashchange', setView);
+      window.addEventListener('popstate', setView);
       setView();
       // 页面启动即校验登录状态；授权成功后后端会回到 /#intro。
       resolveAuthenticationState();

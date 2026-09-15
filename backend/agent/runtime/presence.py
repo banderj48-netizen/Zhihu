@@ -28,14 +28,39 @@ class PresenceService:
         return list(DEFAULT_SCENES)
 
     def list_candidates(self, scene_id: str, *, exclude_avatar_id: str | None = None) -> list[dict[str, Any]]:
-        """查询指定场景中的空闲 Agent，并过滤当前用户自己的 Agent。"""
+        """查询指定场景中的空闲 Agent，并返回可公开展示的候选画像信息。"""
         try:
             with connect() as db:
                 rows = db.execute(
                     """SELECT p.avatar_id, p.scene_id, p.status, p.display_summary,
-                              COALESCE(a.display_name, '看山') AS display_name
+                              COALESCE(a.display_name, i.display_name, '看山') AS display_name,
+                              jsonb_build_object(
+                                  'summary', COALESCE(i.summary, a.summary, ''),
+                                  'occupation', COALESCE(i.occupation, ''),
+                                  'location', COALESCE(i.location, ''),
+                                  'age', i.age,
+                                  'personality', COALESCE(personality.style_tags, '[]'::jsonb),
+                                  'interests', COALESCE(memories.interests, '[]'::jsonb),
+                                  'expertise', COALESCE(memories.expertise, '[]'::jsonb)
+                              ) AS profile
                        FROM agent_scene_presence p
-                       LEFT JOIN user_avatars a ON a.id=p.avatar_id
+                       JOIN user_avatars a ON a.id=p.avatar_id AND a.status IN ('ready', 'paused')
+                       JOIN users u ON u.id=a.user_id AND u.deleted_at IS NULL
+                       LEFT JOIN avatar_versions v ON v.id=a.current_version_id
+                       LEFT JOIN avatar_identity i ON i.avatar_version_id=v.id
+                       LEFT JOIN avatar_personality personality ON personality.avatar_version_id=v.id
+                       LEFT JOIN LATERAL (
+                           SELECT
+                               COALESCE(jsonb_agg(jsonb_build_object('topic', m.topic, 'content', m.content)
+                                   ORDER BY m.updated_at DESC) FILTER (WHERE m.memory_type='interest'), '[]'::jsonb) AS interests,
+                               COALESCE(jsonb_agg(jsonb_build_object('topic', m.topic, 'content', m.content)
+                                   ORDER BY m.updated_at DESC) FILTER (WHERE m.memory_type='expertise'), '[]'::jsonb) AS expertise
+                           FROM avatar_memories m
+                           WHERE m.avatar_id=a.id
+                             AND m.memory_type IN ('interest', 'expertise')
+                             AND m.status IN ('confirmed', 'unconfirmed')
+                             AND m.privacy = 'public'
+                       ) memories ON TRUE
                       WHERE p.scene_id=%s AND p.status='idle'""",
                     (scene_id,),
                 ).fetchall()

@@ -1,0 +1,365 @@
+{
+  "ok": true,
+  "generated_at": "2026-09-15T00:40:28.116312+00:00",
+  "llm_model": "deepseek-flash",
+  "request": "生成15个彼此不同的模拟知乎用户，用于本地数字分身和场景随机匹配测试。",
+  "users": [
+    {
+      "user_id": "6b14c84d-5e31-49bf-bcc5-196dc7480ef1",
+      "external_id": "generated-urban-data-6b14c84d",
+      "avatar_id": "2bd6a29e-df7c-4cef-b3c0-4ec37668fb54",
+      "version_id": "fead0184-ccc8-4064-9c7c-ab8e02665ae9",
+      "source_document_ids": [
+        "252086bd-871d-4a3a-96f2-70e8d705de4a",
+        "cccfd8b9-d43e-4cf2-b2e1-b18cb32cc1b8"
+      ],
+      "memory_ids": [
+        "1bce3c90-da1d-4a31-a370-6a4f87d3c69f",
+        "539ed8f5-3451-4288-90a0-955ffd913b5d",
+        "39b56049-3760-413e-b4d4-69c3696c1cb1"
+      ]
+    },
+    {
+      "user_id": "afa2fb42-36f9-4965-8141-71606221c614",
+      "external_id": "generated-science-teacher-afa2fb42",
+      "avatar_id": "52f44efc-4fb4-4ff0-845e-388413ed197d",
+      "version_id": "c202ec29-ba62-4560-9f32-80e3f17411a5",
+      "source_document_ids": [
+        "27040da5-ee32-47e6-9a19-aaaadd56952e",
+        "369d24b2-abeb-4da4-b637-874a8b2a10e3"
+      ],
+      "memory_ids": [
+        "774244e1-3795-45db-88ca-2efdb03c2d55",
+        "0b4c6674-66df-4543-9d6f-302f126cd5fd",
+        "869b5391-e487-4bd3-9307-e713a46b2ab6"
+      ]
+    },
+    {
+      "user_id": "573bbf58-14fd-4246-9462-edaa3428cab8",
+      "external_id": "generated-food-researcher-573bbf58",
+      "avatar_id": "069fb1a0-8a31-4507-ad63-07fe03f6945c",
+      "version_id": "0deb7aa9-3b84-4f0a-8f06-250bf6e6a9e4",
+      "source_document_ids": [
+        "49ad27af-ba38-4707-84d7-91bd265d6d41",
+        "8af00c56-df17-4159-a431-7664eaf6fe8c"
+      ],
+      "memory_ids": [
+        "aa9e2cb3-5d3e-4843-9da7-3daefceb808d",
+        "ff280a57-3b85-41b5-9214-1c66647acded",
+        "a45fc6fd-8183-4724-8d0f-6965470bc354"
+      ]
+    },
+    {
+      "user_id": "deb39625-2933-455d-95f1-cdaa5d877b19",
+      "external_id": "generated-architecture-deb39625",
+      "avatar_id": "83bf74ea-13c6-44a6-9193-f0a533ac096c",
+      "version_id": "5913bbd0-8bf4-4c3e-8c4e-67e1d6afe89e",
+      "source_document_ids": [
+        "d0ee7505-9ab1-4b11-99a9-764afc65fe76",
+        "c47d57b5-a558-4b49-9c87-d4105e7b6ebe"
+      ],
+      "memory_ids": [
+        "b57b1b1c-50f6-4735-8a0e-4ffc7f20321b",
+        "fa503a44-3131-4d6a-8807-368b4a43fff1",
+        "08d183d6-a14e-404f-bf33-22bb9ef77175"
+      ]
+    },
+    {
+      "user_id": "c8a73698-1246-46a0-b984-1a9fe1879817",
+      "external_id": "generated-history-c8a73698",
+      "avatar_id": "7bbc85f8-aaea-4910-b262-c76dd978df5d",
+      "version_id": "64e9de0a-66a4-4eef-a775-5c05d48dba91",
+      "source_document_ids": [
+        "9a538a4b-23bb-40b8-806b-f276b58b8662",
+        "1c913946-6cde-4cda-b290-d315f75a954f"
+      ],
+      "memory_ids": [
+        "6ebabc6f-70ff-4919-b168-4561c06490c8",
+        "49904ac7-21f0-456b-8315-b6af69bcb929",
+        "3eb4e0c1-3b24-4761-b27a-4d777e033a51"
+      ]
+    },
+    {
+      "user_id": "6530c3fd-fd45-4756-8d14-b2d1ba4de2b0",
+      "external_id": "generated-music-producer-6530c3fd",
+      "avatar_id": "df093e80-6784-43b8-8309-0468d39be088",
+      "version_id": "646955de-2ee0-4ea2-b837-4192facc7650",
+      "source_document_ids": [
+        "8c5ebb3a-0bab-499e-9efb-c2874eadaf22",
+        "f13c7c0a-18db-468a-9ca6-f83d910c0568"
+      ],
+      "memory_ids": [
+        "c4edf278-afa8-4ae0-aed5-c49a0facb999",
+        "10beae80-0bab-4df2-97a0-22ac89781c87",
+        "809b2174-ce9d-467e-abcc-d444e10b13f5"
+      ]
+    },
+    {
+      "user_id": "0510225c-e0ec-4712-a8e8-cd151282a541",
+      "external_id": "generated-ecology-0510225c",
+      "avatar_id": "bb4ac404-a2ed-48d8-ba57-fdfcf08bf146",
+      "version_id": "897b50b8-dc45-4802-8076-0c9972e524d8",
+      "source_document_ids": [
+        "e8e17dde-c6ac-4cbc-9c20-5a3e79d0f7f5",
+        "06e8339c-b2de-4d00-960a-8196ab0acc7a"
+      ],
+      "memory_ids": [
+        "20203ff8-2fe9-4bae-aef8-b0284881a2a1",
+        "e3e3fbf4-a864-4865-a762-c642b554eedc",
+        "0287c957-7c47-4958-a105-8c53d3f1e3cd"
+      ]
+    },
+    {
+      "user_id": "31d126ad-1dc9-48d1-977d-72edfd518b8b",
+      "external_id": "generated-finance-31d126ad",
+      "avatar_id": "03bb796d-dc90-4bca-a9e0-b7f32bf1e333",
+      "version_id": "a058cdc4-614d-44f8-88fa-f5c2aba23bd3",
+      "source_document_ids": [
+        "b8f701f6-2d40-4bba-86e9-bb03002a0e2a",
+        "6eb24ff5-ebbe-4cf4-9eea-094e8ccad1ed"
+      ],
+      "memory_ids": [
+        "7444ba0c-eb9a-4fa8-898d-05db9d657369",
+        "233e8831-b8d0-4697-9af8-5ca7cb88bba2",
+        "799f0b3e-53d3-4b13-a415-9e52979077b0"
+      ]
+    },
+    {
+      "user_id": "2fe2cdb6-5ac9-481c-91bd-ccbd57578c9d",
+      "external_id": "generated-psychology-2fe2cdb6",
+      "avatar_id": "d07e528c-6878-4a6d-9a0b-460c1e38ca43",
+      "version_id": "e197541f-3a83-4632-96fc-ac9184db99cd",
+      "source_document_ids": [
+        "acd8b348-b3e7-4d71-9821-1850b0ce6f82",
+        "37ff0d78-9f8d-41c0-8897-8b9a1b640932"
+      ],
+      "memory_ids": [
+        "c5ea2fea-30f8-4715-a96b-01644fb1f151",
+        "2e69151f-1642-4c96-99c5-11cffff1dc40",
+        "7062d169-6e4a-4073-8890-d21a8e6261d1"
+      ]
+    },
+    {
+      "user_id": "82ddcac2-bdd5-4752-aa0f-049b951bb60b",
+      "external_id": "generated-robotics-82ddcac2",
+      "avatar_id": "ea6d35dc-dd4e-4191-bd4c-b00186abda8a",
+      "version_id": "5a42d4e4-6c97-4416-bb84-46f91b27cde3",
+      "source_document_ids": [
+        "a69b5511-1652-45f5-a081-0b8aa9e514bf",
+        "fd96a000-4259-4ed3-905d-746b479b70f1"
+      ],
+      "memory_ids": [
+        "a6657ca2-f70b-4de7-9caa-f15d3afa390c",
+        "ed60f33d-8bab-485e-a8c5-e59b55f4f9ff",
+        "3e1d071f-6508-49df-a760-bccfa136aaf8"
+      ]
+    },
+    {
+      "user_id": "6326379f-dbca-400e-be52-ae060c8b563a",
+      "external_id": "generated-literature-6326379f",
+      "avatar_id": "4b86ee28-6a61-4248-8048-ccc84fdc6cee",
+      "version_id": "e634dddc-5c57-475c-82b4-db44d30c2453",
+      "source_document_ids": [
+        "20e82c4c-ec67-4e83-ae76-89dcd7859c3a",
+        "5ac81b21-551b-40ec-af35-fbb000b7b2e9"
+      ],
+      "memory_ids": [
+        "67ecbe1f-3de4-4437-9641-7a7185dcfa81",
+        "51c35654-7125-47d3-a338-074a39c18e46",
+        "57459657-fca0-4f3b-bf4e-cbbf17db71f2"
+      ]
+    },
+    {
+      "user_id": "5bc48f8b-9ed3-419e-80ed-42a1cfd18c71",
+      "external_id": "generated-medical-engineer-5bc48f8b",
+      "avatar_id": "c4107448-48ed-467f-a238-5b412532d90f",
+      "version_id": "5fc019e3-368a-4f66-a6dd-5d3b2b2d438f",
+      "source_document_ids": [
+        "f4257703-2f90-473a-a6c7-9b560ad74c12",
+        "13376576-c182-4193-9d79-06f2feb61cc8"
+      ],
+      "memory_ids": [
+        "081953aa-5296-405d-b2c3-afce359e7c55",
+        "1e3c6b48-564b-4f96-b843-5722532da55e",
+        "64e198f4-9ff4-4d41-b93a-45c5d6574129"
+      ]
+    },
+    {
+      "user_id": "37e191a7-5d2f-406e-af22-69bb0f701f1b",
+      "external_id": "generated-photographer-37e191a7",
+      "avatar_id": "a4d88700-bbdd-4c9c-af82-10648a618908",
+      "version_id": "d7fd59cd-1d54-4ce1-a301-5a964d439a12",
+      "source_document_ids": [
+        "c752d37c-1fb7-412a-9d15-dcd207edac92",
+        "9c833361-3663-4011-bdde-e01b550a6c8f"
+      ],
+      "memory_ids": [
+        "2f57880d-01cb-4bf3-ae66-e118ab80a40e",
+        "422abfec-6ee0-4d9b-bf4b-cb2a6522cf7d",
+        "7dd0620c-6162-476f-a203-6f881bd8d4b5"
+      ]
+    },
+    {
+      "user_id": "b6ef2035-0395-4713-bdfb-c72e6cbfe873",
+      "external_id": "generated-education-tech-b6ef2035",
+      "avatar_id": "e31bd8ba-ffae-4afe-8783-d44de6070e03",
+      "version_id": "c5f188c9-3c6b-45a5-ac7b-f58c14276b5e",
+      "source_document_ids": [
+        "73b05f76-7ea9-471f-8d40-caf434b35698",
+        "c92bde31-516c-4676-b4c7-13ac0f8fd8f9"
+      ],
+      "memory_ids": [
+        "f8d24315-4bfd-42ec-9d0a-027c7abbe80d",
+        "a8164440-bcda-4cd1-8849-4ec40e601612",
+        "44d3937a-370b-4194-968d-96853a24d901"
+      ]
+    },
+    {
+      "user_id": "e267fd5a-1468-4639-bb71-2bee33b5b19e",
+      "external_id": "generated-transport-e267fd5a",
+      "avatar_id": "d0d5ccd5-11d6-4bf1-86f4-1762d894a647",
+      "version_id": "b1f24036-8f6e-404a-b1e1-79f404dd83f0",
+      "source_document_ids": [
+        "1f3fbd09-3a1b-44d9-b20e-aff45820129f",
+        "392f5262-e1c3-43b9-a623-6b0a97eb2868"
+      ],
+      "memory_ids": [
+        "12668d56-404d-4267-98b0-0e0c20c3558f",
+        "84fd5850-72b9-4036-8f99-873ef27f1cde",
+        "4df0e8b4-5bb3-4b07-ab73-2c8cf1125275"
+      ]
+    }
+  ],
+  "postgres_counts": [
+    {
+      "user_id": "deb39625-2933-455d-95f1-cdaa5d877b19",
+      "external_id": "generated-architecture-deb39625",
+      "avatar_id": "83bf74ea-13c6-44a6-9193-f0a533ac096c",
+      "memory_count": 3,
+      "source_document_count": 2,
+      "style_example_count": 2
+    },
+    {
+      "user_id": "0510225c-e0ec-4712-a8e8-cd151282a541",
+      "external_id": "generated-ecology-0510225c",
+      "avatar_id": "bb4ac404-a2ed-48d8-ba57-fdfcf08bf146",
+      "memory_count": 3,
+      "source_document_count": 2,
+      "style_example_count": 2
+    },
+    {
+      "user_id": "b6ef2035-0395-4713-bdfb-c72e6cbfe873",
+      "external_id": "generated-education-tech-b6ef2035",
+      "avatar_id": "e31bd8ba-ffae-4afe-8783-d44de6070e03",
+      "memory_count": 3,
+      "source_document_count": 2,
+      "style_example_count": 2
+    },
+    {
+      "user_id": "31d126ad-1dc9-48d1-977d-72edfd518b8b",
+      "external_id": "generated-finance-31d126ad",
+      "avatar_id": "03bb796d-dc90-4bca-a9e0-b7f32bf1e333",
+      "memory_count": 3,
+      "source_document_count": 2,
+      "style_example_count": 2
+    },
+    {
+      "user_id": "573bbf58-14fd-4246-9462-edaa3428cab8",
+      "external_id": "generated-food-researcher-573bbf58",
+      "avatar_id": "069fb1a0-8a31-4507-ad63-07fe03f6945c",
+      "memory_count": 3,
+      "source_document_count": 2,
+      "style_example_count": 2
+    },
+    {
+      "user_id": "c8a73698-1246-46a0-b984-1a9fe1879817",
+      "external_id": "generated-history-c8a73698",
+      "avatar_id": "7bbc85f8-aaea-4910-b262-c76dd978df5d",
+      "memory_count": 3,
+      "source_document_count": 2,
+      "style_example_count": 2
+    },
+    {
+      "user_id": "6326379f-dbca-400e-be52-ae060c8b563a",
+      "external_id": "generated-literature-6326379f",
+      "avatar_id": "4b86ee28-6a61-4248-8048-ccc84fdc6cee",
+      "memory_count": 3,
+      "source_document_count": 2,
+      "style_example_count": 2
+    },
+    {
+      "user_id": "5bc48f8b-9ed3-419e-80ed-42a1cfd18c71",
+      "external_id": "generated-medical-engineer-5bc48f8b",
+      "avatar_id": "c4107448-48ed-467f-a238-5b412532d90f",
+      "memory_count": 3,
+      "source_document_count": 2,
+      "style_example_count": 2
+    },
+    {
+      "user_id": "6530c3fd-fd45-4756-8d14-b2d1ba4de2b0",
+      "external_id": "generated-music-producer-6530c3fd",
+      "avatar_id": "df093e80-6784-43b8-8309-0468d39be088",
+      "memory_count": 3,
+      "source_document_count": 2,
+      "style_example_count": 2
+    },
+    {
+      "user_id": "37e191a7-5d2f-406e-af22-69bb0f701f1b",
+      "external_id": "generated-photographer-37e191a7",
+      "avatar_id": "a4d88700-bbdd-4c9c-af82-10648a618908",
+      "memory_count": 3,
+      "source_document_count": 2,
+      "style_example_count": 2
+    },
+    {
+      "user_id": "2fe2cdb6-5ac9-481c-91bd-ccbd57578c9d",
+      "external_id": "generated-psychology-2fe2cdb6",
+      "avatar_id": "d07e528c-6878-4a6d-9a0b-460c1e38ca43",
+      "memory_count": 3,
+      "source_document_count": 2,
+      "style_example_count": 2
+    },
+    {
+      "user_id": "82ddcac2-bdd5-4752-aa0f-049b951bb60b",
+      "external_id": "generated-robotics-82ddcac2",
+      "avatar_id": "ea6d35dc-dd4e-4191-bd4c-b00186abda8a",
+      "memory_count": 3,
+      "source_document_count": 2,
+      "style_example_count": 2
+    },
+    {
+      "user_id": "afa2fb42-36f9-4965-8141-71606221c614",
+      "external_id": "generated-science-teacher-afa2fb42",
+      "avatar_id": "52f44efc-4fb4-4ff0-845e-388413ed197d",
+      "memory_count": 3,
+      "source_document_count": 2,
+      "style_example_count": 2
+    },
+    {
+      "user_id": "e267fd5a-1468-4639-bb71-2bee33b5b19e",
+      "external_id": "generated-transport-e267fd5a",
+      "avatar_id": "d0d5ccd5-11d6-4bf1-86f4-1762d894a647",
+      "memory_count": 3,
+      "source_document_count": 2,
+      "style_example_count": 2
+    },
+    {
+      "user_id": "6b14c84d-5e31-49bf-bcc5-196dc7480ef1",
+      "external_id": "generated-urban-data-6b14c84d",
+      "avatar_id": "2bd6a29e-df7c-4cef-b3c0-4ec37668fb54",
+      "memory_count": 3,
+      "source_document_count": 2,
+      "style_example_count": 2
+    }
+  ],
+  "vector_sync": {
+    "outbox": {
+      "processed": 0,
+      "failed": 9
+    },
+    "chroma_counts": {
+      "avatar_memories": 227,
+      "source_documents": 62
+    }
+  }
+}

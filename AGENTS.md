@@ -42,6 +42,7 @@
 - 虚拟用户数据准备脚本为 `backend/reports/generate_virtual_users.py`；接收自然语言要求，调用 `backend/.env.models` 的 LLM 生成完整身份、性格、风格、策略、记忆和模拟知乎原始资料，使用现有仓储写入 PostgreSQL，并消费 `vector_sync_outbox` 同步 `avatar_memories`、`source_documents` 到 Chroma。脚本默认只新增数据，不删除已有用户；`--model-response-file` 用于离线复现，`--skip-vector` 仅用于诊断。
 - `newfrontend/index.html` 启动时通过后端 `/api/v1/me` 校验会话；未登录时请求 `/api/v1/sources/zhihu/connect` 并跳转知乎授权，后端 OAuth 回调完成后重定向到 `http://127.0.0.1:3000/#intro`。该链路只新增请求与跳转逻辑，不得修改现有页面样式。
 - `newfrontend/index.html` 认证后根据 `/api/v1/me` 的 `avatar_id/avatar_status` 分流：已初始化直接进入 `#intro`，未初始化进入 `#auth` 引导页并可创建 `/v1/twin/initializations` 会话；认证失败必须在引导页显示错误，不得伪造成功状态。
+- `newfrontend/index.html` 顶部导航使用 History API 立即同步渲染 `#intro/#encounter/#profile`，并监听 hashchange/popstate，确保地址变化与实际页面视图一致；认证异步完成后必须重新应用当前路由。
 - `GET /v1/twin/scenes/{scene_id}/avatars` 每次从 PostgreSQL 在场表的 idle 候选中随机返回最多 3 个，newfrontend 场景点击必须使用该接口覆盖静态示例；初始化引导依次调用观点题、社交题、答案保存和 complete 接口，观点题由后端优先使用真实 LLM 生成。
 - 初始化 complete 接口采用两阶段确认：`confirmed=false` 只生成并保存 `profile_review` 草稿，前端展示后必须由用户确认，再以 `confirmed=true` 激活数字分身；长耗时请求使用原生 dialog 提示进度，完成后回到 `#intro`。
 - 初始化前端的等待提示使用阻塞式原生 dialog，创建会话、读取知乎并出题、生成画像和保存画像期间锁定其它页面控件；画像草稿按摘要、风格、兴趣、专长、观点和行为分组可编辑，确认后的 `profile` 由后端写入画像版本与 `avatar_memories`，并通过 `vector_sync_outbox` 同步 Chroma。
@@ -50,3 +51,8 @@
 - PostgreSQL 数据清理与恢复脚本位于 `backend/db/clear_postgresql_data.ps1` 和 `backend/db/restore_postgresql_backup.ps1`：清理脚本只对所有非系统 schema 执行 `TRUNCATE ... RESTART IDENTITY CASCADE`，保留表结构；恢复脚本使用数据专用备份并仅恢复数据与序列值，两个脚本均需显式追加 `-Force`。备份文件位于 `backups/postgresql/`，执行恢复前应核对文件哈希。
 - `/api/v1/me` 在 PostgreSQL 模式下必须联查 `user_avatars` 返回真实 `avatar_id/avatar_status`；`user_avatars.status=building` 对外映射为 `processing`，归档分身映射为 `not_created`，避免初始化完成后前端再次进入初始化页。
 - 初始化确认接口成功后，newfrontend 应直接将当前路由切换到 `#intro`，不要强制整页刷新触发旧认证状态竞争；重新打开页面时仍必须通过 `/api/v1/me` 校验真实分身状态。
+- 场景候选必须由 `POST /v1/twin/scenes/{scene_id}/avatars` 从 PostgreSQL `agent_scene_presence` 的 idle 候选中随机返回 1-3 名；newfrontend 不得保留林夏、周野等静态候选资料，接口失败时展示空候选，不回退前端 Mock。
+- 当前用户真实标签接口为 `GET /v1/twin/profile/tags`：必须从 HttpOnly 会话解析用户，仅查询其 ready/paused 数字分身的 interest/expertise 记忆，禁止接受前端传入 user_id；newfrontend 的“我的标签”不得使用静态标签。
+- 当本人用户没有历史 Agent 聊天组时，newfrontend 的“遇见”页应回退读取 `/v1/twin/scenes/{scene_id}/avatars` 的真实在场候选；本人分身与场景的关联使用 `agent_scene_presence` 维护，不伪造聊天记录。
+- 场景候选接口除 `avatar_id/scene_id/status/display_name/display_summary` 外，还必须返回 `profile` 公开画像对象（摘要、职业、地点、年龄、性格标签、兴趣和专长）；兴趣与专长只允许读取公开记忆，前端候选卡片和详情面板应直接使用该字段。
+- newfrontend 读取 `/v1/twin/profile/summary` 或其他严格会话接口收到 401/403 时，必须提示会话过期并重新进入认证流程，不得展示旧缓存或伪造画像。

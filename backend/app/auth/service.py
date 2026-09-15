@@ -47,6 +47,8 @@ def to_me_payload(user: dict[str, Any], zhihu_token_valid: bool = True) -> dict[
         "user_id": user["user_id"],
         "avatar_id": user.get("avatar_id"),
         "avatar_status": user.get("avatar_status", "not_created"),
+        "initialization_id": user.get("initialization_id"),
+        "initialization_status": user.get("initialization_status"),
         # 授权已断开或 token 过期时，前端应引导重新授权
         "zhihu_connected": bool(user.get("zhihu_connected")) and zhihu_token_valid,
         "zhihu": {

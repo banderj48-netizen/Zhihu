@@ -87,9 +87,8 @@ _dialogues = DialogueManager(_default_runner, max_dialogues=int(os.getenv("MAX_A
 def _resolved_user(request: Request, header_user_id: str | None) -> str:
     """优先从 HttpOnly 会话 Cookie 解析用户，兼容本地测试的 X-User-Id。"""
     current = auth_session.get_session(auth_session.read_session_id(request))
-    if current:
-        return str(current["user_id"])
-    candidate = header_user_id or "local-demo-user"
+    candidate = (current or {}).get("user_id") if current else (header_user_id or "local-demo-user")
+    candidate = str(candidate)
     # 本地联调允许使用 users.external_id（例如 testacc）作为 X-User-Id；
     # 持久化查询统一转换为内部 UUID，避免直接向 uuid 列传入普通字符串。
     try:
@@ -109,7 +108,7 @@ def _resolved_user(request: Request, header_user_id: str | None) -> str:
     except Exception:
         # 保留原有本地 demo fallback；真正需要数据库的接口会返回业务错误。
         pass
-    return str(candidate)
+    return candidate
 
 
 class MatchRequest(BaseModel):
@@ -128,6 +127,12 @@ class DialogueRequest(MatchRequest):
 class InitCreate(BaseModel):
     """初始化创建参数。"""
     import_job_id: str | None = None
+
+
+class SceneAvatarRequest(BaseModel):
+    """场景候选请求；limit 限制为 1 到 3 名，防止前端任意扩大返回范围。"""
+
+    limit: int = Field(default=3, ge=1, le=3)
 
 
 class InitStep(BaseModel):
@@ -275,6 +280,18 @@ def _my_avatar(user_id: str) -> dict[str, Any] | None:
     return dict(row) if row else None
 
 
+def _strict_current_user_id(request: Request) -> str:
+    """仅从 HttpOnly 会话解析当前用户身份，禁止请求头或请求体伪造用户。"""
+    current = auth_session.get_session(auth_session.read_session_id(request))
+    user_id = str(current["user_id"]) if current else ""
+    if not user_id:
+        raise HTTPException(401, "未登录或会话已过期")
+    try:
+        return str(UUID(user_id))
+    except (ValueError, TypeError, AttributeError):
+        raise HTTPException(401, "当前会话用户标识无效") from None
+
+
 def _candidate_user(avatar_id: str) -> str:
     """根据候选 avatar 查询所属用户。"""
     from db.database import connect
@@ -291,13 +308,129 @@ def list_scenes():
     return {"items": _presence.list_scenes()}
 
 
-@router.get("/scenes/{scene_id}/avatars")
-def list_scene_avatars(scene_id: str, x_user_id: str | None = Header(default=None)):
-    """返回场景空闲候选，当前用户自己的 Agent 不会出现在候选中。"""
-    me = _my_avatar(x_user_id or "local-demo-user")
+@router.get("/profile/tags")
+def get_current_profile_tags(request: Request):
+    """读取当前登录用户的真实画像标签与记忆，严格校验用户归属。"""
+    user_id = _strict_current_user_id(request)
+    from db.database import connect
+
+    with connect() as db:
+        rows = db.execute(
+            """
+            SELECT a.id AS avatar_id, a.status AS avatar_status,
+                   m.id AS memory_id, m.memory_type, m.topic, m.content,
+                   m.level, m.confidence, m.status AS memory_status
+              FROM public.user_avatars a
+              JOIN public.users u ON u.id=a.user_id AND u.deleted_at IS NULL
+              LEFT JOIN public.avatar_memories m
+                ON m.avatar_id=a.id
+               AND m.memory_type IN ('interest', 'expertise')
+               AND m.status IN ('confirmed', 'unconfirmed')
+             WHERE a.user_id=%s AND a.status IN ('ready', 'paused')
+             ORDER BY CASE m.memory_type WHEN 'interest' THEN 1 WHEN 'expertise' THEN 2 ELSE 3 END,
+                      m.created_at ASC
+            """,
+            (user_id,),
+        ).fetchall()
+    if not rows:
+        raise HTTPException(404, "当前用户没有可用的数字分身标签")
+
+    tags: list[dict[str, Any]] = []
+    seen: set[tuple[str, str]] = set()
+    avatar_id = str(rows[0]["avatar_id"])
+    avatar_status = rows[0]["avatar_status"]
+    for row in rows:
+        if not row["memory_id"]:
+            continue
+        label = str(row["content"] or row["topic"] or "").strip()
+        if not label:
+            continue
+        key = (str(row["memory_type"]), label)
+        if key in seen:
+            continue
+        seen.add(key)
+        tags.append({
+            "label": label,
+            "category": str(row["memory_type"]),
+            "topic": row["topic"],
+            "level": row["level"],
+            "confidence": row["confidence"],
+            "status": row["memory_status"],
+        })
+    return {"avatar_id": avatar_id, "avatar_status": avatar_status, "tags": tags}
+
+
+@router.get("/profile/summary")
+def get_current_profile_summary(request: Request):
+    """读取当前用户分身画像，作为分身页的唯一数据源。"""
+    user_id = _strict_current_user_id(request)
+    from db.database import connect
+
+    with connect() as db:
+        avatar = db.execute(
+            """
+            SELECT a.id AS avatar_id, a.status AS avatar_status, a.display_name,
+                   i.summary, i.occupation, i.location, i.age, i.extra,
+                   v.id AS version_id, v.version_no
+              FROM public.user_avatars a
+              JOIN public.users u ON u.id=a.user_id AND u.deleted_at IS NULL
+              LEFT JOIN public.avatar_versions v ON v.id=a.current_version_id
+              LEFT JOIN public.avatar_identity i ON i.avatar_version_id=v.id
+             WHERE a.user_id=%s AND a.status IN ('ready','paused')
+             LIMIT 1
+            """,
+            (user_id,),
+        ).fetchone()
+        if not avatar:
+            raise HTTPException(404, "当前用户没有可用的数字分身画像")
+        memories = db.execute(
+            """
+            SELECT memory_type, topic, content, level, confidence, status
+              FROM public.avatar_memories
+             WHERE avatar_id=%s AND status IN ('confirmed','unconfirmed')
+               AND privacy IN ('public','private')
+             ORDER BY CASE level WHEN 'deep' THEN 1 WHEN 'middle' THEN 2 ELSE 3 END,
+                      updated_at DESC
+             LIMIT 80
+            """,
+            (avatar["avatar_id"],),
+        ).fetchall()
+
+    sections: dict[str, list[dict[str, Any]]] = {}
+    for item in memories:
+        key = str(item["memory_type"])
+        sections.setdefault(key, []).append({
+            "topic": item["topic"], "content": item["content"],
+            "level": item["level"], "confidence": item["confidence"],
+            "status": item["status"],
+        })
+    return {
+        "avatar_id": str(avatar["avatar_id"]),
+        "avatar_status": avatar["avatar_status"],
+        "version_id": str(avatar["version_id"]) if avatar["version_id"] else None,
+        "version_no": avatar["version_no"],
+        "identity": {
+            "display_name": avatar["display_name"], "summary": avatar["summary"],
+            "occupation": avatar["occupation"], "location": avatar["location"],
+            "age": avatar["age"], "extra": avatar["extra"] or {},
+        },
+        "memories": sections,
+    }
+
+
+@router.post("/scenes/{scene_id}/avatars")
+def list_scene_avatars(scene_id: str, body: SceneAvatarRequest, request: Request, x_user_id: str | None = Header(default=None)):
+    """从 PostgreSQL 在场表随机返回 1 到 3 名空闲候选，不使用前端 Mock 数据。"""
+    me = _my_avatar(_resolved_user(request, x_user_id))
     candidates = _presence.list_candidates(scene_id, exclude_avatar_id=str(me["id"]) if me else None)
-    # 每次进入场景都从数据库空闲池随机抽取 1-3 个，避免前端固定 Mock 数据。
-    return {"scene_id": scene_id, "items": random.sample(candidates, min(3, len(candidates)))}
+    # 每次进入场景都重新从数据库空闲池随机抽取，数量由后端校验后的 limit 决定。
+    return {"scene_id": scene_id, "items": random.sample(candidates, min(body.limit, len(candidates)))}
+
+
+@router.get("/scenes/{scene_id}/avatars")
+def list_scene_avatars_legacy(scene_id: str, request: Request, x_user_id: str | None = Header(default=None)):
+    """兼容旧客户端的 GET 查询；新前端必须使用 POST 接口。"""
+    return list_scene_avatars(scene_id, SceneAvatarRequest(), request, x_user_id)
 
 
 @router.post("/matches")
@@ -365,6 +498,39 @@ async def start_dialogue(body: DialogueRequest, request: Request, x_user_id: str
         _presence.release(avatar_b, body.scene_id)
         raise
     return {"run_id": run_id, "avatar_a_id": str(me["id"]), "avatar_b_id": avatar_b, "scene_id": body.scene_id, "status": "queued"}
+
+
+@router.post("/interest", status_code=202)
+async def express_interest(body: MatchRequest, request: Request, x_user_id: str | None = Header(default=None)):
+    """对场景候选表达兴趣；无历史聊天时立即启动双 Agent 生成聊天记录。"""
+    user_id = _resolved_user(request, x_user_id)
+    me = _my_avatar(user_id)
+    if not me:
+        raise HTTPException(409, "请先完成数字分身初始化")
+    if not body.target_avatar_id:
+        raise HTTPException(422, "缺少目标看山")
+    target_user = _candidate_user(body.target_avatar_id)
+    from db.database import connect
+    with connect() as db:
+        existing = db.execute(
+            """SELECT chat_no, dialogue_run_id, processing_status FROM agent_chat_groups
+               WHERE ((initiator_avatar_id=%s AND invited_avatar_id=%s) OR (initiator_avatar_id=%s AND invited_avatar_id=%s))
+               ORDER BY started_at DESC LIMIT 1""",
+            (me["id"], body.target_avatar_id, body.target_avatar_id, me["id"]),
+        ).fetchone()
+    if existing:
+        if existing["processing_status"] == "ready":
+            _notifications.create_friendship_notifications(
+                dialogue_run_id=str(existing["dialogue_run_id"]), user_a_id=user_id,
+                user_b_id=target_user, avatar_a_id=str(me["id"]), avatar_b_id=body.target_avatar_id,
+                score=0.8, threshold=0.55, summary="用户主动对该相遇对象表达兴趣",
+            )
+        return {"status": "existing", "chat_no": existing["chat_no"], "run_id": str(existing["dialogue_run_id"]), "processing_status": existing["processing_status"]}
+    started = await start_dialogue(
+        DialogueRequest(scene_id=body.scene_id, match_mode="manual", target_avatar_id=body.target_avatar_id, max_rounds=10),
+        request, x_user_id,
+    )
+    return {"status": "started", **started}
 
 
 @router.get("/dialogues/{run_id}")

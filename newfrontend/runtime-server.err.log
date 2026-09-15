@@ -1,0 +1,1969 @@
+127.0.0.1 - - [15/Sep/2026 09:14:48] "GET / HTTP/1.1" 200 -
+127.0.0.1 - - [15/Sep/2026 09:14:52] "GET /profile HTTP/1.1" 200 -
+127.0.0.1 - - [15/Sep/2026 09:14:52] "GET /styles.css HTTP/1.1" 304 -
+127.0.0.1 - - [15/Sep/2026 09:14:52] "GET /%E7%BE%8E%E6%9C%AF%E7%B4%A0%E6%9D%90/%E5%B0%8F%E9%95%87%E5%9C%B0%E5%9B%BE.jpg HTTP/1.1" 304 -
+127.0.0.1 - - [15/Sep/2026 09:14:52] "GET /%E9%9F%B3%E4%B9%90/%E6%B8%A9%E6%9A%96%E7%9A%84%E6%97%A5%E5%B8%B8.mp3 HTTP/1.1" 200 -
+----------------------------------------
+Exception occurred during processing of request from ('127.0.0.1', 39928)
+Traceback (most recent call last):
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\socketserver.py", line 697, in process_request_thread
+    self.finish_request(request, client_address)
+    ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\socketserver.py", line 362, in finish_request
+    self.RequestHandlerClass(request, client_address, self)
+    ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "E:\ZH\Zhihu\newfrontend\server.py", line 11, in __init__
+    super().__init__(*args, directory=str(ROOT), **kwargs)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\http\server.py", line 732, in __init__
+    super().__init__(*args, **kwargs)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\socketserver.py", line 766, in __init__
+    self.handle()
+    ~~~~~~~~~~~^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\http\server.py", line 496, in handle
+    self.handle_one_request()
+    ~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\http\server.py", line 484, in handle_one_request
+    method()
+    ~~~~~~^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\http\server.py", line 739, in do_GET
+    self.copyfile(f, self.wfile)
+    ~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\http\server.py", line 942, in copyfile
+    shutil.copyfileobj(source, outputfile)
+    ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\shutil.py", line 257, in copyfileobj
+    fdst_write(buf)
+    ~~~~~~~~~~^^^^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\socketserver.py", line 845, in write
+    self._sock.sendall(b)
+    ~~~~~~~~~~~~~~~~~~^^^
+ConnectionResetError: [WinError 10054] 远程主机强迫关闭了一个现有的连接。
+----------------------------------------
+127.0.0.1 - - [15/Sep/2026 09:14:54] "GET /intro/intro HTTP/1.1" 200 -
+127.0.0.1 - - [15/Sep/2026 09:14:54] "GET /intro/styles.css HTTP/1.1" 200 -
+127.0.0.1 - - [15/Sep/2026 09:14:54] "GET /intro/%E7%BE%8E%E6%9C%AF%E7%B4%A0%E6%9D%90/logo.jpg HTTP/1.1" 200 -
+127.0.0.1 - - [15/Sep/2026 09:14:54] "GET /intro/%E7%BE%8E%E6%9C%AF%E7%B4%A0%E6%9D%90/%E6%B6%88%E6%81%AF%E7%9B%92%E5%AD%90%EF%BC%88%E6%B2%A1%E6%9C%89%E6%B6%88%E6%81%AF%EF%BC%89.svg HTTP/1.1" 200 -
+127.0.0.1 - - [15/Sep/2026 09:14:54] "GET /intro/%E7%BE%8E%E6%9C%AF%E7%B4%A0%E6%9D%90/%E6%B6%88%E6%81%AF%E7%9B%92%E5%AD%90%EF%BC%88%E6%9C%89%E6%B6%88%E6%81%AF%EF%BC%89.svg HTTP/1.1" 200 -
+127.0.0.1 - - [15/Sep/2026 09:14:54] "GET /intro/%E7%BE%8E%E6%9C%AF%E7%B4%A0%E6%9D%90/%E5%BB%BA%E7%AD%91%E5%92%96%E5%95%A1%E5%BA%97.png HTTP/1.1" 200 -
+127.0.0.1 - - [15/Sep/2026 09:14:54] "GET /intro/%E7%BE%8E%E6%9C%AF%E7%B4%A0%E6%9D%90/%E5%B0%8F%E9%95%87%E5%9C%B0%E5%9B%BE.jpg HTTP/1.1" 200 -
+127.0.0.1 - - [15/Sep/2026 09:14:54] "GET /intro/%E7%BE%8E%E6%9C%AF%E7%B4%A0%E6%9D%90/%E5%BB%BA%E7%AD%91%E5%89%A7%E9%99%A2-cut.png HTTP/1.1" 200 -
+127.0.0.1 - - [15/Sep/2026 09:14:54] "GET /intro/%E7%BE%8E%E6%9C%AF%E7%B4%A0%E6%9D%90/%E5%BB%BA%E7%AD%91%E8%AE%B2%E5%8F%B0-cut.png HTTP/1.1" 200 -
+127.0.0.1 - - [15/Sep/2026 09:14:54] "GET /intro/%E7%BE%8E%E6%9C%AF%E7%B4%A0%E6%9D%90/%E5%BB%BA%E7%AD%91%E5%92%96%E5%95%A1%E5%BA%97-cut.png HTTP/1.1" 200 -
+127.0.0.1 - - [15/Sep/2026 09:14:54] "GET /intro/%E7%BE%8E%E6%9C%AF%E7%B4%A0%E6%9D%90/%E5%BB%BA%E7%AD%91%E5%9B%BE%E4%B9%A6%E9%A6%86-cut.png HTTP/1.1" 200 -
+127.0.0.1 - - [15/Sep/2026 09:14:54] "GET /intro/%E7%BE%8E%E6%9C%AF%E7%B4%A0%E6%9D%90/%E5%BB%BA%E7%AD%91%E9%85%92%E9%A6%86-cut.png HTTP/1.1" 200 -
+127.0.0.1 - - [15/Sep/2026 09:14:54] "GET /intro/%E7%BE%8E%E6%9C%AF%E7%B4%A0%E6%9D%90/%E7%9C%8B%E5%B1%B1%E4%BA%BA%E7%89%A9.png HTTP/1.1" 200 -
+127.0.0.1 - - [15/Sep/2026 09:14:54] "GET /intro/%E7%BE%8E%E6%9C%AF%E7%B4%A0%E6%9D%90/%E5%9C%BA%E6%99%AF%E9%85%92%E5%90%A7.png HTTP/1.1" 200 -
+127.0.0.1 - - [15/Sep/2026 09:14:54] "GET /intro/%E7%BE%8E%E6%9C%AF%E7%B4%A0%E6%9D%90/%E5%A5%B3%E7%9C%8B%E5%B1%B1-%E6%AD%A3%E9%9D%A2.png HTTP/1.1" 200 -
+127.0.0.1 - - [15/Sep/2026 09:14:54] "GET /intro/%E7%BE%8E%E6%9C%AF%E7%B4%A0%E6%9D%90/%E7%94%B7%E7%9C%8B%E5%B1%B1-%E6%AD%A3%E9%9D%A2.png HTTP/1.1" 200 -
+127.0.0.1 - - [15/Sep/2026 09:14:54] "GET /intro/%E7%BE%8E%E6%9C%AF%E7%B4%A0%E6%9D%90/%E7%9C%8B%E5%B1%B1%E6%8E%A2%E5%A4%B4.png HTTP/1.1" 200 -
+127.0.0.1 - - [15/Sep/2026 09:14:54] "GET /intro/%E9%9F%B3%E4%B9%90/%E6%B8%A9%E6%9A%96%E7%9A%84%E6%97%A5%E5%B8%B8.mp3 HTTP/1.1" 200 -
+127.0.0.1 - - [15/Sep/2026 09:14:55] "GET /favicon.ico HTTP/1.1" 200 -
+127.0.0.1 - - [15/Sep/2026 09:14:56] "GET /auth HTTP/1.1" 200 -
+127.0.0.1 - - [15/Sep/2026 09:14:57] "GET /%E9%9F%B3%E4%B9%90/%E6%B8%A9%E6%9A%96%E7%9A%84%E6%97%A5%E5%B8%B8.mp3 HTTP/1.1" 200 -
+127.0.0.1 - - [15/Sep/2026 09:15:07] "GET /favicon.ico HTTP/1.1" 304 -
+----------------------------------------
+Exception occurred during processing of request from ('127.0.0.1', 41893)
+Traceback (most recent call last):
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\socketserver.py", line 697, in process_request_thread
+    self.finish_request(request, client_address)
+    ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\socketserver.py", line 362, in finish_request
+    self.RequestHandlerClass(request, client_address, self)
+    ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "E:\ZH\Zhihu\newfrontend\server.py", line 11, in __init__
+    super().__init__(*args, directory=str(ROOT), **kwargs)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\http\server.py", line 732, in __init__
+    super().__init__(*args, **kwargs)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\socketserver.py", line 766, in __init__
+    self.handle()
+    ~~~~~~~~~~~^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\http\server.py", line 496, in handle
+    self.handle_one_request()
+    ~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\http\server.py", line 484, in handle_one_request
+    method()
+    ~~~~~~^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\http\server.py", line 739, in do_GET
+    self.copyfile(f, self.wfile)
+    ~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\http\server.py", line 942, in copyfile
+    shutil.copyfileobj(source, outputfile)
+    ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\shutil.py", line 257, in copyfileobj
+    fdst_write(buf)
+    ~~~~~~~~~~^^^^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\socketserver.py", line 845, in write
+    self._sock.sendall(b)
+    ~~~~~~~~~~~~~~~~~~^^^
+ConnectionResetError: [WinError 10054] 远程主机强迫关闭了一个现有的连接。
+----------------------------------------
+127.0.0.1 - - [15/Sep/2026 09:16:30] "GET /encounter HTTP/1.1" 200 -
+127.0.0.1 - - [15/Sep/2026 09:16:30] "GET /%E7%BE%8E%E6%9C%AF%E7%B4%A0%E6%9D%90/logo.jpg HTTP/1.1" 304 -
+127.0.0.1 - - [15/Sep/2026 09:16:30] "GET /%E7%BE%8E%E6%9C%AF%E7%B4%A0%E6%9D%90/%E6%B6%88%E6%81%AF%E7%9B%92%E5%AD%90%EF%BC%88%E6%B2%A1%E6%9C%89%E6%B6%88%E6%81%AF%EF%BC%89.svg HTTP/1.1" 304 -
+127.0.0.1 - - [15/Sep/2026 09:16:30] "GET /%E7%BE%8E%E6%9C%AF%E7%B4%A0%E6%9D%90/%E7%9C%8B%E5%B1%B1%E4%BA%BA%E7%89%A9.png HTTP/1.1" 304 -
+127.0.0.1 - - [15/Sep/2026 09:16:30] "GET /%E7%BE%8E%E6%9C%AF%E7%B4%A0%E6%9D%90/%E6%B6%88%E6%81%AF%E7%9B%92%E5%AD%90%EF%BC%88%E6%9C%89%E6%B6%88%E6%81%AF%EF%BC%89.svg HTTP/1.1" 304 -
+127.0.0.1 - - [15/Sep/2026 09:16:30] "GET /%E7%BE%8E%E6%9C%AF%E7%B4%A0%E6%9D%90/%E5%BB%BA%E7%AD%91%E5%92%96%E5%95%A1%E5%BA%97.png HTTP/1.1" 304 -
+127.0.0.1 - - [15/Sep/2026 09:16:30] "GET /%E7%BE%8E%E6%9C%AF%E7%B4%A0%E6%9D%90/%E5%BB%BA%E7%AD%91%E5%89%A7%E9%99%A2-cut.png HTTP/1.1" 304 -
+127.0.0.1 - - [15/Sep/2026 09:16:30] "GET /%E7%BE%8E%E6%9C%AF%E7%B4%A0%E6%9D%90/%E5%BB%BA%E7%AD%91%E5%92%96%E5%95%A1%E5%BA%97-cut.png HTTP/1.1" 304 -
+127.0.0.1 - - [15/Sep/2026 09:16:30] "GET /%E7%BE%8E%E6%9C%AF%E7%B4%A0%E6%9D%90/%E5%BB%BA%E7%AD%91%E8%AE%B2%E5%8F%B0-cut.png HTTP/1.1" 304 -
+127.0.0.1 - - [15/Sep/2026 09:16:30] "GET /%E7%BE%8E%E6%9C%AF%E7%B4%A0%E6%9D%90/%E5%BB%BA%E7%AD%91%E5%9B%BE%E4%B9%A6%E9%A6%86-cut.png HTTP/1.1" 304 -
+127.0.0.1 - - [15/Sep/2026 09:16:30] "GET /%E7%BE%8E%E6%9C%AF%E7%B4%A0%E6%9D%90/%E5%9C%BA%E6%99%AF%E9%85%92%E5%90%A7.png HTTP/1.1" 304 -
+127.0.0.1 - - [15/Sep/2026 09:16:30] "GET /%E7%BE%8E%E6%9C%AF%E7%B4%A0%E6%9D%90/%E5%BB%BA%E7%AD%91%E9%85%92%E9%A6%86-cut.png HTTP/1.1" 304 -
+127.0.0.1 - - [15/Sep/2026 09:16:30] "GET /%E7%BE%8E%E6%9C%AF%E7%B4%A0%E6%9D%90/%E5%A5%B3%E7%9C%8B%E5%B1%B1-%E6%AD%A3%E9%9D%A2.png HTTP/1.1" 304 -
+127.0.0.1 - - [15/Sep/2026 09:16:30] "GET /%E7%BE%8E%E6%9C%AF%E7%B4%A0%E6%9D%90/%E7%94%B7%E7%9C%8B%E5%B1%B1-%E6%AD%A3%E9%9D%A2.png HTTP/1.1" 304 -
+127.0.0.1 - - [15/Sep/2026 09:16:30] "GET /%E7%BE%8E%E6%9C%AF%E7%B4%A0%E6%9D%90/%E7%9C%8B%E5%B1%B1%E6%8E%A2%E5%A4%B4.png HTTP/1.1" 304 -
+127.0.0.1 - - [15/Sep/2026 09:16:30] "GET /%E9%9F%B3%E4%B9%90/%E6%B8%A9%E6%9A%96%E7%9A%84%E6%97%A5%E5%B8%B8.mp3 HTTP/1.1" 200 -
+127.0.0.1 - - [15/Sep/2026 09:16:30] "GET /favicon.ico HTTP/1.1" 304 -
+----------------------------------------
+Exception occurred during processing of request from ('127.0.0.1', 25905)
+Traceback (most recent call last):
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\socketserver.py", line 697, in process_request_thread
+    self.finish_request(request, client_address)
+    ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\socketserver.py", line 362, in finish_request
+    self.RequestHandlerClass(request, client_address, self)
+    ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "E:\ZH\Zhihu\newfrontend\server.py", line 11, in __init__
+    super().__init__(*args, directory=str(ROOT), **kwargs)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\http\server.py", line 732, in __init__
+    super().__init__(*args, **kwargs)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\socketserver.py", line 766, in __init__
+    self.handle()
+    ~~~~~~~~~~~^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\http\server.py", line 496, in handle
+    self.handle_one_request()
+    ~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\http\server.py", line 484, in handle_one_request
+    method()
+    ~~~~~~^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\http\server.py", line 739, in do_GET
+    self.copyfile(f, self.wfile)
+    ~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\http\server.py", line 942, in copyfile
+    shutil.copyfileobj(source, outputfile)
+    ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\shutil.py", line 257, in copyfileobj
+    fdst_write(buf)
+    ~~~~~~~~~~^^^^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\socketserver.py", line 845, in write
+    self._sock.sendall(b)
+    ~~~~~~~~~~~~~~~~~~^^^
+ConnectionResetError: [WinError 10054] 远程主机强迫关闭了一个现有的连接。
+----------------------------------------
+127.0.0.1 - - [15/Sep/2026 09:17:30] "GET /favicon.ico HTTP/1.1" 304 -
+127.0.0.1 - - [15/Sep/2026 09:17:44] "GET /town HTTP/1.1" 200 -
+127.0.0.1 - - [15/Sep/2026 09:17:44] "GET /%E9%9F%B3%E4%B9%90/%E6%B8%A9%E6%9A%96%E7%9A%84%E6%97%A5%E5%B8%B8.mp3 HTTP/1.1" 200 -
+----------------------------------------
+Exception occurred during processing of request from ('127.0.0.1', 19733)
+Traceback (most recent call last):
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\socketserver.py", line 697, in process_request_thread
+    self.finish_request(request, client_address)
+    ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\socketserver.py", line 362, in finish_request
+    self.RequestHandlerClass(request, client_address, self)
+    ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "E:\ZH\Zhihu\newfrontend\server.py", line 11, in __init__
+    super().__init__(*args, directory=str(ROOT), **kwargs)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\http\server.py", line 732, in __init__
+    super().__init__(*args, **kwargs)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\socketserver.py", line 766, in __init__
+    self.handle()
+    ~~~~~~~~~~~^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\http\server.py", line 496, in handle
+    self.handle_one_request()
+    ~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\http\server.py", line 484, in handle_one_request
+    method()
+    ~~~~~~^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\http\server.py", line 739, in do_GET
+    self.copyfile(f, self.wfile)
+    ~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\http\server.py", line 942, in copyfile
+    shutil.copyfileobj(source, outputfile)
+    ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\shutil.py", line 257, in copyfileobj
+    fdst_write(buf)
+    ~~~~~~~~~~^^^^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\socketserver.py", line 845, in write
+    self._sock.sendall(b)
+    ~~~~~~~~~~~~~~~~~~^^^
+ConnectionResetError: [WinError 10054] 远程主机强迫关闭了一个现有的连接。
+----------------------------------------
+127.0.0.1 - - [15/Sep/2026 09:18:46] "GET /favicon.ico HTTP/1.1" 200 -
+127.0.0.1 - - [15/Sep/2026 09:18:49] "GET /intro HTTP/1.1" 200 -
+127.0.0.1 - - [15/Sep/2026 09:18:49] "GET /%E9%9F%B3%E4%B9%90/%E6%B8%A9%E6%9A%96%E7%9A%84%E6%97%A5%E5%B8%B8.mp3 HTTP/1.1" 200 -
+127.0.0.1 - - [15/Sep/2026 09:18:52] "GET /favicon.ico HTTP/1.1" 304 -
+127.0.0.1 - - [15/Sep/2026 09:18:53] "GET /profile HTTP/1.1" 200 -
+----------------------------------------
+Exception occurred during processing of request from ('127.0.0.1', 26218)
+Traceback (most recent call last):
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\socketserver.py", line 697, in process_request_thread
+    self.finish_request(request, client_address)
+    ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\socketserver.py", line 362, in finish_request
+    self.RequestHandlerClass(request, client_address, self)
+    ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "E:\ZH\Zhihu\newfrontend\server.py", line 11, in __init__
+    super().__init__(*args, directory=str(ROOT), **kwargs)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\http\server.py", line 732, in __init__
+    super().__init__(*args, **kwargs)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\socketserver.py", line 766, in __init__
+    self.handle()
+    ~~~~~~~~~~~^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\http\server.py", line 496, in handle
+    self.handle_one_request()
+    ~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\http\server.py", line 484, in handle_one_request
+    method()
+    ~~~~~~^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\http\server.py", line 739, in do_GET
+    self.copyfile(f, self.wfile)
+    ~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\http\server.py", line 942, in copyfile
+    shutil.copyfileobj(source, outputfile)
+    ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\shutil.py", line 257, in copyfileobj
+    fdst_write(buf)
+    ~~~~~~~~~~^^^^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\socketserver.py", line 845, in write
+    self._sock.sendall(b)
+    ~~~~~~~~~~~~~~~~~~^^^
+ConnectionResetError: [WinError 10054] 远程主机强迫关闭了一个现有的连接。
+----------------------------------------
+127.0.0.1 - - [15/Sep/2026 09:18:53] "GET /%E9%9F%B3%E4%B9%90/%E6%B8%A9%E6%9A%96%E7%9A%84%E6%97%A5%E5%B8%B8.mp3 HTTP/1.1" 200 -
+127.0.0.1 - - [15/Sep/2026 09:19:06] "GET /favicon.ico HTTP/1.1" 304 -
+----------------------------------------
+Exception occurred during processing of request from ('127.0.0.1', 44438)
+Traceback (most recent call last):
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\socketserver.py", line 697, in process_request_thread
+    self.finish_request(request, client_address)
+    ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\socketserver.py", line 362, in finish_request
+    self.RequestHandlerClass(request, client_address, self)
+    ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "E:\ZH\Zhihu\newfrontend\server.py", line 11, in __init__
+    super().__init__(*args, directory=str(ROOT), **kwargs)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\http\server.py", line 732, in __init__
+    super().__init__(*args, **kwargs)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\socketserver.py", line 766, in __init__
+    self.handle()
+    ~~~~~~~~~~~^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\http\server.py", line 496, in handle
+    self.handle_one_request()
+    ~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\http\server.py", line 484, in handle_one_request
+    method()
+    ~~~~~~^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\http\server.py", line 739, in do_GET
+    self.copyfile(f, self.wfile)
+    ~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\http\server.py", line 942, in copyfile
+    shutil.copyfileobj(source, outputfile)
+    ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\shutil.py", line 257, in copyfileobj
+    fdst_write(buf)
+    ~~~~~~~~~~^^^^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\socketserver.py", line 845, in write
+    self._sock.sendall(b)
+    ~~~~~~~~~~~~~~~~~~^^^
+ConnectionResetError: [WinError 10054] 远程主机强迫关闭了一个现有的连接。
+----------------------------------------
+127.0.0.1 - - [15/Sep/2026 09:19:39] "GET / HTTP/1.1" 200 -
+127.0.0.1 - - [15/Sep/2026 09:21:48] "GET /favicon.ico HTTP/1.1" 304 -
+127.0.0.1 - - [15/Sep/2026 09:21:51] "GET /%E7%BE%8E%E6%9C%AF%E7%B4%A0%E6%9D%90/%E5%9C%BA%E6%99%AF%E5%9B%BE%E4%B9%A6%E9%A6%86.png HTTP/1.1" 304 -
+127.0.0.1 - - [15/Sep/2026 09:22:00] "GET /town HTTP/1.1" 200 -
+127.0.0.1 - - [15/Sep/2026 09:22:00] "GET /%E9%9F%B3%E4%B9%90/%E6%B8%A9%E6%9A%96%E7%9A%84%E6%97%A5%E5%B8%B8.mp3 HTTP/1.1" 200 -
+----------------------------------------
+Exception occurred during processing of request from ('127.0.0.1', 56151)
+Traceback (most recent call last):
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\socketserver.py", line 697, in process_request_thread
+    self.finish_request(request, client_address)
+    ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\socketserver.py", line 362, in finish_request
+    self.RequestHandlerClass(request, client_address, self)
+    ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "E:\ZH\Zhihu\newfrontend\server.py", line 11, in __init__
+    super().__init__(*args, directory=str(ROOT), **kwargs)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\http\server.py", line 732, in __init__
+    super().__init__(*args, **kwargs)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\socketserver.py", line 766, in __init__
+    self.handle()
+    ~~~~~~~~~~~^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\http\server.py", line 496, in handle
+    self.handle_one_request()
+    ~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\http\server.py", line 484, in handle_one_request
+    method()
+    ~~~~~~^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\http\server.py", line 739, in do_GET
+    self.copyfile(f, self.wfile)
+    ~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\http\server.py", line 942, in copyfile
+    shutil.copyfileobj(source, outputfile)
+    ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\shutil.py", line 257, in copyfileobj
+    fdst_write(buf)
+    ~~~~~~~~~~^^^^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\socketserver.py", line 845, in write
+    self._sock.sendall(b)
+    ~~~~~~~~~~~~~~~~~~^^^
+ConnectionResetError: [WinError 10054] 远程主机强迫关闭了一个现有的连接。
+----------------------------------------
+127.0.0.1 - - [15/Sep/2026 09:23:11] "GET /favicon.ico HTTP/1.1" 200 -
+127.0.0.1 - - [15/Sep/2026 09:23:16] "GET /favicon.ico HTTP/1.1" 304 -
+127.0.0.1 - - [15/Sep/2026 09:23:24] "GET /favicon.ico HTTP/1.1" 304 -
+127.0.0.1 - - [15/Sep/2026 09:23:26] "GET /%E7%BE%8E%E6%9C%AF%E7%B4%A0%E6%9D%90/%E5%9C%BA%E6%99%AF%E6%88%8F%E5%89%A7%E9%99%A2.jpg HTTP/1.1" 200 -
+127.0.0.1 - - [15/Sep/2026 09:23:34] "GET /town HTTP/1.1" 200 -
+127.0.0.1 - - [15/Sep/2026 09:23:34] "GET /styles.css HTTP/1.1" 304 -
+127.0.0.1 - - [15/Sep/2026 09:23:34] "GET /%E7%BE%8E%E6%9C%AF%E7%B4%A0%E6%9D%90/%E5%B0%8F%E9%95%87%E5%9C%B0%E5%9B%BE.jpg HTTP/1.1" 304 -
+127.0.0.1 - - [15/Sep/2026 09:23:34] "GET /%E9%9F%B3%E4%B9%90/%E6%B8%A9%E6%9A%96%E7%9A%84%E6%97%A5%E5%B8%B8.mp3 HTTP/1.1" 200 -
+127.0.0.1 - - [15/Sep/2026 09:23:34] "GET /favicon.ico HTTP/1.1" 304 -
+127.0.0.1 - - [15/Sep/2026 09:23:45] "GET /town HTTP/1.1" 304 -
+----------------------------------------
+Exception occurred during processing of request from ('127.0.0.1', 55902)
+127.0.0.1 - - [15/Sep/2026 09:23:45] "GET /%E9%9F%B3%E4%B9%90/%E6%B8%A9%E6%9A%96%E7%9A%84%E6%97%A5%E5%B8%B8.mp3 HTTP/1.1" 200 -
+Traceback (most recent call last):
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\socketserver.py", line 697, in process_request_thread
+    self.finish_request(request, client_address)
+    ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\socketserver.py", line 362, in finish_request
+    self.RequestHandlerClass(request, client_address, self)
+    ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "E:\ZH\Zhihu\newfrontend\server.py", line 11, in __init__
+    super().__init__(*args, directory=str(ROOT), **kwargs)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\http\server.py", line 732, in __init__
+    super().__init__(*args, **kwargs)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\socketserver.py", line 766, in __init__
+    self.handle()
+    ~~~~~~~~~~~^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\http\server.py", line 496, in handle
+    self.handle_one_request()
+    ~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\http\server.py", line 484, in handle_one_request
+    method()
+    ~~~~~~^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\http\server.py", line 739, in do_GET
+    self.copyfile(f, self.wfile)
+    ~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\http\server.py", line 942, in copyfile
+    shutil.copyfileobj(source, outputfile)
+    ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\shutil.py", line 257, in copyfileobj
+    fdst_write(buf)
+    ~~~~~~~~~~^^^^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\socketserver.py", line 845, in write
+    self._sock.sendall(b)
+    ~~~~~~~~~~~~~~~~~~^^^
+ConnectionResetError: [WinError 10054] 远程主机强迫关闭了一个现有的连接。
+----------------------------------------
+127.0.0.1 - - [15/Sep/2026 09:23:45] "GET /favicon.ico HTTP/1.1" 304 -
+127.0.0.1 - - [15/Sep/2026 09:23:56] "GET /favicon.ico HTTP/1.1" 304 -
+----------------------------------------
+Exception occurred during processing of request from ('127.0.0.1', 47021)
+Traceback (most recent call last):
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\socketserver.py", line 697, in process_request_thread
+    self.finish_request(request, client_address)
+    ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\socketserver.py", line 362, in finish_request
+    self.RequestHandlerClass(request, client_address, self)
+    ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "E:\ZH\Zhihu\newfrontend\server.py", line 11, in __init__
+    super().__init__(*args, directory=str(ROOT), **kwargs)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\http\server.py", line 732, in __init__
+    super().__init__(*args, **kwargs)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\socketserver.py", line 766, in __init__
+    self.handle()
+    ~~~~~~~~~~~^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\http\server.py", line 496, in handle
+    self.handle_one_request()
+    ~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\http\server.py", line 484, in handle_one_request
+    method()
+    ~~~~~~^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\http\server.py", line 739, in do_GET
+    self.copyfile(f, self.wfile)
+    ~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\http\server.py", line 942, in copyfile
+    shutil.copyfileobj(source, outputfile)
+    ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\shutil.py", line 257, in copyfileobj
+    fdst_write(buf)
+    ~~~~~~~~~~^^^^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\socketserver.py", line 845, in write
+    self._sock.sendall(b)
+    ~~~~~~~~~~~~~~~~~~^^^
+ConnectionResetError: [WinError 10054] 远程主机强迫关闭了一个现有的连接。
+----------------------------------------
+127.0.0.1 - - [15/Sep/2026 09:24:00] "GET /town HTTP/1.1" 304 -
+127.0.0.1 - - [15/Sep/2026 09:24:00] "GET /%E9%9F%B3%E4%B9%90/%E6%B8%A9%E6%9A%96%E7%9A%84%E6%97%A5%E5%B8%B8.mp3 HTTP/1.1" 200 -
+127.0.0.1 - - [15/Sep/2026 09:24:03] "GET /favicon.ico HTTP/1.1" 304 -
+----------------------------------------
+Exception occurred during processing of request from ('127.0.0.1', 14104)
+Traceback (most recent call last):
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\socketserver.py", line 697, in process_request_thread
+    self.finish_request(request, client_address)
+    ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\socketserver.py", line 362, in finish_request
+    self.RequestHandlerClass(request, client_address, self)
+    ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "E:\ZH\Zhihu\newfrontend\server.py", line 11, in __init__
+    super().__init__(*args, directory=str(ROOT), **kwargs)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\http\server.py", line 732, in __init__
+    super().__init__(*args, **kwargs)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\socketserver.py", line 766, in __init__
+    self.handle()
+    ~~~~~~~~~~~^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\http\server.py", line 496, in handle
+    self.handle_one_request()
+    ~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\http\server.py", line 484, in handle_one_request
+    method()
+    ~~~~~~^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\http\server.py", line 739, in do_GET
+    self.copyfile(f, self.wfile)
+    ~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\http\server.py", line 942, in copyfile
+    shutil.copyfileobj(source, outputfile)
+    ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\shutil.py", line 257, in copyfileobj
+    fdst_write(buf)
+    ~~~~~~~~~~^^^^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\socketserver.py", line 845, in write
+    self._sock.sendall(b)
+    ~~~~~~~~~~~~~~~~~~^^^
+ConnectionResetError: [WinError 10054] 远程主机强迫关闭了一个现有的连接。
+----------------------------------------
+127.0.0.1 - - [15/Sep/2026 09:24:37] "GET /favicon.ico HTTP/1.1" 304 -
+127.0.0.1 - - [15/Sep/2026 09:24:53] "GET /town HTTP/1.1" 304 -
+127.0.0.1 - - [15/Sep/2026 09:24:53] "GET /%E9%9F%B3%E4%B9%90/%E6%B8%A9%E6%9A%96%E7%9A%84%E6%97%A5%E5%B8%B8.mp3 HTTP/1.1" 200 -
+127.0.0.1 - - [15/Sep/2026 09:24:53] "GET /favicon.ico HTTP/1.1" 304 -
+----------------------------------------
+127.0.0.1 - - [15/Sep/2026 09:25:01] "GET /%E9%9F%B3%E4%B9%90/%E6%B8%A9%E6%9A%96%E7%9A%84%E6%97%A5%E5%B8%B8.mp3 HTTP/1.1" 200 -
+Exception occurred during processing of request from ('127.0.0.1', 24783)
+Traceback (most recent call last):
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\socketserver.py", line 697, in process_request_thread
+    self.finish_request(request, client_address)
+    ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\socketserver.py", line 362, in finish_request
+    self.RequestHandlerClass(request, client_address, self)
+    ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "E:\ZH\Zhihu\newfrontend\server.py", line 11, in __init__
+    super().__init__(*args, directory=str(ROOT), **kwargs)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\http\server.py", line 732, in __init__
+    super().__init__(*args, **kwargs)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\socketserver.py", line 766, in __init__
+    self.handle()
+    ~~~~~~~~~~~^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\http\server.py", line 496, in handle
+    self.handle_one_request()
+    ~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\http\server.py", line 484, in handle_one_request
+    method()
+    ~~~~~~^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\http\server.py", line 739, in do_GET
+    self.copyfile(f, self.wfile)
+    ~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\http\server.py", line 942, in copyfile
+    shutil.copyfileobj(source, outputfile)
+    ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\shutil.py", line 257, in copyfileobj
+    fdst_write(buf)
+    ~~~~~~~~~~^^^^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\socketserver.py", line 845, in write
+    self._sock.sendall(b)
+    ~~~~~~~~~~~~~~~~~~^^^
+ConnectionResetError: [WinError 10054] 远程主机强迫关闭了一个现有的连接。
+----------------------------------------
+127.0.0.1 - - [15/Sep/2026 09:25:06] "GET /favicon.ico HTTP/1.1" 304 -
+----------------------------------------
+Exception occurred during processing of request from ('127.0.0.1', 26115)
+Traceback (most recent call last):
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\socketserver.py", line 697, in process_request_thread
+    self.finish_request(request, client_address)
+    ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\socketserver.py", line 362, in finish_request
+    self.RequestHandlerClass(request, client_address, self)
+    ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "E:\ZH\Zhihu\newfrontend\server.py", line 11, in __init__
+    super().__init__(*args, directory=str(ROOT), **kwargs)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\http\server.py", line 732, in __init__
+    super().__init__(*args, **kwargs)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\socketserver.py", line 766, in __init__
+    self.handle()
+    ~~~~~~~~~~~^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\http\server.py", line 496, in handle
+    self.handle_one_request()
+    ~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\http\server.py", line 484, in handle_one_request
+    method()
+    ~~~~~~^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\http\server.py", line 739, in do_GET
+    self.copyfile(f, self.wfile)
+    ~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\http\server.py", line 942, in copyfile
+    shutil.copyfileobj(source, outputfile)
+    ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\shutil.py", line 257, in copyfileobj
+    fdst_write(buf)
+    ~~~~~~~~~~^^^^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\socketserver.py", line 845, in write
+    self._sock.sendall(b)
+    ~~~~~~~~~~~~~~~~~~^^^
+ConnectionResetError: [WinError 10054] 远程主机强迫关闭了一个现有的连接。
+----------------------------------------
+127.0.0.1 - - [15/Sep/2026 09:26:22] "GET /favicon.ico HTTP/1.1" 304 -
+127.0.0.1 - - [15/Sep/2026 09:26:43] "GET /%E7%BE%8E%E6%9C%AF%E7%B4%A0%E6%9D%90/%E5%9C%BA%E6%99%AF%E8%AE%B2%E5%8F%B0.jpg HTTP/1.1" 304 -
+127.0.0.1 - - [15/Sep/2026 09:26:47] "GET /town HTTP/1.1" 304 -
+127.0.0.1 - - [15/Sep/2026 09:26:47] "GET /%E9%9F%B3%E4%B9%90/%E6%B8%A9%E6%9A%96%E7%9A%84%E6%97%A5%E5%B8%B8.mp3 HTTP/1.1" 200 -
+127.0.0.1 - - [15/Sep/2026 09:26:47] "GET /favicon.ico HTTP/1.1" 304 -
+127.0.0.1 - - [15/Sep/2026 09:26:58] "GET /podium-scene HTTP/1.1" 200 -
+----------------------------------------
+Exception occurred during processing of request from ('127.0.0.1', 64262)
+127.0.0.1 - - [15/Sep/2026 09:26:58] "GET /%E9%9F%B3%E4%B9%90/%E6%B8%A9%E6%9A%96%E7%9A%84%E6%97%A5%E5%B8%B8.mp3 HTTP/1.1" 200 -
+Traceback (most recent call last):
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\socketserver.py", line 697, in process_request_thread
+    self.finish_request(request, client_address)
+    ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\socketserver.py", line 362, in finish_request
+    self.RequestHandlerClass(request, client_address, self)
+    ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "E:\ZH\Zhihu\newfrontend\server.py", line 11, in __init__
+    super().__init__(*args, directory=str(ROOT), **kwargs)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\http\server.py", line 732, in __init__
+    super().__init__(*args, **kwargs)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\socketserver.py", line 766, in __init__
+    self.handle()
+    ~~~~~~~~~~~^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\http\server.py", line 496, in handle
+    self.handle_one_request()
+    ~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\http\server.py", line 484, in handle_one_request
+    method()
+    ~~~~~~^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\http\server.py", line 739, in do_GET
+    self.copyfile(f, self.wfile)
+    ~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\http\server.py", line 942, in copyfile
+    shutil.copyfileobj(source, outputfile)
+    ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\shutil.py", line 257, in copyfileobj
+    fdst_write(buf)
+    ~~~~~~~~~~^^^^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\socketserver.py", line 845, in write
+    self._sock.sendall(b)
+    ~~~~~~~~~~~~~~~~~~^^^
+ConnectionResetError: [WinError 10054] 远程主机强迫关闭了一个现有的连接。
+----------------------------------------
+127.0.0.1 - - [15/Sep/2026 09:27:05] "GET /library-scene HTTP/1.1" 200 -
+----------------------------------------
+Exception occurred during processing of request from ('127.0.0.1', 47642)
+127.0.0.1 - - [15/Sep/2026 09:27:05] "GET /%E9%9F%B3%E4%B9%90/%E6%B8%A9%E6%9A%96%E7%9A%84%E6%97%A5%E5%B8%B8.mp3 HTTP/1.1" 200 -
+Traceback (most recent call last):
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\socketserver.py", line 697, in process_request_thread
+    self.finish_request(request, client_address)
+    ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\socketserver.py", line 362, in finish_request
+    self.RequestHandlerClass(request, client_address, self)
+    ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "E:\ZH\Zhihu\newfrontend\server.py", line 11, in __init__
+    super().__init__(*args, directory=str(ROOT), **kwargs)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\http\server.py", line 732, in __init__
+    super().__init__(*args, **kwargs)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\socketserver.py", line 766, in __init__
+    self.handle()
+    ~~~~~~~~~~~^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\http\server.py", line 496, in handle
+    self.handle_one_request()
+    ~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\http\server.py", line 484, in handle_one_request
+    method()
+    ~~~~~~^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\http\server.py", line 739, in do_GET
+    self.copyfile(f, self.wfile)
+    ~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\http\server.py", line 942, in copyfile
+    shutil.copyfileobj(source, outputfile)
+    ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\shutil.py", line 257, in copyfileobj
+    fdst_write(buf)
+    ~~~~~~~~~~^^^^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\socketserver.py", line 845, in write
+    self._sock.sendall(b)
+    ~~~~~~~~~~~~~~~~~~^^^
+ConnectionResetError: [WinError 10054] 远程主机强迫关闭了一个现有的连接。
+----------------------------------------
+----------------------------------------
+127.0.0.1 - - [15/Sep/2026 09:27:07] "GET /%E9%9F%B3%E4%B9%90/%E6%B8%A9%E6%9A%96%E7%9A%84%E6%97%A5%E5%B8%B8.mp3 HTTP/1.1" 200 -
+Exception occurred during processing of request from ('127.0.0.1', 40633)
+Traceback (most recent call last):
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\socketserver.py", line 697, in process_request_thread
+    self.finish_request(request, client_address)
+    ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\socketserver.py", line 362, in finish_request
+    self.RequestHandlerClass(request, client_address, self)
+    ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "E:\ZH\Zhihu\newfrontend\server.py", line 11, in __init__
+    super().__init__(*args, directory=str(ROOT), **kwargs)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\http\server.py", line 732, in __init__
+    super().__init__(*args, **kwargs)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\socketserver.py", line 766, in __init__
+    self.handle()
+    ~~~~~~~~~~~^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\http\server.py", line 496, in handle
+    self.handle_one_request()
+    ~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\http\server.py", line 484, in handle_one_request
+    method()
+    ~~~~~~^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\http\server.py", line 739, in do_GET
+    self.copyfile(f, self.wfile)
+    ~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\http\server.py", line 942, in copyfile
+    shutil.copyfileobj(source, outputfile)
+    ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\shutil.py", line 257, in copyfileobj
+    fdst_write(buf)
+    ~~~~~~~~~~^^^^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\socketserver.py", line 845, in write
+    self._sock.sendall(b)
+    ~~~~~~~~~~~~~~~~~~^^^
+ConnectionResetError: [WinError 10054] 远程主机强迫关闭了一个现有的连接。
+----------------------------------------
+127.0.0.1 - - [15/Sep/2026 09:27:09] "GET /theater-scene HTTP/1.1" 200 -
+----------------------------------------
+Exception occurred during processing of request from ('127.0.0.1', 30297)
+127.0.0.1 - - [15/Sep/2026 09:27:09] "GET /%E9%9F%B3%E4%B9%90/%E6%B8%A9%E6%9A%96%E7%9A%84%E6%97%A5%E5%B8%B8.mp3 HTTP/1.1" 200 -
+Traceback (most recent call last):
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\socketserver.py", line 697, in process_request_thread
+    self.finish_request(request, client_address)
+    ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\socketserver.py", line 362, in finish_request
+    self.RequestHandlerClass(request, client_address, self)
+    ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "E:\ZH\Zhihu\newfrontend\server.py", line 11, in __init__
+    super().__init__(*args, directory=str(ROOT), **kwargs)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\http\server.py", line 732, in __init__
+    super().__init__(*args, **kwargs)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\socketserver.py", line 766, in __init__
+    self.handle()
+    ~~~~~~~~~~~^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\http\server.py", line 496, in handle
+    self.handle_one_request()
+    ~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\http\server.py", line 484, in handle_one_request
+    method()
+    ~~~~~~^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\http\server.py", line 739, in do_GET
+    self.copyfile(f, self.wfile)
+    ~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\http\server.py", line 942, in copyfile
+    shutil.copyfileobj(source, outputfile)
+    ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\shutil.py", line 257, in copyfileobj
+    fdst_write(buf)
+    ~~~~~~~~~~^^^^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\socketserver.py", line 845, in write
+    self._sock.sendall(b)
+    ~~~~~~~~~~~~~~~~~~^^^
+ConnectionResetError: [WinError 10054] 远程主机强迫关闭了一个现有的连接。
+----------------------------------------
+127.0.0.1 - - [15/Sep/2026 09:27:13] "GET /favicon.ico HTTP/1.1" 304 -
+----------------------------------------
+Exception occurred during processing of request from ('127.0.0.1', 47700)
+127.0.0.1 - - [15/Sep/2026 09:27:17] "GET /%E9%9F%B3%E4%B9%90/%E6%B8%A9%E6%9A%96%E7%9A%84%E6%97%A5%E5%B8%B8.mp3 HTTP/1.1" 200 -
+Traceback (most recent call last):
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\socketserver.py", line 697, in process_request_thread
+    self.finish_request(request, client_address)
+    ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\socketserver.py", line 362, in finish_request
+    self.RequestHandlerClass(request, client_address, self)
+    ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "E:\ZH\Zhihu\newfrontend\server.py", line 11, in __init__
+    super().__init__(*args, directory=str(ROOT), **kwargs)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\http\server.py", line 732, in __init__
+    super().__init__(*args, **kwargs)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\socketserver.py", line 766, in __init__
+    self.handle()
+    ~~~~~~~~~~~^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\http\server.py", line 496, in handle
+    self.handle_one_request()
+    ~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\http\server.py", line 484, in handle_one_request
+    method()
+    ~~~~~~^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\http\server.py", line 739, in do_GET
+    self.copyfile(f, self.wfile)
+    ~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\http\server.py", line 942, in copyfile
+    shutil.copyfileobj(source, outputfile)
+    ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\shutil.py", line 257, in copyfileobj
+    fdst_write(buf)
+    ~~~~~~~~~~^^^^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\socketserver.py", line 845, in write
+    self._sock.sendall(b)
+    ~~~~~~~~~~~~~~~~~~^^^
+ConnectionResetError: [WinError 10054] 远程主机强迫关闭了一个现有的连接。
+----------------------------------------
+----------------------------------------
+127.0.0.1 - - [15/Sep/2026 09:27:18] "GET /%E9%9F%B3%E4%B9%90/%E6%B8%A9%E6%9A%96%E7%9A%84%E6%97%A5%E5%B8%B8.mp3 HTTP/1.1" 200 -
+Exception occurred during processing of request from ('127.0.0.1', 35367)
+Traceback (most recent call last):
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\socketserver.py", line 697, in process_request_thread
+    self.finish_request(request, client_address)
+    ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\socketserver.py", line 362, in finish_request
+    self.RequestHandlerClass(request, client_address, self)
+    ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "E:\ZH\Zhihu\newfrontend\server.py", line 11, in __init__
+    super().__init__(*args, directory=str(ROOT), **kwargs)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\http\server.py", line 732, in __init__
+    super().__init__(*args, **kwargs)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\socketserver.py", line 766, in __init__
+    self.handle()
+    ~~~~~~~~~~~^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\http\server.py", line 496, in handle
+    self.handle_one_request()
+    ~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\http\server.py", line 484, in handle_one_request
+    method()
+    ~~~~~~^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\http\server.py", line 739, in do_GET
+    self.copyfile(f, self.wfile)
+    ~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\http\server.py", line 942, in copyfile
+    shutil.copyfileobj(source, outputfile)
+    ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\shutil.py", line 257, in copyfileobj
+    fdst_write(buf)
+    ~~~~~~~~~~^^^^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\socketserver.py", line 845, in write
+    self._sock.sendall(b)
+    ~~~~~~~~~~~~~~~~~~^^^
+ConnectionResetError: [WinError 10054] 远程主机强迫关闭了一个现有的连接。
+----------------------------------------
+----------------------------------------
+127.0.0.1 - - [15/Sep/2026 09:27:23] "GET /%E9%9F%B3%E4%B9%90/%E6%B8%A9%E6%9A%96%E7%9A%84%E6%97%A5%E5%B8%B8.mp3 HTTP/1.1" 200 -
+Exception occurred during processing of request from ('127.0.0.1', 15709)
+Traceback (most recent call last):
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\socketserver.py", line 697, in process_request_thread
+    self.finish_request(request, client_address)
+    ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\socketserver.py", line 362, in finish_request
+    self.RequestHandlerClass(request, client_address, self)
+    ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "E:\ZH\Zhihu\newfrontend\server.py", line 11, in __init__
+    super().__init__(*args, directory=str(ROOT), **kwargs)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\http\server.py", line 732, in __init__
+    super().__init__(*args, **kwargs)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\socketserver.py", line 766, in __init__
+    self.handle()
+    ~~~~~~~~~~~^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\http\server.py", line 496, in handle
+    self.handle_one_request()
+    ~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\http\server.py", line 484, in handle_one_request
+    method()
+    ~~~~~~^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\http\server.py", line 739, in do_GET
+    self.copyfile(f, self.wfile)
+    ~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\http\server.py", line 942, in copyfile
+    shutil.copyfileobj(source, outputfile)
+    ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\shutil.py", line 257, in copyfileobj
+    fdst_write(buf)
+    ~~~~~~~~~~^^^^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\socketserver.py", line 845, in write
+    self._sock.sendall(b)
+    ~~~~~~~~~~~~~~~~~~^^^
+ConnectionResetError: [WinError 10054] 远程主机强迫关闭了一个现有的连接。
+----------------------------------------
+----------------------------------------
+Exception occurred during processing of request from ('127.0.0.1', 15476)
+127.0.0.1 - - [15/Sep/2026 09:27:26] "GET /%E9%9F%B3%E4%B9%90/%E6%B8%A9%E6%9A%96%E7%9A%84%E6%97%A5%E5%B8%B8.mp3 HTTP/1.1" 200 -
+Traceback (most recent call last):
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\socketserver.py", line 697, in process_request_thread
+    self.finish_request(request, client_address)
+    ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\socketserver.py", line 362, in finish_request
+    self.RequestHandlerClass(request, client_address, self)
+    ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "E:\ZH\Zhihu\newfrontend\server.py", line 11, in __init__
+    super().__init__(*args, directory=str(ROOT), **kwargs)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\http\server.py", line 732, in __init__
+    super().__init__(*args, **kwargs)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\socketserver.py", line 766, in __init__
+    self.handle()
+    ~~~~~~~~~~~^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\http\server.py", line 496, in handle
+    self.handle_one_request()
+    ~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\http\server.py", line 484, in handle_one_request
+    method()
+    ~~~~~~^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\http\server.py", line 739, in do_GET
+    self.copyfile(f, self.wfile)
+    ~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\http\server.py", line 942, in copyfile
+    shutil.copyfileobj(source, outputfile)
+    ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\shutil.py", line 257, in copyfileobj
+    fdst_write(buf)
+    ~~~~~~~~~~^^^^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\socketserver.py", line 845, in write
+    self._sock.sendall(b)
+    ~~~~~~~~~~~~~~~~~~^^^
+ConnectionResetError: [WinError 10054] 远程主机强迫关闭了一个现有的连接。
+----------------------------------------
+127.0.0.1 - - [15/Sep/2026 09:27:32] "GET / HTTP/1.1" 200 -
+----------------------------------------
+Exception occurred during processing of request from ('127.0.0.1', 49465)
+Traceback (most recent call last):
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\socketserver.py", line 697, in process_request_thread
+    self.finish_request(request, client_address)
+    ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^
+127.0.0.1 - - [15/Sep/2026 09:27:32] "GET /%E9%9F%B3%E4%B9%90/%E6%B8%A9%E6%9A%96%E7%9A%84%E6%97%A5%E5%B8%B8.mp3 HTTP/1.1" 200 -
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\socketserver.py", line 362, in finish_request
+    self.RequestHandlerClass(request, client_address, self)
+    ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "E:\ZH\Zhihu\newfrontend\server.py", line 11, in __init__
+    super().__init__(*args, directory=str(ROOT), **kwargs)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\http\server.py", line 732, in __init__
+    super().__init__(*args, **kwargs)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\socketserver.py", line 766, in __init__
+    self.handle()
+    ~~~~~~~~~~~^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\http\server.py", line 496, in handle
+    self.handle_one_request()
+    ~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\http\server.py", line 484, in handle_one_request
+    method()
+    ~~~~~~^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\http\server.py", line 739, in do_GET
+    self.copyfile(f, self.wfile)
+    ~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\http\server.py", line 942, in copyfile
+    shutil.copyfileobj(source, outputfile)
+    ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\shutil.py", line 257, in copyfileobj
+    fdst_write(buf)
+    ~~~~~~~~~~^^^^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\socketserver.py", line 845, in write
+    self._sock.sendall(b)
+    ~~~~~~~~~~~~~~~~~~^^^
+ConnectionResetError: [WinError 10054] 远程主机强迫关闭了一个现有的连接。
+----------------------------------------
+----------------------------------------
+Exception occurred during processing of request from ('127.0.0.1', 15029)
+Traceback (most recent call last):
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\socketserver.py", line 697, in process_request_thread
+    self.finish_request(request, client_address)
+    ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\socketserver.py", line 362, in finish_request
+    self.RequestHandlerClass(request, client_address, self)
+    ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "E:\ZH\Zhihu\newfrontend\server.py", line 11, in __init__
+    super().__init__(*args, directory=str(ROOT), **kwargs)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\http\server.py", line 732, in __init__
+    super().__init__(*args, **kwargs)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\socketserver.py", line 766, in __init__
+    self.handle()
+    ~~~~~~~~~~~^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\http\server.py", line 496, in handle
+    self.handle_one_request()
+    ~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\http\server.py", line 484, in handle_one_request
+    method()
+    ~~~~~~^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\http\server.py", line 739, in do_GET
+    self.copyfile(f, self.wfile)
+    ~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\http\server.py", line 942, in copyfile
+    shutil.copyfileobj(source, outputfile)
+    ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\shutil.py", line 257, in copyfileobj
+    fdst_write(buf)
+    ~~~~~~~~~~^^^^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\socketserver.py", line 845, in write
+    self._sock.sendall(b)
+    ~~~~~~~~~~~~~~~~~~^^^
+ConnectionResetError: [WinError 10054] 远程主机强迫关闭了一个现有的连接。
+----------------------------------------
+127.0.0.1 - - [15/Sep/2026 09:28:19] "GET / HTTP/1.1" 200 -
+127.0.0.1 - - [15/Sep/2026 09:28:19] "GET /styles.css HTTP/1.1" 200 -
+127.0.0.1 - - [15/Sep/2026 09:28:19] "GET /%E7%BE%8E%E6%9C%AF%E7%B4%A0%E6%9D%90/logo.jpg HTTP/1.1" 200 -
+127.0.0.1 - - [15/Sep/2026 09:28:19] "GET /%E7%BE%8E%E6%9C%AF%E7%B4%A0%E6%9D%90/%E6%B6%88%E6%81%AF%E7%9B%92%E5%AD%90%EF%BC%88%E6%B2%A1%E6%9C%89%E6%B6%88%E6%81%AF%EF%BC%89.svg HTTP/1.1" 200 -
+127.0.0.1 - - [15/Sep/2026 09:28:19] "GET /%E7%BE%8E%E6%9C%AF%E7%B4%A0%E6%9D%90/%E6%B6%88%E6%81%AF%E7%9B%92%E5%AD%90%EF%BC%88%E6%9C%89%E6%B6%88%E6%81%AF%EF%BC%89.svg HTTP/1.1" 200 -
+127.0.0.1 - - [15/Sep/2026 09:28:19] "GET /%E7%BE%8E%E6%9C%AF%E7%B4%A0%E6%9D%90/%E5%BB%BA%E7%AD%91%E5%92%96%E5%95%A1%E5%BA%97.png HTTP/1.1" 200 -
+127.0.0.1 - - [15/Sep/2026 09:28:19] "GET /%E7%BE%8E%E6%9C%AF%E7%B4%A0%E6%9D%90/%E7%9C%8B%E5%B1%B1%E4%BA%BA%E7%89%A9.png HTTP/1.1" 200 -
+127.0.0.1 - - [15/Sep/2026 09:28:19] "GET /%E7%BE%8E%E6%9C%AF%E7%B4%A0%E6%9D%90/%E5%BB%BA%E7%AD%91%E5%89%A7%E9%99%A2-cut.png HTTP/1.1" 200 -
+127.0.0.1 - - [15/Sep/2026 09:28:19] "GET /%E7%BE%8E%E6%9C%AF%E7%B4%A0%E6%9D%90/%E5%B0%8F%E9%95%87%E5%9C%B0%E5%9B%BE.jpg HTTP/1.1" 200 -
+127.0.0.1 - - [15/Sep/2026 09:28:19] "GET /%E7%BE%8E%E6%9C%AF%E7%B4%A0%E6%9D%90/%E5%BB%BA%E7%AD%91%E8%AE%B2%E5%8F%B0-cut.png HTTP/1.1" 200 -
+127.0.0.1 - - [15/Sep/2026 09:28:19] "GET /%E7%BE%8E%E6%9C%AF%E7%B4%A0%E6%9D%90/%E5%BB%BA%E7%AD%91%E5%92%96%E5%95%A1%E5%BA%97-cut.png HTTP/1.1" 200 -
+127.0.0.1 - - [15/Sep/2026 09:28:19] "GET /%E7%BE%8E%E6%9C%AF%E7%B4%A0%E6%9D%90/%E5%BB%BA%E7%AD%91%E5%9B%BE%E4%B9%A6%E9%A6%86-cut.png HTTP/1.1" 200 -
+127.0.0.1 - - [15/Sep/2026 09:28:19] "GET /%E7%BE%8E%E6%9C%AF%E7%B4%A0%E6%9D%90/%E5%BB%BA%E7%AD%91%E9%85%92%E9%A6%86-cut.png HTTP/1.1" 200 -
+127.0.0.1 - - [15/Sep/2026 09:28:19] "GET /%E7%BE%8E%E6%9C%AF%E7%B4%A0%E6%9D%90/%E5%9C%BA%E6%99%AF%E9%85%92%E5%90%A7.png HTTP/1.1" 200 -
+127.0.0.1 - - [15/Sep/2026 09:28:19] "GET /%E7%BE%8E%E6%9C%AF%E7%B4%A0%E6%9D%90/%E7%94%B7%E7%9C%8B%E5%B1%B1-%E6%AD%A3%E9%9D%A2.png HTTP/1.1" 200 -
+127.0.0.1 - - [15/Sep/2026 09:28:19] "GET /%E7%BE%8E%E6%9C%AF%E7%B4%A0%E6%9D%90/%E5%A5%B3%E7%9C%8B%E5%B1%B1-%E6%AD%A3%E9%9D%A2.png HTTP/1.1" 200 -
+127.0.0.1 - - [15/Sep/2026 09:28:19] "GET /%E7%BE%8E%E6%9C%AF%E7%B4%A0%E6%9D%90/%E7%9C%8B%E5%B1%B1%E6%8E%A2%E5%A4%B4.png HTTP/1.1" 200 -
+127.0.0.1 - - [15/Sep/2026 09:28:20] "GET /%E9%9F%B3%E4%B9%90/%E6%B8%A9%E6%9A%96%E7%9A%84%E6%97%A5%E5%B8%B8.mp3 HTTP/1.1" 200 -
+----------------------------------------
+Exception occurred during processing of request from ('127.0.0.1', 19436)
+Traceback (most recent call last):
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\socketserver.py", line 697, in process_request_thread
+    self.finish_request(request, client_address)
+    ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\socketserver.py", line 362, in finish_request
+    self.RequestHandlerClass(request, client_address, self)
+    ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "E:\ZH\Zhihu\newfrontend\server.py", line 11, in __init__
+    super().__init__(*args, directory=str(ROOT), **kwargs)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\http\server.py", line 732, in __init__
+    super().__init__(*args, **kwargs)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\socketserver.py", line 766, in __init__
+    self.handle()
+    ~~~~~~~~~~~^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\http\server.py", line 496, in handle
+    self.handle_one_request()
+    ~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\http\server.py", line 484, in handle_one_request
+    method()
+    ~~~~~~^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\http\server.py", line 739, in do_GET
+    self.copyfile(f, self.wfile)
+    ~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\http\server.py", line 942, in copyfile
+    shutil.copyfileobj(source, outputfile)
+    ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\shutil.py", line 257, in copyfileobj
+    fdst_write(buf)
+    ~~~~~~~~~~^^^^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\socketserver.py", line 845, in write
+    self._sock.sendall(b)
+    ~~~~~~~~~~~~~~~~~~^^^
+ConnectionResetError: [WinError 10054] 远程主机强迫关闭了一个现有的连接。
+----------------------------------------
+127.0.0.1 - - [15/Sep/2026 09:28:51] "GET / HTTP/1.1" 304 -
+127.0.0.1 - - [15/Sep/2026 09:28:51] "GET /%E7%BE%8E%E6%9C%AF%E7%B4%A0%E6%9D%90/%E5%9C%BA%E6%99%AF%E9%85%92%E5%90%A7.png HTTP/1.1" 200 -
+127.0.0.1 - - [15/Sep/2026 09:28:51] "GET /%E9%9F%B3%E4%B9%90/%E6%B8%A9%E6%9A%96%E7%9A%84%E6%97%A5%E5%B8%B8.mp3 HTTP/1.1" 200 -
+----------------------------------------
+Exception occurred during processing of request from ('127.0.0.1', 19871)
+Traceback (most recent call last):
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\socketserver.py", line 697, in process_request_thread
+    self.finish_request(request, client_address)
+    ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\socketserver.py", line 362, in finish_request
+    self.RequestHandlerClass(request, client_address, self)
+    ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "E:\ZH\Zhihu\newfrontend\server.py", line 11, in __init__
+    super().__init__(*args, directory=str(ROOT), **kwargs)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\http\server.py", line 732, in __init__
+    super().__init__(*args, **kwargs)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\socketserver.py", line 766, in __init__
+    self.handle()
+    ~~~~~~~~~~~^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\http\server.py", line 496, in handle
+    self.handle_one_request()
+    ~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\http\server.py", line 484, in handle_one_request
+    method()
+    ~~~~~~^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\http\server.py", line 739, in do_GET
+    self.copyfile(f, self.wfile)
+    ~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\http\server.py", line 942, in copyfile
+    shutil.copyfileobj(source, outputfile)
+    ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\shutil.py", line 257, in copyfileobj
+    fdst_write(buf)
+    ~~~~~~~~~~^^^^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\socketserver.py", line 845, in write
+    self._sock.sendall(b)
+    ~~~~~~~~~~~~~~~~~~^^^
+ConnectionResetError: [WinError 10054] 远程主机强迫关闭了一个现有的连接。
+----------------------------------------
+127.0.0.1 - - [15/Sep/2026 09:29:15] "GET /intro/intro HTTP/1.1" 200 -
+127.0.0.1 - - [15/Sep/2026 09:29:15] "GET /intro/styles.css HTTP/1.1" 200 -
+127.0.0.1 - - [15/Sep/2026 09:29:15] "GET /intro/%E7%BE%8E%E6%9C%AF%E7%B4%A0%E6%9D%90/%E6%B6%88%E6%81%AF%E7%9B%92%E5%AD%90%EF%BC%88%E6%B2%A1%E6%9C%89%E6%B6%88%E6%81%AF%EF%BC%89.svg HTTP/1.1" 200 -
+127.0.0.1 - - [15/Sep/2026 09:29:15] "GET /intro/%E7%BE%8E%E6%9C%AF%E7%B4%A0%E6%9D%90/logo.jpg HTTP/1.1" 200 -
+127.0.0.1 - - [15/Sep/2026 09:29:15] "GET /intro/%E7%BE%8E%E6%9C%AF%E7%B4%A0%E6%9D%90/%E6%B6%88%E6%81%AF%E7%9B%92%E5%AD%90%EF%BC%88%E6%9C%89%E6%B6%88%E6%81%AF%EF%BC%89.svg HTTP/1.1" 200 -
+127.0.0.1 - - [15/Sep/2026 09:29:15] "GET /intro/%E7%BE%8E%E6%9C%AF%E7%B4%A0%E6%9D%90/%E5%BB%BA%E7%AD%91%E5%92%96%E5%95%A1%E5%BA%97.png HTTP/1.1" 200 -
+127.0.0.1 - - [15/Sep/2026 09:29:15] "GET /intro/%E7%BE%8E%E6%9C%AF%E7%B4%A0%E6%9D%90/%E7%9C%8B%E5%B1%B1%E4%BA%BA%E7%89%A9.png HTTP/1.1" 200 -
+127.0.0.1 - - [15/Sep/2026 09:29:15] "GET /intro/%E7%BE%8E%E6%9C%AF%E7%B4%A0%E6%9D%90/%E5%BB%BA%E7%AD%91%E5%89%A7%E9%99%A2-cut.png HTTP/1.1" 200 -
+127.0.0.1 - - [15/Sep/2026 09:29:15] "GET /intro/%E7%BE%8E%E6%9C%AF%E7%B4%A0%E6%9D%90/%E5%B0%8F%E9%95%87%E5%9C%B0%E5%9B%BE.jpg HTTP/1.1" 200 -
+127.0.0.1 - - [15/Sep/2026 09:29:15] "GET /intro/%E7%BE%8E%E6%9C%AF%E7%B4%A0%E6%9D%90/%E5%BB%BA%E7%AD%91%E5%9B%BE%E4%B9%A6%E9%A6%86-cut.png HTTP/1.1" 200 -
+127.0.0.1 - - [15/Sep/2026 09:29:15] "GET /intro/%E7%BE%8E%E6%9C%AF%E7%B4%A0%E6%9D%90/%E5%BB%BA%E7%AD%91%E9%85%92%E9%A6%86-cut.png HTTP/1.1" 200 -
+127.0.0.1 - - [15/Sep/2026 09:29:15] "GET /intro/%E7%BE%8E%E6%9C%AF%E7%B4%A0%E6%9D%90/%E5%BB%BA%E7%AD%91%E8%AE%B2%E5%8F%B0-cut.png HTTP/1.1" 200 -
+127.0.0.1 - - [15/Sep/2026 09:29:15] "GET /intro/%E7%BE%8E%E6%9C%AF%E7%B4%A0%E6%9D%90/%E5%BB%BA%E7%AD%91%E5%92%96%E5%95%A1%E5%BA%97-cut.png HTTP/1.1" 200 -
+127.0.0.1 - - [15/Sep/2026 09:29:15] "GET /intro/%E7%BE%8E%E6%9C%AF%E7%B4%A0%E6%9D%90/%E5%9C%BA%E6%99%AF%E9%85%92%E5%90%A7.png HTTP/1.1" 200 -
+127.0.0.1 - - [15/Sep/2026 09:29:15] "GET /intro/%E7%BE%8E%E6%9C%AF%E7%B4%A0%E6%9D%90/%E7%94%B7%E7%9C%8B%E5%B1%B1-%E6%AD%A3%E9%9D%A2.png HTTP/1.1" 200 -
+127.0.0.1 - - [15/Sep/2026 09:29:15] "GET /intro/%E7%BE%8E%E6%9C%AF%E7%B4%A0%E6%9D%90/%E5%A5%B3%E7%9C%8B%E5%B1%B1-%E6%AD%A3%E9%9D%A2.png HTTP/1.1" 200 -
+127.0.0.1 - - [15/Sep/2026 09:29:15] "GET /intro/%E7%BE%8E%E6%9C%AF%E7%B4%A0%E6%9D%90/%E7%9C%8B%E5%B1%B1%E6%8E%A2%E5%A4%B4.png HTTP/1.1" 200 -
+127.0.0.1 - - [15/Sep/2026 09:29:15] "GET /intro/%E9%9F%B3%E4%B9%90/%E6%B8%A9%E6%9A%96%E7%9A%84%E6%97%A5%E5%B8%B8.mp3 HTTP/1.1" 200 -
+127.0.0.1 - - [15/Sep/2026 09:29:15] "GET /favicon.ico HTTP/1.1" 200 -
+127.0.0.1 - - [15/Sep/2026 09:29:19] "GET /auth HTTP/1.1" 200 -
+127.0.0.1 - - [15/Sep/2026 09:29:19] "GET /%E7%BE%8E%E6%9C%AF%E7%B4%A0%E6%9D%90/%E5%9C%BA%E6%99%AF%E9%85%92%E5%90%A7.png HTTP/1.1" 200 -
+127.0.0.1 - - [15/Sep/2026 09:29:19] "GET /%E9%9F%B3%E4%B9%90/%E6%B8%A9%E6%9A%96%E7%9A%84%E6%97%A5%E5%B8%B8.mp3 HTTP/1.1" 200 -
+----------------------------------------
+Exception occurred during processing of request from ('127.0.0.1', 64444)
+Traceback (most recent call last):
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\socketserver.py", line 697, in process_request_thread
+    self.finish_request(request, client_address)
+    ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\socketserver.py", line 362, in finish_request
+    self.RequestHandlerClass(request, client_address, self)
+    ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "E:\ZH\Zhihu\newfrontend\server.py", line 11, in __init__
+    super().__init__(*args, directory=str(ROOT), **kwargs)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\http\server.py", line 732, in __init__
+    super().__init__(*args, **kwargs)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\socketserver.py", line 766, in __init__
+    self.handle()
+    ~~~~~~~~~~~^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\http\server.py", line 496, in handle
+    self.handle_one_request()
+    ~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\http\server.py", line 484, in handle_one_request
+    method()
+    ~~~~~~^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\http\server.py", line 739, in do_GET
+    self.copyfile(f, self.wfile)
+    ~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\http\server.py", line 942, in copyfile
+    shutil.copyfileobj(source, outputfile)
+    ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\shutil.py", line 257, in copyfileobj
+    fdst_write(buf)
+    ~~~~~~~~~~^^^^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\socketserver.py", line 845, in write
+    self._sock.sendall(b)
+    ~~~~~~~~~~~~~~~~~~^^^
+ConnectionResetError: [WinError 10054] 远程主机强迫关闭了一个现有的连接。
+----------------------------------------
+127.0.0.1 - - [15/Sep/2026 09:29:37] "GET / HTTP/1.1" 304 -
+127.0.0.1 - - [15/Sep/2026 09:29:37] "GET /%E7%BE%8E%E6%9C%AF%E7%B4%A0%E6%9D%90/%E5%9C%BA%E6%99%AF%E9%85%92%E5%90%A7.png HTTP/1.1" 200 -
+127.0.0.1 - - [15/Sep/2026 09:29:37] "GET /%E9%9F%B3%E4%B9%90/%E6%B8%A9%E6%9A%96%E7%9A%84%E6%97%A5%E5%B8%B8.mp3 HTTP/1.1" 200 -
+127.0.0.1 - - [15/Sep/2026 09:29:37] "GET /favicon.ico HTTP/1.1" 304 -
+127.0.0.1 - - [15/Sep/2026 09:29:41] "GET /auth HTTP/1.1" 304 -
+----------------------------------------
+Exception occurred during processing of request from ('127.0.0.1', 14758)
+Traceback (most recent call last):
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\socketserver.py", line 697, in process_request_thread
+    self.finish_request(request, client_address)
+    ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\socketserver.py", line 362, in finish_request
+    self.RequestHandlerClass(request, client_address, self)
+    ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "E:\ZH\Zhihu\newfrontend\server.py", line 11, in __init__
+    super().__init__(*args, directory=str(ROOT), **kwargs)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\http\server.py", line 732, in __init__
+    super().__init__(*args, **kwargs)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\socketserver.py", line 766, in __init__
+    self.handle()
+    ~~~~~~~~~~~^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\http\server.py", line 496, in handle
+    self.handle_one_request()
+    ~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\http\server.py", line 484, in handle_one_request
+    method()
+    ~~~~~~^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\http\server.py", line 739, in do_GET
+    self.copyfile(f, self.wfile)
+    ~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\http\server.py", line 942, in copyfile
+    shutil.copyfileobj(source, outputfile)
+    ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\shutil.py", line 257, in copyfileobj
+    fdst_write(buf)
+    ~~~~~~~~~~^^^^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\socketserver.py", line 845, in write
+    self._sock.sendall(b)
+    ~~~~~~~~~~~~~~~~~~^^^
+ConnectionResetError: [WinError 10054] 远程主机强迫关闭了一个现有的连接。
+----------------------------------------
+127.0.0.1 - - [15/Sep/2026 09:29:41] "GET /%E9%9F%B3%E4%B9%90/%E6%B8%A9%E6%9A%96%E7%9A%84%E6%97%A5%E5%B8%B8.mp3 HTTP/1.1" 200 -
+----------------------------------------
+Exception occurred during processing of request from ('127.0.0.1', 24421)
+Traceback (most recent call last):
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\socketserver.py", line 697, in process_request_thread
+    self.finish_request(request, client_address)
+    ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\socketserver.py", line 362, in finish_request
+    self.RequestHandlerClass(request, client_address, self)
+    ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "E:\ZH\Zhihu\newfrontend\server.py", line 11, in __init__
+    super().__init__(*args, directory=str(ROOT), **kwargs)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\http\server.py", line 732, in __init__
+    super().__init__(*args, **kwargs)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\socketserver.py", line 766, in __init__
+    self.handle()
+    ~~~~~~~~~~~^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\http\server.py", line 496, in handle
+    self.handle_one_request()
+    ~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\http\server.py", line 484, in handle_one_request
+    method()
+    ~~~~~~^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\http\server.py", line 739, in do_GET
+    self.copyfile(f, self.wfile)
+    ~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\http\server.py", line 942, in copyfile
+    shutil.copyfileobj(source, outputfile)
+    ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\shutil.py", line 257, in copyfileobj
+    fdst_write(buf)
+    ~~~~~~~~~~^^^^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\socketserver.py", line 845, in write
+    self._sock.sendall(b)
+    ~~~~~~~~~~~~~~~~~~^^^
+ConnectionResetError: [WinError 10054] 远程主机强迫关闭了一个现有的连接。
+----------------------------------------
+127.0.0.1 - - [15/Sep/2026 09:30:06] "GET / HTTP/1.1" 200 -
+127.0.0.1 - - [15/Sep/2026 09:30:06] "GET /styles.css HTTP/1.1" 200 -
+127.0.0.1 - - [15/Sep/2026 09:30:06] "GET /%E7%BE%8E%E6%9C%AF%E7%B4%A0%E6%9D%90/logo.jpg HTTP/1.1" 200 -
+127.0.0.1 - - [15/Sep/2026 09:30:06] "GET /%E7%BE%8E%E6%9C%AF%E7%B4%A0%E6%9D%90/%E6%B6%88%E6%81%AF%E7%9B%92%E5%AD%90%EF%BC%88%E6%B2%A1%E6%9C%89%E6%B6%88%E6%81%AF%EF%BC%89.svg HTTP/1.1" 200 -
+127.0.0.1 - - [15/Sep/2026 09:30:06] "GET /%E7%BE%8E%E6%9C%AF%E7%B4%A0%E6%9D%90/%E6%B6%88%E6%81%AF%E7%9B%92%E5%AD%90%EF%BC%88%E6%9C%89%E6%B6%88%E6%81%AF%EF%BC%89.svg HTTP/1.1" 200 -
+127.0.0.1 - - [15/Sep/2026 09:30:06] "GET /%E7%BE%8E%E6%9C%AF%E7%B4%A0%E6%9D%90/%E5%BB%BA%E7%AD%91%E5%92%96%E5%95%A1%E5%BA%97.png HTTP/1.1" 200 -
+127.0.0.1 - - [15/Sep/2026 09:30:06] "GET /%E7%BE%8E%E6%9C%AF%E7%B4%A0%E6%9D%90/%E5%B0%8F%E9%95%87%E5%9C%B0%E5%9B%BE.jpg HTTP/1.1" 200 -
+127.0.0.1 - - [15/Sep/2026 09:30:06] "GET /%E7%BE%8E%E6%9C%AF%E7%B4%A0%E6%9D%90/%E5%BB%BA%E7%AD%91%E5%89%A7%E9%99%A2-cut.png HTTP/1.1" 200 -
+127.0.0.1 - - [15/Sep/2026 09:30:06] "GET /%E7%BE%8E%E6%9C%AF%E7%B4%A0%E6%9D%90/%E5%BB%BA%E7%AD%91%E8%AE%B2%E5%8F%B0-cut.png HTTP/1.1" 200 -
+127.0.0.1 - - [15/Sep/2026 09:30:06] "GET /%E7%BE%8E%E6%9C%AF%E7%B4%A0%E6%9D%90/%E5%BB%BA%E7%AD%91%E5%92%96%E5%95%A1%E5%BA%97-cut.png HTTP/1.1" 200 -
+127.0.0.1 - - [15/Sep/2026 09:30:06] "GET /%E7%BE%8E%E6%9C%AF%E7%B4%A0%E6%9D%90/%E5%BB%BA%E7%AD%91%E5%9B%BE%E4%B9%A6%E9%A6%86-cut.png HTTP/1.1" 200 -
+127.0.0.1 - - [15/Sep/2026 09:30:06] "GET /%E7%BE%8E%E6%9C%AF%E7%B4%A0%E6%9D%90/%E5%BB%BA%E7%AD%91%E9%85%92%E9%A6%86-cut.png HTTP/1.1" 200 -
+127.0.0.1 - - [15/Sep/2026 09:30:06] "GET /%E7%BE%8E%E6%9C%AF%E7%B4%A0%E6%9D%90/%E7%9C%8B%E5%B1%B1%E4%BA%BA%E7%89%A9.png HTTP/1.1" 200 -
+127.0.0.1 - - [15/Sep/2026 09:30:06] "GET /%E7%BE%8E%E6%9C%AF%E7%B4%A0%E6%9D%90/%E5%9C%BA%E6%99%AF%E9%85%92%E5%90%A7.png HTTP/1.1" 200 -
+127.0.0.1 - - [15/Sep/2026 09:30:06] "GET /%E7%BE%8E%E6%9C%AF%E7%B4%A0%E6%9D%90/%E7%94%B7%E7%9C%8B%E5%B1%B1-%E6%AD%A3%E9%9D%A2.png HTTP/1.1" 200 -
+127.0.0.1 - - [15/Sep/2026 09:30:06] "GET /%E7%BE%8E%E6%9C%AF%E7%B4%A0%E6%9D%90/%E5%A5%B3%E7%9C%8B%E5%B1%B1-%E6%AD%A3%E9%9D%A2.png HTTP/1.1" 200 -
+127.0.0.1 - - [15/Sep/2026 09:30:06] "GET /%E7%BE%8E%E6%9C%AF%E7%B4%A0%E6%9D%90/%E7%9C%8B%E5%B1%B1%E6%8E%A2%E5%A4%B4.png HTTP/1.1" 200 -
+127.0.0.1 - - [15/Sep/2026 09:30:06] "GET /%E9%9F%B3%E4%B9%90/%E6%B8%A9%E6%9A%96%E7%9A%84%E6%97%A5%E5%B8%B8.mp3 HTTP/1.1" 200 -
+----------------------------------------
+Exception occurred during processing of request from ('127.0.0.1', 51585)
+Traceback (most recent call last):
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\socketserver.py", line 697, in process_request_thread
+    self.finish_request(request, client_address)
+    ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\socketserver.py", line 362, in finish_request
+    self.RequestHandlerClass(request, client_address, self)
+    ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "E:\ZH\Zhihu\newfrontend\server.py", line 11, in __init__
+    super().__init__(*args, directory=str(ROOT), **kwargs)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\http\server.py", line 732, in __init__
+    super().__init__(*args, **kwargs)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\socketserver.py", line 766, in __init__
+    self.handle()
+    ~~~~~~~~~~~^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\http\server.py", line 496, in handle
+    self.handle_one_request()
+    ~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\http\server.py", line 484, in handle_one_request
+    method()
+    ~~~~~~^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\http\server.py", line 739, in do_GET
+    self.copyfile(f, self.wfile)
+    ~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\http\server.py", line 942, in copyfile
+    shutil.copyfileobj(source, outputfile)
+    ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\shutil.py", line 257, in copyfileobj
+    fdst_write(buf)
+    ~~~~~~~~~~^^^^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\socketserver.py", line 845, in write
+    self._sock.sendall(b)
+    ~~~~~~~~~~~~~~~~~~^^^
+ConnectionResetError: [WinError 10054] 远程主机强迫关闭了一个现有的连接。
+----------------------------------------
+127.0.0.1 - - [15/Sep/2026 09:30:20] "GET /intro/intro HTTP/1.1" 200 -
+127.0.0.1 - - [15/Sep/2026 09:30:20] "GET /intro/styles.css HTTP/1.1" 200 -
+127.0.0.1 - - [15/Sep/2026 09:30:20] "GET /intro/%E7%BE%8E%E6%9C%AF%E7%B4%A0%E6%9D%90/%E6%B6%88%E6%81%AF%E7%9B%92%E5%AD%90%EF%BC%88%E6%B2%A1%E6%9C%89%E6%B6%88%E6%81%AF%EF%BC%89.svg HTTP/1.1" 200 -
+127.0.0.1 - - [15/Sep/2026 09:30:20] "GET /intro/%E7%BE%8E%E6%9C%AF%E7%B4%A0%E6%9D%90/logo.jpg HTTP/1.1" 200 -
+127.0.0.1 - - [15/Sep/2026 09:30:20] "GET /intro/%E7%BE%8E%E6%9C%AF%E7%B4%A0%E6%9D%90/%E6%B6%88%E6%81%AF%E7%9B%92%E5%AD%90%EF%BC%88%E6%9C%89%E6%B6%88%E6%81%AF%EF%BC%89.svg HTTP/1.1" 200 -
+127.0.0.1 - - [15/Sep/2026 09:30:20] "GET /intro/%E7%BE%8E%E6%9C%AF%E7%B4%A0%E6%9D%90/%E5%BB%BA%E7%AD%91%E5%92%96%E5%95%A1%E5%BA%97.png HTTP/1.1" 200 -
+127.0.0.1 - - [15/Sep/2026 09:30:20] "GET /intro/%E7%BE%8E%E6%9C%AF%E7%B4%A0%E6%9D%90/%E7%9C%8B%E5%B1%B1%E4%BA%BA%E7%89%A9.png HTTP/1.1" 200 -
+127.0.0.1 - - [15/Sep/2026 09:30:20] "GET /intro/%E7%BE%8E%E6%9C%AF%E7%B4%A0%E6%9D%90/%E5%B0%8F%E9%95%87%E5%9C%B0%E5%9B%BE.jpg HTTP/1.1" 200 -
+127.0.0.1 - - [15/Sep/2026 09:30:20] "GET /intro/%E7%BE%8E%E6%9C%AF%E7%B4%A0%E6%9D%90/%E5%BB%BA%E7%AD%91%E5%89%A7%E9%99%A2-cut.png HTTP/1.1" 200 -
+127.0.0.1 - - [15/Sep/2026 09:30:20] "GET /intro/%E7%BE%8E%E6%9C%AF%E7%B4%A0%E6%9D%90/%E5%BB%BA%E7%AD%91%E8%AE%B2%E5%8F%B0-cut.png HTTP/1.1" 200 -
+127.0.0.1 - - [15/Sep/2026 09:30:20] "GET /intro/%E7%BE%8E%E6%9C%AF%E7%B4%A0%E6%9D%90/%E5%BB%BA%E7%AD%91%E5%92%96%E5%95%A1%E5%BA%97-cut.png HTTP/1.1" 200 -
+127.0.0.1 - - [15/Sep/2026 09:30:20] "GET /intro/%E7%BE%8E%E6%9C%AF%E7%B4%A0%E6%9D%90/%E5%BB%BA%E7%AD%91%E5%9B%BE%E4%B9%A6%E9%A6%86-cut.png HTTP/1.1" 200 -
+127.0.0.1 - - [15/Sep/2026 09:30:20] "GET /intro/%E7%BE%8E%E6%9C%AF%E7%B4%A0%E6%9D%90/%E5%BB%BA%E7%AD%91%E9%85%92%E9%A6%86-cut.png HTTP/1.1" 200 -
+127.0.0.1 - - [15/Sep/2026 09:30:20] "GET /intro/%E7%BE%8E%E6%9C%AF%E7%B4%A0%E6%9D%90/%E5%9C%BA%E6%99%AF%E9%85%92%E5%90%A7.png HTTP/1.1" 200 -
+127.0.0.1 - - [15/Sep/2026 09:30:20] "GET /intro/%E7%BE%8E%E6%9C%AF%E7%B4%A0%E6%9D%90/%E7%94%B7%E7%9C%8B%E5%B1%B1-%E6%AD%A3%E9%9D%A2.png HTTP/1.1" 200 -
+127.0.0.1 - - [15/Sep/2026 09:30:20] "GET /intro/%E7%BE%8E%E6%9C%AF%E7%B4%A0%E6%9D%90/%E5%A5%B3%E7%9C%8B%E5%B1%B1-%E6%AD%A3%E9%9D%A2.png HTTP/1.1" 200 -
+127.0.0.1 - - [15/Sep/2026 09:30:20] "GET /intro/%E7%BE%8E%E6%9C%AF%E7%B4%A0%E6%9D%90/%E7%9C%8B%E5%B1%B1%E6%8E%A2%E5%A4%B4.png HTTP/1.1" 200 -
+127.0.0.1 - - [15/Sep/2026 09:30:20] "GET /intro/%E9%9F%B3%E4%B9%90/%E6%B8%A9%E6%9A%96%E7%9A%84%E6%97%A5%E5%B8%B8.mp3 HTTP/1.1" 200 -
+127.0.0.1 - - [15/Sep/2026 09:30:20] "GET /favicon.ico HTTP/1.1" 200 -
+127.0.0.1 - - [15/Sep/2026 09:30:23] "GET /auth HTTP/1.1" 200 -
+127.0.0.1 - - [15/Sep/2026 09:30:23] "GET /%E7%BE%8E%E6%9C%AF%E7%B4%A0%E6%9D%90/%E5%9C%BA%E6%99%AF%E9%85%92%E5%90%A7.png HTTP/1.1" 200 -
+127.0.0.1 - - [15/Sep/2026 09:30:24] "GET /%E9%9F%B3%E4%B9%90/%E6%B8%A9%E6%9A%96%E7%9A%84%E6%97%A5%E5%B8%B8.mp3 HTTP/1.1" 200 -
+----------------------------------------
+Exception occurred during processing of request from ('127.0.0.1', 37031)
+Traceback (most recent call last):
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\socketserver.py", line 697, in process_request_thread
+    self.finish_request(request, client_address)
+    ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\socketserver.py", line 362, in finish_request
+    self.RequestHandlerClass(request, client_address, self)
+    ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "E:\ZH\Zhihu\newfrontend\server.py", line 11, in __init__
+    super().__init__(*args, directory=str(ROOT), **kwargs)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\http\server.py", line 732, in __init__
+    super().__init__(*args, **kwargs)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\socketserver.py", line 766, in __init__
+    self.handle()
+    ~~~~~~~~~~~^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\http\server.py", line 496, in handle
+    self.handle_one_request()
+    ~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\http\server.py", line 484, in handle_one_request
+    method()
+    ~~~~~~^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\http\server.py", line 739, in do_GET
+    self.copyfile(f, self.wfile)
+    ~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\http\server.py", line 942, in copyfile
+    shutil.copyfileobj(source, outputfile)
+    ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\shutil.py", line 257, in copyfileobj
+    fdst_write(buf)
+    ~~~~~~~~~~^^^^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\socketserver.py", line 845, in write
+    self._sock.sendall(b)
+    ~~~~~~~~~~~~~~~~~~^^^
+ConnectionResetError: [WinError 10054] 远程主机强迫关闭了一个现有的连接。
+----------------------------------------
+127.0.0.1 - - [15/Sep/2026 09:31:01] "GET /intro HTTP/1.1" 200 -
+127.0.0.1 - - [15/Sep/2026 09:31:01] "GET /%E9%9F%B3%E4%B9%90/%E6%B8%A9%E6%9A%96%E7%9A%84%E6%97%A5%E5%B8%B8.mp3 HTTP/1.1" 200 -
+127.0.0.1 - - [15/Sep/2026 09:31:01] "GET /favicon.ico HTTP/1.1" 200 -
+127.0.0.1 - - [15/Sep/2026 09:31:02] "GET /intro HTTP/1.1" 304 -
+----------------------------------------
+Exception occurred during processing of request from ('127.0.0.1', 43317)
+Traceback (most recent call last):
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\socketserver.py", line 697, in process_request_thread
+    self.finish_request(request, client_address)
+    ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\socketserver.py", line 362, in finish_request
+    self.RequestHandlerClass(request, client_address, self)
+    ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "E:\ZH\Zhihu\newfrontend\server.py", line 11, in __init__
+    super().__init__(*args, directory=str(ROOT), **kwargs)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\http\server.py", line 732, in __init__
+    super().__init__(*args, **kwargs)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\socketserver.py", line 766, in __init__
+    self.handle()
+    ~~~~~~~~~~~^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\http\server.py", line 496, in handle
+    self.handle_one_request()
+    ~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\http\server.py", line 484, in handle_one_request
+    method()
+    ~~~~~~^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\http\server.py", line 739, in do_GET
+    self.copyfile(f, self.wfile)
+    ~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\http\server.py", line 942, in copyfile
+    shutil.copyfileobj(source, outputfile)
+    ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\shutil.py", line 257, in copyfileobj
+    fdst_write(buf)
+    ~~~~~~~~~~^^^^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\socketserver.py", line 845, in write
+    self._sock.sendall(b)
+    ~~~~~~~~~~~~~~~~~~^^^
+ConnectionResetError: [WinError 10054] 远程主机强迫关闭了一个现有的连接。
+----------------------------------------
+127.0.0.1 - - [15/Sep/2026 09:31:02] "GET /%E9%9F%B3%E4%B9%90/%E6%B8%A9%E6%9A%96%E7%9A%84%E6%97%A5%E5%B8%B8.mp3 HTTP/1.1" 200 -
+127.0.0.1 - - [15/Sep/2026 09:31:05] "GET / HTTP/1.1" 304 -
+----------------------------------------
+Exception occurred during processing of request from ('127.0.0.1', 64795)
+127.0.0.1 - - [15/Sep/2026 09:31:05] "GET /%E9%9F%B3%E4%B9%90/%E6%B8%A9%E6%9A%96%E7%9A%84%E6%97%A5%E5%B8%B8.mp3 HTTP/1.1" 200 -
+Traceback (most recent call last):
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\socketserver.py", line 697, in process_request_thread
+    self.finish_request(request, client_address)
+    ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\socketserver.py", line 362, in finish_request
+    self.RequestHandlerClass(request, client_address, self)
+    ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "E:\ZH\Zhihu\newfrontend\server.py", line 11, in __init__
+    super().__init__(*args, directory=str(ROOT), **kwargs)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\http\server.py", line 732, in __init__
+    super().__init__(*args, **kwargs)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\socketserver.py", line 766, in __init__
+    self.handle()
+    ~~~~~~~~~~~^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\http\server.py", line 496, in handle
+    self.handle_one_request()
+    ~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\http\server.py", line 484, in handle_one_request
+    method()
+    ~~~~~~^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\http\server.py", line 739, in do_GET
+    self.copyfile(f, self.wfile)
+    ~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\http\server.py", line 942, in copyfile
+    shutil.copyfileobj(source, outputfile)
+    ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\shutil.py", line 257, in copyfileobj
+    fdst_write(buf)
+    ~~~~~~~~~~^^^^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\socketserver.py", line 845, in write
+    self._sock.sendall(b)
+    ~~~~~~~~~~~~~~~~~~^^^
+ConnectionResetError: [WinError 10054] 远程主机强迫关闭了一个现有的连接。
+----------------------------------------
+----------------------------------------
+Exception occurred during processing of request from ('127.0.0.1', 48104)
+Traceback (most recent call last):
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\socketserver.py", line 697, in process_request_thread
+    self.finish_request(request, client_address)
+    ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\socketserver.py", line 362, in finish_request
+    self.RequestHandlerClass(request, client_address, self)
+    ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "E:\ZH\Zhihu\newfrontend\server.py", line 11, in __init__
+    super().__init__(*args, directory=str(ROOT), **kwargs)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\http\server.py", line 732, in __init__
+    super().__init__(*args, **kwargs)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\socketserver.py", line 766, in __init__
+    self.handle()
+    ~~~~~~~~~~~^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\http\server.py", line 496, in handle
+    self.handle_one_request()
+    ~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\http\server.py", line 484, in handle_one_request
+    method()
+    ~~~~~~^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\http\server.py", line 739, in do_GET
+    self.copyfile(f, self.wfile)
+    ~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\http\server.py", line 942, in copyfile
+    shutil.copyfileobj(source, outputfile)
+    ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\shutil.py", line 257, in copyfileobj
+    fdst_write(buf)
+    ~~~~~~~~~~^^^^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\socketserver.py", line 845, in write
+    self._sock.sendall(b)
+    ~~~~~~~~~~~~~~~~~~^^^
+ConnectionResetError: [WinError 10054] 远程主机强迫关闭了一个现有的连接。
+----------------------------------------
+127.0.0.1 - - [15/Sep/2026 09:31:43] "GET /intro HTTP/1.1" 304 -
+127.0.0.1 - - [15/Sep/2026 09:31:43] "GET /%E9%9F%B3%E4%B9%90/%E6%B8%A9%E6%9A%96%E7%9A%84%E6%97%A5%E5%B8%B8.mp3 HTTP/1.1" 200 -
+127.0.0.1 - - [15/Sep/2026 09:31:43] "GET /favicon.ico HTTP/1.1" 304 -
+127.0.0.1 - - [15/Sep/2026 09:31:57] "GET / HTTP/1.1" 200 -
+127.0.0.1 - - [15/Sep/2026 09:31:57] "GET /styles.css HTTP/1.1" 200 -
+127.0.0.1 - - [15/Sep/2026 09:31:57] "GET /%E7%BE%8E%E6%9C%AF%E7%B4%A0%E6%9D%90/logo.jpg HTTP/1.1" 200 -
+127.0.0.1 - - [15/Sep/2026 09:31:57] "GET /%E7%BE%8E%E6%9C%AF%E7%B4%A0%E6%9D%90/%E6%B6%88%E6%81%AF%E7%9B%92%E5%AD%90%EF%BC%88%E6%B2%A1%E6%9C%89%E6%B6%88%E6%81%AF%EF%BC%89.svg HTTP/1.1" 200 -
+127.0.0.1 - - [15/Sep/2026 09:31:57] "GET /%E7%BE%8E%E6%9C%AF%E7%B4%A0%E6%9D%90/%E6%B6%88%E6%81%AF%E7%9B%92%E5%AD%90%EF%BC%88%E6%9C%89%E6%B6%88%E6%81%AF%EF%BC%89.svg HTTP/1.1" 200 -
+127.0.0.1 - - [15/Sep/2026 09:31:57] "GET /%E7%BE%8E%E6%9C%AF%E7%B4%A0%E6%9D%90/%E5%BB%BA%E7%AD%91%E5%92%96%E5%95%A1%E5%BA%97.png HTTP/1.1" 200 -
+127.0.0.1 - - [15/Sep/2026 09:31:57] "GET /%E7%BE%8E%E6%9C%AF%E7%B4%A0%E6%9D%90/%E5%B0%8F%E9%95%87%E5%9C%B0%E5%9B%BE.jpg HTTP/1.1" 200 -
+127.0.0.1 - - [15/Sep/2026 09:31:57] "GET /%E7%BE%8E%E6%9C%AF%E7%B4%A0%E6%9D%90/%E5%BB%BA%E7%AD%91%E5%89%A7%E9%99%A2-cut.png HTTP/1.1" 200 -
+127.0.0.1 - - [15/Sep/2026 09:31:57] "GET /%E7%BE%8E%E6%9C%AF%E7%B4%A0%E6%9D%90/%E5%BB%BA%E7%AD%91%E8%AE%B2%E5%8F%B0-cut.png HTTP/1.1" 200 -
+127.0.0.1 - - [15/Sep/2026 09:31:57] "GET /%E7%BE%8E%E6%9C%AF%E7%B4%A0%E6%9D%90/%E5%BB%BA%E7%AD%91%E5%92%96%E5%95%A1%E5%BA%97-cut.png HTTP/1.1" 200 -
+127.0.0.1 - - [15/Sep/2026 09:31:58] "GET /%E7%BE%8E%E6%9C%AF%E7%B4%A0%E6%9D%90/%E5%BB%BA%E7%AD%91%E5%9B%BE%E4%B9%A6%E9%A6%86-cut.png HTTP/1.1" 200 -
+127.0.0.1 - - [15/Sep/2026 09:31:58] "GET /%E7%BE%8E%E6%9C%AF%E7%B4%A0%E6%9D%90/%E5%BB%BA%E7%AD%91%E9%85%92%E9%A6%86-cut.png HTTP/1.1" 200 -
+127.0.0.1 - - [15/Sep/2026 09:31:58] "GET /%E7%BE%8E%E6%9C%AF%E7%B4%A0%E6%9D%90/%E7%9C%8B%E5%B1%B1%E4%BA%BA%E7%89%A9.png HTTP/1.1" 200 -
+127.0.0.1 - - [15/Sep/2026 09:31:58] "GET /%E7%BE%8E%E6%9C%AF%E7%B4%A0%E6%9D%90/%E5%9C%BA%E6%99%AF%E9%85%92%E5%90%A7.png HTTP/1.1" 200 -
+127.0.0.1 - - [15/Sep/2026 09:31:58] "GET /%E7%BE%8E%E6%9C%AF%E7%B4%A0%E6%9D%90/%E7%94%B7%E7%9C%8B%E5%B1%B1-%E6%AD%A3%E9%9D%A2.png HTTP/1.1" 200 -
+127.0.0.1 - - [15/Sep/2026 09:31:58] "GET /%E7%BE%8E%E6%9C%AF%E7%B4%A0%E6%9D%90/%E5%A5%B3%E7%9C%8B%E5%B1%B1-%E6%AD%A3%E9%9D%A2.png HTTP/1.1" 200 -
+127.0.0.1 - - [15/Sep/2026 09:31:58] "GET /%E7%BE%8E%E6%9C%AF%E7%B4%A0%E6%9D%90/%E7%9C%8B%E5%B1%B1%E6%8E%A2%E5%A4%B4.png HTTP/1.1" 200 -
+----------------------------------------
+Exception occurred during processing of request from ('127.0.0.1', 42859)
+Traceback (most recent call last):
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\socketserver.py", line 697, in process_request_thread
+    self.finish_request(request, client_address)
+    ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\socketserver.py", line 362, in finish_request
+    self.RequestHandlerClass(request, client_address, self)
+    ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "E:\ZH\Zhihu\newfrontend\server.py", line 11, in __init__
+    super().__init__(*args, directory=str(ROOT), **kwargs)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\http\server.py", line 732, in __init__
+    super().__init__(*args, **kwargs)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\socketserver.py", line 766, in __init__
+    self.handle()
+    ~~~~~~~~~~~^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\http\server.py", line 496, in handle
+    self.handle_one_request()
+    ~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\http\server.py", line 484, in handle_one_request
+    method()
+    ~~~~~~^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\http\server.py", line 739, in do_GET
+    self.copyfile(f, self.wfile)
+    ~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\http\server.py", line 942, in copyfile
+    shutil.copyfileobj(source, outputfile)
+    ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\shutil.py", line 257, in copyfileobj
+    fdst_write(buf)
+    ~~~~~~~~~~^^^^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\socketserver.py", line 845, in write
+    self._sock.sendall(b)
+    ~~~~~~~~~~~~~~~~~~^^^
+ConnectionResetError: [WinError 10054] 远程主机强迫关闭了一个现有的连接。
+----------------------------------------
+127.0.0.1 - - [15/Sep/2026 09:32:02] "GET /intro/intro HTTP/1.1" 200 -
+127.0.0.1 - - [15/Sep/2026 09:32:02] "GET /intro/styles.css HTTP/1.1" 200 -
+127.0.0.1 - - [15/Sep/2026 09:32:02] "GET /intro/%E7%BE%8E%E6%9C%AF%E7%B4%A0%E6%9D%90/logo.jpg HTTP/1.1" 200 -
+127.0.0.1 - - [15/Sep/2026 09:32:02] "GET /intro/%E7%BE%8E%E6%9C%AF%E7%B4%A0%E6%9D%90/%E6%B6%88%E6%81%AF%E7%9B%92%E5%AD%90%EF%BC%88%E6%B2%A1%E6%9C%89%E6%B6%88%E6%81%AF%EF%BC%89.svg HTTP/1.1" 200 -
+127.0.0.1 - - [15/Sep/2026 09:32:02] "GET /intro/%E7%BE%8E%E6%9C%AF%E7%B4%A0%E6%9D%90/%E6%B6%88%E6%81%AF%E7%9B%92%E5%AD%90%EF%BC%88%E6%9C%89%E6%B6%88%E6%81%AF%EF%BC%89.svg HTTP/1.1" 200 -
+127.0.0.1 - - [15/Sep/2026 09:32:02] "GET /intro/%E7%BE%8E%E6%9C%AF%E7%B4%A0%E6%9D%90/%E7%9C%8B%E5%B1%B1%E4%BA%BA%E7%89%A9.png HTTP/1.1" 200 -
+127.0.0.1 - - [15/Sep/2026 09:32:02] "GET /intro/%E7%BE%8E%E6%9C%AF%E7%B4%A0%E6%9D%90/%E5%BB%BA%E7%AD%91%E5%92%96%E5%95%A1%E5%BA%97.png HTTP/1.1" 200 -
+127.0.0.1 - - [15/Sep/2026 09:32:02] "GET /intro/%E7%BE%8E%E6%9C%AF%E7%B4%A0%E6%9D%90/%E5%B0%8F%E9%95%87%E5%9C%B0%E5%9B%BE.jpg HTTP/1.1" 200 -
+127.0.0.1 - - [15/Sep/2026 09:32:02] "GET /intro/%E7%BE%8E%E6%9C%AF%E7%B4%A0%E6%9D%90/%E5%BB%BA%E7%AD%91%E5%89%A7%E9%99%A2-cut.png HTTP/1.1" 200 -
+127.0.0.1 - - [15/Sep/2026 09:32:02] "GET /intro/%E7%BE%8E%E6%9C%AF%E7%B4%A0%E6%9D%90/%E5%BB%BA%E7%AD%91%E8%AE%B2%E5%8F%B0-cut.png HTTP/1.1" 200 -
+127.0.0.1 - - [15/Sep/2026 09:32:02] "GET /intro/%E7%BE%8E%E6%9C%AF%E7%B4%A0%E6%9D%90/%E5%BB%BA%E7%AD%91%E5%92%96%E5%95%A1%E5%BA%97-cut.png HTTP/1.1" 200 -
+127.0.0.1 - - [15/Sep/2026 09:32:02] "GET /intro/%E7%BE%8E%E6%9C%AF%E7%B4%A0%E6%9D%90/%E5%BB%BA%E7%AD%91%E5%9B%BE%E4%B9%A6%E9%A6%86-cut.png HTTP/1.1" 200 -
+127.0.0.1 - - [15/Sep/2026 09:32:02] "GET /intro/%E7%BE%8E%E6%9C%AF%E7%B4%A0%E6%9D%90/%E5%BB%BA%E7%AD%91%E9%85%92%E9%A6%86-cut.png HTTP/1.1" 200 -
+127.0.0.1 - - [15/Sep/2026 09:32:02] "GET /intro/%E7%BE%8E%E6%9C%AF%E7%B4%A0%E6%9D%90/%E5%9C%BA%E6%99%AF%E9%85%92%E5%90%A7.png HTTP/1.1" 200 -
+127.0.0.1 - - [15/Sep/2026 09:32:02] "GET /intro/%E7%BE%8E%E6%9C%AF%E7%B4%A0%E6%9D%90/%E7%94%B7%E7%9C%8B%E5%B1%B1-%E6%AD%A3%E9%9D%A2.png HTTP/1.1" 200 -
+127.0.0.1 - - [15/Sep/2026 09:32:02] "GET /intro/%E7%BE%8E%E6%9C%AF%E7%B4%A0%E6%9D%90/%E5%A5%B3%E7%9C%8B%E5%B1%B1-%E6%AD%A3%E9%9D%A2.png HTTP/1.1" 200 -
+127.0.0.1 - - [15/Sep/2026 09:32:02] "GET /intro/%E7%BE%8E%E6%9C%AF%E7%B4%A0%E6%9D%90/%E7%9C%8B%E5%B1%B1%E6%8E%A2%E5%A4%B4.png HTTP/1.1" 200 -
+127.0.0.1 - - [15/Sep/2026 09:32:02] "GET /intro/%E9%9F%B3%E4%B9%90/%E6%B8%A9%E6%9A%96%E7%9A%84%E6%97%A5%E5%B8%B8.mp3 HTTP/1.1" 200 -
+127.0.0.1 - - [15/Sep/2026 09:32:02] "GET /favicon.ico HTTP/1.1" 200 -
+127.0.0.1 - - [15/Sep/2026 09:32:03] "GET /intro HTTP/1.1" 200 -
+127.0.0.1 - - [15/Sep/2026 09:32:03] "GET /%E9%9F%B3%E4%B9%90/%E6%B8%A9%E6%9A%96%E7%9A%84%E6%97%A5%E5%B8%B8.mp3 HTTP/1.1" 200 -
+----------------------------------------
+Exception occurred during processing of request from ('127.0.0.1', 45082)
+Traceback (most recent call last):
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\socketserver.py", line 697, in process_request_thread
+    self.finish_request(request, client_address)
+    ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\socketserver.py", line 362, in finish_request
+    self.RequestHandlerClass(request, client_address, self)
+    ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "E:\ZH\Zhihu\newfrontend\server.py", line 11, in __init__
+    super().__init__(*args, directory=str(ROOT), **kwargs)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\http\server.py", line 732, in __init__
+    super().__init__(*args, **kwargs)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\socketserver.py", line 766, in __init__
+    self.handle()
+    ~~~~~~~~~~~^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\http\server.py", line 496, in handle
+    self.handle_one_request()
+    ~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\http\server.py", line 484, in handle_one_request
+    method()
+    ~~~~~~^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\http\server.py", line 739, in do_GET
+    self.copyfile(f, self.wfile)
+    ~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\http\server.py", line 942, in copyfile
+    shutil.copyfileobj(source, outputfile)
+    ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\shutil.py", line 257, in copyfileobj
+    fdst_write(buf)
+    ~~~~~~~~~~^^^^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\socketserver.py", line 845, in write
+    self._sock.sendall(b)
+    ~~~~~~~~~~~~~~~~~~^^^
+ConnectionResetError: [WinError 10054] 远程主机强迫关闭了一个现有的连接。
+----------------------------------------
+127.0.0.1 - - [15/Sep/2026 09:32:22] "GET /%E7%BE%8E%E6%9C%AF%E7%B4%A0%E6%9D%90/%E5%9C%BA%E6%99%AF%E5%9B%BE%E4%B9%A6%E9%A6%86.png HTTP/1.1" 200 -
+127.0.0.1 - - [15/Sep/2026 09:32:26] "GET /town HTTP/1.1" 200 -
+127.0.0.1 - - [15/Sep/2026 09:32:26] "GET /%E9%9F%B3%E4%B9%90/%E6%B8%A9%E6%9A%96%E7%9A%84%E6%97%A5%E5%B8%B8.mp3 HTTP/1.1" 200 -
+127.0.0.1 - - [15/Sep/2026 09:32:29] "GET /favicon.ico HTTP/1.1" 304 -
+----------------------------------------
+Exception occurred during processing of request from ('127.0.0.1', 49834)
+Traceback (most recent call last):
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\socketserver.py", line 697, in process_request_thread
+    self.finish_request(request, client_address)
+    ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\socketserver.py", line 362, in finish_request
+    self.RequestHandlerClass(request, client_address, self)
+    ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "E:\ZH\Zhihu\newfrontend\server.py", line 11, in __init__
+    super().__init__(*args, directory=str(ROOT), **kwargs)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\http\server.py", line 732, in __init__
+    super().__init__(*args, **kwargs)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\socketserver.py", line 766, in __init__
+    self.handle()
+    ~~~~~~~~~~~^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\http\server.py", line 496, in handle
+    self.handle_one_request()
+    ~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\http\server.py", line 484, in handle_one_request
+    method()
+    ~~~~~~^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\http\server.py", line 739, in do_GET
+    self.copyfile(f, self.wfile)
+    ~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\http\server.py", line 942, in copyfile
+    shutil.copyfileobj(source, outputfile)
+    ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\shutil.py", line 257, in copyfileobj
+    fdst_write(buf)
+    ~~~~~~~~~~^^^^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\socketserver.py", line 845, in write
+    self._sock.sendall(b)
+    ~~~~~~~~~~~~~~~~~~^^^
+ConnectionResetError: [WinError 10054] 远程主机强迫关闭了一个现有的连接。
+----------------------------------------
+127.0.0.1 - - [15/Sep/2026 09:32:52] "GET /%E7%BE%8E%E6%9C%AF%E7%B4%A0%E6%9D%90/%E5%9C%BA%E6%99%AF%E8%AE%B2%E5%8F%B0.jpg HTTP/1.1" 200 -
+127.0.0.1 - - [15/Sep/2026 09:32:58] "GET /town HTTP/1.1" 304 -
+127.0.0.1 - - [15/Sep/2026 09:32:58] "GET /%E9%9F%B3%E4%B9%90/%E6%B8%A9%E6%9A%96%E7%9A%84%E6%97%A5%E5%B8%B8.mp3 HTTP/1.1" 200 -
+127.0.0.1 - - [15/Sep/2026 09:33:05] "GET /favicon.ico HTTP/1.1" 304 -
+----------------------------------------
+127.0.0.1 - - [15/Sep/2026 09:33:09] "GET /%E9%9F%B3%E4%B9%90/%E6%B8%A9%E6%9A%96%E7%9A%84%E6%97%A5%E5%B8%B8.mp3 HTTP/1.1" 200 -
+Exception occurred during processing of request from ('127.0.0.1', 21546)
+Traceback (most recent call last):
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\socketserver.py", line 697, in process_request_thread
+    self.finish_request(request, client_address)
+    ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\socketserver.py", line 362, in finish_request
+    self.RequestHandlerClass(request, client_address, self)
+    ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "E:\ZH\Zhihu\newfrontend\server.py", line 11, in __init__
+    super().__init__(*args, directory=str(ROOT), **kwargs)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\http\server.py", line 732, in __init__
+    super().__init__(*args, **kwargs)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\socketserver.py", line 766, in __init__
+    self.handle()
+    ~~~~~~~~~~~^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\http\server.py", line 496, in handle
+    self.handle_one_request()
+    ~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\http\server.py", line 484, in handle_one_request
+    method()
+    ~~~~~~^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\http\server.py", line 739, in do_GET
+    self.copyfile(f, self.wfile)
+    ~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\http\server.py", line 942, in copyfile
+    shutil.copyfileobj(source, outputfile)
+    ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\shutil.py", line 257, in copyfileobj
+    fdst_write(buf)
+    ~~~~~~~~~~^^^^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\socketserver.py", line 845, in write
+    self._sock.sendall(b)
+    ~~~~~~~~~~~~~~~~~~^^^
+ConnectionResetError: [WinError 10054] 远程主机强迫关闭了一个现有的连接。
+----------------------------------------
+----------------------------------------
+Exception occurred during processing of request from ('127.0.0.1', 13342)
+Traceback (most recent call last):
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\socketserver.py", line 697, in process_request_thread
+    self.finish_request(request, client_address)
+    ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\socketserver.py", line 362, in finish_request
+    self.RequestHandlerClass(request, client_address, self)
+    ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "E:\ZH\Zhihu\newfrontend\server.py", line 11, in __init__
+    super().__init__(*args, directory=str(ROOT), **kwargs)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\http\server.py", line 732, in __init__
+    super().__init__(*args, **kwargs)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\socketserver.py", line 766, in __init__
+    self.handle()
+    ~~~~~~~~~~~^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\http\server.py", line 496, in handle
+    self.handle_one_request()
+    ~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\http\server.py", line 484, in handle_one_request
+    method()
+    ~~~~~~^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\http\server.py", line 739, in do_GET
+    self.copyfile(f, self.wfile)
+    ~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\http\server.py", line 942, in copyfile
+    shutil.copyfileobj(source, outputfile)
+    ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\shutil.py", line 257, in copyfileobj
+    fdst_write(buf)
+    ~~~~~~~~~~^^^^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\socketserver.py", line 845, in write
+    self._sock.sendall(b)
+    ~~~~~~~~~~~~~~~~~~^^^
+ConnectionResetError: [WinError 10054] 远程主机强迫关闭了一个现有的连接。
+----------------------------------------
+127.0.0.1 - - [15/Sep/2026 09:33:49] "GET /favicon.ico HTTP/1.1" 304 -
+127.0.0.1 - - [15/Sep/2026 09:33:50] "GET /town HTTP/1.1" 304 -
+127.0.0.1 - - [15/Sep/2026 09:33:50] "GET /%E9%9F%B3%E4%B9%90/%E6%B8%A9%E6%9A%96%E7%9A%84%E6%97%A5%E5%B8%B8.mp3 HTTP/1.1" 200 -
+----------------------------------------
+Exception occurred during processing of request from ('127.0.0.1', 28532)
+Traceback (most recent call last):
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\socketserver.py", line 697, in process_request_thread
+    self.finish_request(request, client_address)
+    ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\socketserver.py", line 362, in finish_request
+    self.RequestHandlerClass(request, client_address, self)
+    ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "E:\ZH\Zhihu\newfrontend\server.py", line 11, in __init__
+    super().__init__(*args, directory=str(ROOT), **kwargs)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\http\server.py", line 732, in __init__
+    super().__init__(*args, **kwargs)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\socketserver.py", line 766, in __init__
+    self.handle()
+    ~~~~~~~~~~~^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\http\server.py", line 496, in handle
+    self.handle_one_request()
+    ~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\http\server.py", line 484, in handle_one_request
+    method()
+    ~~~~~~^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\http\server.py", line 739, in do_GET
+    self.copyfile(f, self.wfile)
+    ~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\http\server.py", line 942, in copyfile
+    shutil.copyfileobj(source, outputfile)
+    ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\shutil.py", line 257, in copyfileobj
+    fdst_write(buf)
+    ~~~~~~~~~~^^^^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\socketserver.py", line 845, in write
+    self._sock.sendall(b)
+    ~~~~~~~~~~~~~~~~~~^^^
+ConnectionResetError: [WinError 10054] 远程主机强迫关闭了一个现有的连接。
+----------------------------------------
+127.0.0.1 - - [15/Sep/2026 09:34:10] "GET /%E9%9F%B3%E4%B9%90/%E6%B8%A9%E6%9A%96%E7%9A%84%E6%97%A5%E5%B8%B8.mp3 HTTP/1.1" 200 -
+----------------------------------------
+Exception occurred during processing of request from ('127.0.0.1', 11256)
+Traceback (most recent call last):
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\socketserver.py", line 697, in process_request_thread
+    self.finish_request(request, client_address)
+    ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\socketserver.py", line 362, in finish_request
+    self.RequestHandlerClass(request, client_address, self)
+    ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "E:\ZH\Zhihu\newfrontend\server.py", line 11, in __init__
+    super().__init__(*args, directory=str(ROOT), **kwargs)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\http\server.py", line 732, in __init__
+    super().__init__(*args, **kwargs)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\socketserver.py", line 766, in __init__
+    self.handle()
+    ~~~~~~~~~~~^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\http\server.py", line 496, in handle
+    self.handle_one_request()
+    ~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\http\server.py", line 484, in handle_one_request
+    method()
+    ~~~~~~^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\http\server.py", line 739, in do_GET
+    self.copyfile(f, self.wfile)
+    ~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\http\server.py", line 942, in copyfile
+    shutil.copyfileobj(source, outputfile)
+    ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\shutil.py", line 257, in copyfileobj
+    fdst_write(buf)
+    ~~~~~~~~~~^^^^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\socketserver.py", line 845, in write
+    self._sock.sendall(b)
+    ~~~~~~~~~~~~~~~~~~^^^
+ConnectionResetError: [WinError 10054] 远程主机强迫关闭了一个现有的连接。
+----------------------------------------
+127.0.0.1 - - [15/Sep/2026 09:34:51] "GET / HTTP/1.1" 304 -
+127.0.0.1 - - [15/Sep/2026 09:34:51] "GET /%E9%9F%B3%E4%B9%90/%E6%B8%A9%E6%9A%96%E7%9A%84%E6%97%A5%E5%B8%B8.mp3 HTTP/1.1" 200 -
+127.0.0.1 - - [15/Sep/2026 09:34:51] "GET /favicon.ico HTTP/1.1" 304 -
+----------------------------------------
+Exception occurred during processing of request from ('127.0.0.1', 20421)
+Traceback (most recent call last):
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\socketserver.py", line 697, in process_request_thread
+    self.finish_request(request, client_address)
+    ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\socketserver.py", line 362, in finish_request
+    self.RequestHandlerClass(request, client_address, self)
+    ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "E:\ZH\Zhihu\newfrontend\server.py", line 11, in __init__
+    super().__init__(*args, directory=str(ROOT), **kwargs)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\http\server.py", line 732, in __init__
+    super().__init__(*args, **kwargs)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\socketserver.py", line 766, in __init__
+    self.handle()
+    ~~~~~~~~~~~^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\http\server.py", line 496, in handle
+    self.handle_one_request()
+    ~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\http\server.py", line 484, in handle_one_request
+    method()
+    ~~~~~~^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\http\server.py", line 739, in do_GET
+    self.copyfile(f, self.wfile)
+    ~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\http\server.py", line 942, in copyfile
+    shutil.copyfileobj(source, outputfile)
+    ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\shutil.py", line 257, in copyfileobj
+    fdst_write(buf)
+    ~~~~~~~~~~^^^^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\socketserver.py", line 845, in write
+    self._sock.sendall(b)
+    ~~~~~~~~~~~~~~~~~~^^^
+ConnectionResetError: [WinError 10054] 远程主机强迫关闭了一个现有的连接。
+----------------------------------------
+127.0.0.1 - - [15/Sep/2026 09:35:07] "GET /%E9%9F%B3%E4%B9%90/%E6%B8%A9%E6%9A%96%E7%9A%84%E6%97%A5%E5%B8%B8.mp3 HTTP/1.1" 200 -
+127.0.0.1 - - [15/Sep/2026 09:35:18] "GET / HTTP/1.1" 200 -
+127.0.0.1 - - [15/Sep/2026 09:35:18] "GET /styles.css HTTP/1.1" 200 -
+127.0.0.1 - - [15/Sep/2026 09:35:18] "GET /%E7%BE%8E%E6%9C%AF%E7%B4%A0%E6%9D%90/logo.jpg HTTP/1.1" 200 -
+127.0.0.1 - - [15/Sep/2026 09:35:18] "GET /%E7%BE%8E%E6%9C%AF%E7%B4%A0%E6%9D%90/%E6%B6%88%E6%81%AF%E7%9B%92%E5%AD%90%EF%BC%88%E6%B2%A1%E6%9C%89%E6%B6%88%E6%81%AF%EF%BC%89.svg HTTP/1.1" 200 -
+127.0.0.1 - - [15/Sep/2026 09:35:18] "GET /%E7%BE%8E%E6%9C%AF%E7%B4%A0%E6%9D%90/%E6%B6%88%E6%81%AF%E7%9B%92%E5%AD%90%EF%BC%88%E6%9C%89%E6%B6%88%E6%81%AF%EF%BC%89.svg HTTP/1.1" 200 -
+127.0.0.1 - - [15/Sep/2026 09:35:18] "GET /%E7%BE%8E%E6%9C%AF%E7%B4%A0%E6%9D%90/%E7%9C%8B%E5%B1%B1%E4%BA%BA%E7%89%A9.png HTTP/1.1" 200 -
+127.0.0.1 - - [15/Sep/2026 09:35:18] "GET /%E7%BE%8E%E6%9C%AF%E7%B4%A0%E6%9D%90/%E5%BB%BA%E7%AD%91%E5%92%96%E5%95%A1%E5%BA%97.png HTTP/1.1" 200 -
+127.0.0.1 - - [15/Sep/2026 09:35:18] "GET /%E7%BE%8E%E6%9C%AF%E7%B4%A0%E6%9D%90/%E5%B0%8F%E9%95%87%E5%9C%B0%E5%9B%BE.jpg HTTP/1.1" 200 -
+127.0.0.1 - - [15/Sep/2026 09:35:18] "GET /%E7%BE%8E%E6%9C%AF%E7%B4%A0%E6%9D%90/%E5%BB%BA%E7%AD%91%E5%89%A7%E9%99%A2-cut.png HTTP/1.1" 200 -
+127.0.0.1 - - [15/Sep/2026 09:35:18] "GET /%E7%BE%8E%E6%9C%AF%E7%B4%A0%E6%9D%90/%E5%BB%BA%E7%AD%91%E8%AE%B2%E5%8F%B0-cut.png HTTP/1.1" 200 -
+127.0.0.1 - - [15/Sep/2026 09:35:18] "GET /%E7%BE%8E%E6%9C%AF%E7%B4%A0%E6%9D%90/%E5%BB%BA%E7%AD%91%E5%92%96%E5%95%A1%E5%BA%97-cut.png HTTP/1.1" 200 -
+127.0.0.1 - - [15/Sep/2026 09:35:18] "GET /%E7%BE%8E%E6%9C%AF%E7%B4%A0%E6%9D%90/%E5%BB%BA%E7%AD%91%E5%9B%BE%E4%B9%A6%E9%A6%86-cut.png HTTP/1.1" 200 -
+127.0.0.1 - - [15/Sep/2026 09:35:18] "GET /%E7%BE%8E%E6%9C%AF%E7%B4%A0%E6%9D%90/%E5%BB%BA%E7%AD%91%E9%85%92%E9%A6%86-cut.png HTTP/1.1" 200 -
+127.0.0.1 - - [15/Sep/2026 09:35:18] "GET /%E7%BE%8E%E6%9C%AF%E7%B4%A0%E6%9D%90/%E5%9C%BA%E6%99%AF%E9%85%92%E5%90%A7.png HTTP/1.1" 200 -
+127.0.0.1 - - [15/Sep/2026 09:35:18] "GET /%E7%BE%8E%E6%9C%AF%E7%B4%A0%E6%9D%90/%E7%94%B7%E7%9C%8B%E5%B1%B1-%E6%AD%A3%E9%9D%A2.png HTTP/1.1" 200 -
+127.0.0.1 - - [15/Sep/2026 09:35:18] "GET /%E7%BE%8E%E6%9C%AF%E7%B4%A0%E6%9D%90/%E5%A5%B3%E7%9C%8B%E5%B1%B1-%E6%AD%A3%E9%9D%A2.png HTTP/1.1" 200 -
+127.0.0.1 - - [15/Sep/2026 09:35:18] "GET /%E7%BE%8E%E6%9C%AF%E7%B4%A0%E6%9D%90/%E7%9C%8B%E5%B1%B1%E6%8E%A2%E5%A4%B4.png HTTP/1.1" 200 -
+127.0.0.1 - - [15/Sep/2026 09:35:19] "GET /%E9%9F%B3%E4%B9%90/%E6%B8%A9%E6%9A%96%E7%9A%84%E6%97%A5%E5%B8%B8.mp3 HTTP/1.1" 200 -
+----------------------------------------
+Exception occurred during processing of request from ('127.0.0.1', 12325)
+Traceback (most recent call last):
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\socketserver.py", line 697, in process_request_thread
+    self.finish_request(request, client_address)
+    ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\socketserver.py", line 362, in finish_request
+    self.RequestHandlerClass(request, client_address, self)
+    ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "E:\ZH\Zhihu\newfrontend\server.py", line 11, in __init__
+    super().__init__(*args, directory=str(ROOT), **kwargs)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\http\server.py", line 732, in __init__
+    super().__init__(*args, **kwargs)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\socketserver.py", line 766, in __init__
+    self.handle()
+    ~~~~~~~~~~~^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\http\server.py", line 496, in handle
+    self.handle_one_request()
+    ~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\http\server.py", line 484, in handle_one_request
+    method()
+    ~~~~~~^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\http\server.py", line 739, in do_GET
+    self.copyfile(f, self.wfile)
+    ~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\http\server.py", line 942, in copyfile
+    shutil.copyfileobj(source, outputfile)
+    ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\shutil.py", line 257, in copyfileobj
+    fdst_write(buf)
+    ~~~~~~~~~~^^^^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\socketserver.py", line 845, in write
+    self._sock.sendall(b)
+    ~~~~~~~~~~~~~~~~~~^^^
+ConnectionResetError: [WinError 10054] 远程主机强迫关闭了一个现有的连接。
+----------------------------------------
+----------------------------------------
+Exception occurred during processing of request from ('127.0.0.1', 16594)
+Traceback (most recent call last):
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\socketserver.py", line 697, in process_request_thread
+    self.finish_request(request, client_address)
+    ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\socketserver.py", line 362, in finish_request
+    self.RequestHandlerClass(request, client_address, self)
+    ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "E:\ZH\Zhihu\newfrontend\server.py", line 11, in __init__
+    super().__init__(*args, directory=str(ROOT), **kwargs)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\http\server.py", line 732, in __init__
+    super().__init__(*args, **kwargs)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\socketserver.py", line 766, in __init__
+    self.handle()
+    ~~~~~~~~~~~^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\http\server.py", line 496, in handle
+    self.handle_one_request()
+    ~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\http\server.py", line 484, in handle_one_request
+    method()
+    ~~~~~~^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\http\server.py", line 739, in do_GET
+    self.copyfile(f, self.wfile)
+    ~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\http\server.py", line 942, in copyfile
+    shutil.copyfileobj(source, outputfile)
+    ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\shutil.py", line 257, in copyfileobj
+    fdst_write(buf)
+    ~~~~~~~~~~^^^^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\socketserver.py", line 845, in write
+    self._sock.sendall(b)
+    ~~~~~~~~~~~~~~~~~~^^^
+ConnectionResetError: [WinError 10054] 远程主机强迫关闭了一个现有的连接。
+----------------------------------------
+127.0.0.1 - - [15/Sep/2026 09:35:39] "GET /%E7%BE%8E%E6%9C%AF%E7%B4%A0%E6%9D%90/%E5%9C%BA%E6%99%AF%E9%85%92%E5%90%A7.png HTTP/1.1" 200 -
+127.0.0.1 - - [15/Sep/2026 09:35:39] "GET /%E9%9F%B3%E4%B9%90/%E6%B8%A9%E6%9A%96%E7%9A%84%E6%97%A5%E5%B8%B8.mp3 HTTP/1.1" 200 -
+----------------------------------------
+Exception occurred during processing of request from ('127.0.0.1', 62910)
+Traceback (most recent call last):
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\socketserver.py", line 697, in process_request_thread
+    self.finish_request(request, client_address)
+    ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\socketserver.py", line 362, in finish_request
+    self.RequestHandlerClass(request, client_address, self)
+    ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "E:\ZH\Zhihu\newfrontend\server.py", line 11, in __init__
+    super().__init__(*args, directory=str(ROOT), **kwargs)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\http\server.py", line 732, in __init__
+    super().__init__(*args, **kwargs)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\socketserver.py", line 766, in __init__
+    self.handle()
+    ~~~~~~~~~~~^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\http\server.py", line 496, in handle
+    self.handle_one_request()
+    ~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\http\server.py", line 484, in handle_one_request
+    method()
+    ~~~~~~^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\http\server.py", line 739, in do_GET
+    self.copyfile(f, self.wfile)
+    ~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\http\server.py", line 942, in copyfile
+    shutil.copyfileobj(source, outputfile)
+    ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\shutil.py", line 257, in copyfileobj
+    fdst_write(buf)
+    ~~~~~~~~~~^^^^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\socketserver.py", line 845, in write
+    self._sock.sendall(b)
+    ~~~~~~~~~~~~~~~~~~^^^
+ConnectionResetError: [WinError 10054] 远程主机强迫关闭了一个现有的连接。
+----------------------------------------
+127.0.0.1 - - [15/Sep/2026 09:35:49] "GET /intro/intro HTTP/1.1" 200 -
+127.0.0.1 - - [15/Sep/2026 09:35:49] "GET /intro/styles.css HTTP/1.1" 200 -
+127.0.0.1 - - [15/Sep/2026 09:35:49] "GET /intro/%E7%BE%8E%E6%9C%AF%E7%B4%A0%E6%9D%90/logo.jpg HTTP/1.1" 200 -
+127.0.0.1 - - [15/Sep/2026 09:35:49] "GET /intro/%E7%BE%8E%E6%9C%AF%E7%B4%A0%E6%9D%90/%E6%B6%88%E6%81%AF%E7%9B%92%E5%AD%90%EF%BC%88%E6%B2%A1%E6%9C%89%E6%B6%88%E6%81%AF%EF%BC%89.svg HTTP/1.1" 200 -
+127.0.0.1 - - [15/Sep/2026 09:35:49] "GET /intro/%E7%BE%8E%E6%9C%AF%E7%B4%A0%E6%9D%90/%E6%B6%88%E6%81%AF%E7%9B%92%E5%AD%90%EF%BC%88%E6%9C%89%E6%B6%88%E6%81%AF%EF%BC%89.svg HTTP/1.1" 200 -
+127.0.0.1 - - [15/Sep/2026 09:35:49] "GET /intro/%E7%BE%8E%E6%9C%AF%E7%B4%A0%E6%9D%90/%E7%9C%8B%E5%B1%B1%E4%BA%BA%E7%89%A9.png HTTP/1.1" 200 -
+127.0.0.1 - - [15/Sep/2026 09:35:49] "GET /intro/%E7%BE%8E%E6%9C%AF%E7%B4%A0%E6%9D%90/%E5%BB%BA%E7%AD%91%E5%92%96%E5%95%A1%E5%BA%97.png HTTP/1.1" 200 -
+127.0.0.1 - - [15/Sep/2026 09:35:49] "GET /intro/%E7%BE%8E%E6%9C%AF%E7%B4%A0%E6%9D%90/%E5%BB%BA%E7%AD%91%E5%89%A7%E9%99%A2-cut.png HTTP/1.1" 200 -
+127.0.0.1 - - [15/Sep/2026 09:35:49] "GET /intro/%E7%BE%8E%E6%9C%AF%E7%B4%A0%E6%9D%90/%E5%B0%8F%E9%95%87%E5%9C%B0%E5%9B%BE.jpg HTTP/1.1" 200 -
+127.0.0.1 - - [15/Sep/2026 09:35:49] "GET /intro/%E7%BE%8E%E6%9C%AF%E7%B4%A0%E6%9D%90/%E5%BB%BA%E7%AD%91%E9%85%92%E9%A6%86-cut.png HTTP/1.1" 200 -
+127.0.0.1 - - [15/Sep/2026 09:35:49] "GET /intro/%E7%BE%8E%E6%9C%AF%E7%B4%A0%E6%9D%90/%E5%BB%BA%E7%AD%91%E5%9B%BE%E4%B9%A6%E9%A6%86-cut.png HTTP/1.1" 200 -
+127.0.0.1 - - [15/Sep/2026 09:35:49] "GET /intro/%E7%BE%8E%E6%9C%AF%E7%B4%A0%E6%9D%90/%E5%BB%BA%E7%AD%91%E8%AE%B2%E5%8F%B0-cut.png HTTP/1.1" 200 -
+127.0.0.1 - - [15/Sep/2026 09:35:49] "GET /intro/%E7%BE%8E%E6%9C%AF%E7%B4%A0%E6%9D%90/%E5%BB%BA%E7%AD%91%E5%92%96%E5%95%A1%E5%BA%97-cut.png HTTP/1.1" 200 -
+127.0.0.1 - - [15/Sep/2026 09:35:49] "GET /intro/%E7%BE%8E%E6%9C%AF%E7%B4%A0%E6%9D%90/%E5%9C%BA%E6%99%AF%E9%85%92%E5%90%A7.png HTTP/1.1" 200 -
+127.0.0.1 - - [15/Sep/2026 09:35:49] "GET /intro/%E7%BE%8E%E6%9C%AF%E7%B4%A0%E6%9D%90/%E7%94%B7%E7%9C%8B%E5%B1%B1-%E6%AD%A3%E9%9D%A2.png HTTP/1.1" 200 -
+127.0.0.1 - - [15/Sep/2026 09:35:49] "GET /intro/%E7%BE%8E%E6%9C%AF%E7%B4%A0%E6%9D%90/%E5%A5%B3%E7%9C%8B%E5%B1%B1-%E6%AD%A3%E9%9D%A2.png HTTP/1.1" 200 -
+127.0.0.1 - - [15/Sep/2026 09:35:49] "GET /intro/%E7%BE%8E%E6%9C%AF%E7%B4%A0%E6%9D%90/%E7%9C%8B%E5%B1%B1%E6%8E%A2%E5%A4%B4.png HTTP/1.1" 200 -
+127.0.0.1 - - [15/Sep/2026 09:35:49] "GET /intro/%E9%9F%B3%E4%B9%90/%E6%B8%A9%E6%9A%96%E7%9A%84%E6%97%A5%E5%B8%B8.mp3 HTTP/1.1" 200 -
+127.0.0.1 - - [15/Sep/2026 09:35:49] "GET /favicon.ico HTTP/1.1" 200 -
+127.0.0.1 - - [15/Sep/2026 09:35:51] "GET /auth HTTP/1.1" 200 -
+127.0.0.1 - - [15/Sep/2026 09:35:51] "GET /%E7%BE%8E%E6%9C%AF%E7%B4%A0%E6%9D%90/%E5%9C%BA%E6%99%AF%E9%85%92%E5%90%A7.png HTTP/1.1" 200 -
+127.0.0.1 - - [15/Sep/2026 09:35:51] "GET /%E9%9F%B3%E4%B9%90/%E6%B8%A9%E6%9A%96%E7%9A%84%E6%97%A5%E5%B8%B8.mp3 HTTP/1.1" 200 -
+----------------------------------------
+Exception occurred during processing of request from ('127.0.0.1', 63283)
+Traceback (most recent call last):
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\socketserver.py", line 697, in process_request_thread
+    self.finish_request(request, client_address)
+    ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\socketserver.py", line 362, in finish_request
+    self.RequestHandlerClass(request, client_address, self)
+    ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "E:\ZH\Zhihu\newfrontend\server.py", line 11, in __init__
+    super().__init__(*args, directory=str(ROOT), **kwargs)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\http\server.py", line 732, in __init__
+    super().__init__(*args, **kwargs)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\socketserver.py", line 766, in __init__
+    self.handle()
+    ~~~~~~~~~~~^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\http\server.py", line 496, in handle
+    self.handle_one_request()
+    ~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\http\server.py", line 484, in handle_one_request
+    method()
+    ~~~~~~^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\http\server.py", line 739, in do_GET
+    self.copyfile(f, self.wfile)
+    ~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\http\server.py", line 942, in copyfile
+    shutil.copyfileobj(source, outputfile)
+    ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\shutil.py", line 257, in copyfileobj
+    fdst_write(buf)
+    ~~~~~~~~~~^^^^^
+  File "C:\Users\xyf\AppData\Roaming\uv\python\cpython-3.14-windows-x86_64-none\Lib\socketserver.py", line 845, in write
+    self._sock.sendall(b)
+    ~~~~~~~~~~~~~~~~~~^^^
+ConnectionResetError: [WinError 10054] 远程主机强迫关闭了一个现有的连接。
+----------------------------------------
+127.0.0.1 - - [15/Sep/2026 09:36:52] "GET /favicon.ico HTTP/1.1" 304 -

@@ -31,9 +31,9 @@ def _rid(request: Request, body_request_id: str | None = None) -> str:
 def _callback_error(request: Request, exc: service.ConsentError, rid: str):
     """浏览器 OAuth 失败时回到前端认证页，接口调用仍返回标准 JSON 错误。"""
     if "text/html" in request.headers.get("accept", ""):
-        frontend_url = os.environ.get("TWINLOOP_FRONTEND_URL", "http://127.0.0.1:3000/#intro")
+        frontend_url = os.environ.get("TWINLOOP_FRONTEND_URL", "http://127.0.0.1:3000/intro")
         base_url = frontend_url.split("#", 1)[0].rstrip("/")
-        return RedirectResponse(url=f"{base_url}/#auth?error={quote(exc.message)}", status_code=302)
+        return RedirectResponse(url=f"{base_url}/auth?error={quote(exc.message)}", status_code=302)
     return JSONResponse(status_code=exc.status_code, content=fail(exc.code, exc.message, rid))
 
 
@@ -75,9 +75,9 @@ async def callback(
         user = auth_service.login_with_zhihu_profile(result["profile"])
     except auth_service.AuthError as exc:
         if "text/html" in request.headers.get("accept", ""):
-            frontend_url = os.environ.get("TWINLOOP_FRONTEND_URL", "http://127.0.0.1:3000/#intro")
+            frontend_url = os.environ.get("TWINLOOP_FRONTEND_URL", "http://127.0.0.1:3000/intro")
             base_url = frontend_url.split("#", 1)[0].rstrip("/")
-            return RedirectResponse(url=f"{base_url}/#auth?error={quote(exc.message)}", status_code=302)
+            return RedirectResponse(url=f"{base_url}/auth?error={quote(exc.message)}", status_code=302)
         return JSONResponse(status_code=exc.status_code, content=fail(exc.code, exc.message, rid))
 
     # 知乎 token 只存服务端会话，浏览器仅得到随机会话 ID
@@ -90,7 +90,7 @@ async def callback(
     frontend_url = os.environ.get("TWINLOOP_FRONTEND_URL", "http://127.0.0.1:3000/")
     # 授权完成后统一回到新前端的 intro 首屏；保留显式配置中的 hash。
     if "#" not in frontend_url:
-        frontend_url = frontend_url.rstrip("/") + "/#intro"
+        frontend_url = frontend_url.rstrip("/") + "/intro"
     resp = RedirectResponse(url=frontend_url, status_code=302)
     session.set_session_cookie(resp, session_id)
     return resp

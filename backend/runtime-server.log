@@ -1,0 +1,8 @@
+[config] .env 已加载
+[consent] 知乎 OAuth 配置: 完整
+[consent] redirect_uri = http://127.0.0.1:8000/api/v1/sources/zhihu/callback
+[imports] Access Secret: 已配置
+[chroma] 向量同步 worker 已启动
+INFO:     127.0.0.1:46393 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:33716 - "POST /v1/twin/scenes/cafe/avatars HTTP/1.1" 200 OK
+INFO:     127.0.0.1:23163 - "GET /v1/twin/scenes/cafe/avatars HTTP/1.1" 200 OK
