@@ -104,6 +104,16 @@
       </div>
     </section>
 
+    <section class="exchange-overlay" id="exchange-overlay" aria-hidden="true">
+      <div class="exchange-modal" role="dialog" aria-modal="true" aria-labelledby="exchange-modal-title">
+        <button class="exchange-modal__close" id="exchange-modal-close" type="button" aria-label="关闭交流状态">×</button>
+        <div class="exchange-modal__icon" aria-hidden="true">✦</div>
+        <h2 id="exchange-modal-title">正在交流中</h2>
+        <p id="exchange-modal-text">你的看山正在和对方交换想法，请稍候。</p>
+        <span class="exchange-modal__status"><i></i> 对话准备中</span>
+      </div>
+    </section>
+
     <div class="page-shell" id="home-view">
 
       <main class="main-content">
@@ -190,6 +200,7 @@
           <div><dt>感兴趣的方向</dt><dd id="tavern-detail-interests"></dd></div>
           <div><dt>想聊聊</dt><dd id="tavern-detail-intro"></dd></div>
         </dl>
+        <button class="tavern-detail-card__action" id="tavern-start-chat" type="button">和看山交流</button>
       </aside>
       <section class="tavern-characters" aria-label="酒馆里的看山">
         <div class="tavern-character tavern-character--mine">
@@ -355,6 +366,10 @@
       const tavernDetailPersonality = document.getElementById('tavern-detail-personality');
       const tavernDetailInterests = document.getElementById('tavern-detail-interests');
       const tavernDetailIntro = document.getElementById('tavern-detail-intro');
+      const tavernStartChat = document.getElementById('tavern-start-chat');
+      const exchangeOverlay = document.getElementById('exchange-overlay');
+      const exchangeModalClose = document.getElementById('exchange-modal-close');
+      const exchangeModalText = document.getElementById('exchange-modal-text');
       const profile = document.getElementById('profile-view');
       const profileTraitList = document.getElementById('profile-trait-list');
       const list = document.getElementById('encounter-list');
@@ -1322,6 +1337,7 @@
       });
       document.addEventListener('keydown', (event) => {
         if (event.key === 'Escape') closeMessageList();
+        if (event.key === 'Escape') closeExchangeStatus();
       });
       document.querySelectorAll('.town-building[data-scene]').forEach((building) => {
         building.addEventListener('click', () => {
@@ -1380,6 +1396,7 @@
         tavernGuests.forEach((guest) => guest.classList.remove('is-selected'));
         tavernHeading.textContent = '开始与看山交谈';
         tavernDetailCard.hidden = true;
+        if (tavernStartChat) tavernStartChat.dataset.name = '';
       }
       tavernGuests.forEach((guest) => {
         guest.addEventListener('click', () => {
@@ -1391,8 +1408,24 @@
           tavernDetailPersonality.textContent = guest.dataset.personality;
           tavernDetailInterests.textContent = guest.dataset.interests;
           tavernDetailIntro.textContent = guest.dataset.intro;
+          tavernStartChat.dataset.name = guest.dataset.name;
           tavernDetailCard.hidden = false;
         });
+      });
+      function openExchangeStatus() {
+        const name = tavernStartChat?.dataset.name || tavernDetailName?.textContent || '对方';
+        if (exchangeModalText) exchangeModalText.textContent = `你的看山正在和${name}交换想法，请稍候。`;
+        exchangeOverlay?.classList.add('is-open');
+        exchangeOverlay?.setAttribute('aria-hidden', 'false');
+      }
+      function closeExchangeStatus() {
+        exchangeOverlay?.classList.remove('is-open');
+        exchangeOverlay?.setAttribute('aria-hidden', 'true');
+      }
+      tavernStartChat?.addEventListener('click', openExchangeStatus);
+      exchangeModalClose?.addEventListener('click', closeExchangeStatus);
+      exchangeOverlay?.addEventListener('click', (event) => {
+        if (event.target === exchangeOverlay) closeExchangeStatus();
       });
       tavernSelectionBack.addEventListener('click', resetTavernConversation);
       renderList();
